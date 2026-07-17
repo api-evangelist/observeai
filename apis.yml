@@ -1,0 +1,28 @@
+aid: observeai
+name: Observe.AI
+description: 'Observe.AI is a company surfaced as a portfolio company of scale-venture-partners, softbank-vision-fund
+  and added to the API Evangelist network as a stub for enrichment. Sector: ai-apps. This profile is a
+  lead awaiting the enrichment pipeline.'
+url: https://raw.githubusercontent.com/api-evangelist/observeai/refs/heads/main/apis.yml
+x-type: company
+x-source: vc-portfolio
+x-backed-by:
+- scale-venture-partners
+- softbank-vision-fund
+x-tier: stub
+x-tier-reason: portfolio-lead
+specificationVersion: '0.20'
+created: '2026-07-17'
+modified: '2026-07-17'
+tags:
+- Company
+- Ai Apps
+apis: []
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com
+- FN: APIs.json
+  email: info@apis.io
+common:
+- type: Website
+  url: https://www.observe.ai/
