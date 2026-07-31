@@ -1,8 +1,30 @@
 aid: observeai
+accessModel:
+  pricing: unknown
+  onboarding: unknown
+  trial: false
+  try_now: false
+  public: false
+  label: Unknown
+  confidence: low
+  source: []
+  generated: '2026-07-22'
+  method: derived
+image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/observeai.png
 name: Observe.AI
-description: 'Observe.AI is a company surfaced as a portfolio company of scale-venture-partners, softbank-vision-fund
-  and added to the API Evangelist network as a stub for enrichment. Sector: ai-apps. This profile is a
-  lead awaiting the enrichment pipeline.'
+description: >-
+  Observe.AI is an agentic AI platform for the contact center, providing
+  purpose-built AI agents that handle customer support end-to-end across voice
+  and chat, real-time AI Copilot guidance that assists frontline agents during
+  live interactions, and Conversation Intelligence that evaluates every
+  interaction for quality assurance, compliance, and business insight. Its AI
+  agents connect to CRM, CCaaS, knowledge base, and backend systems to read and
+  write data and trigger workflows, backed by 250+ prebuilt integrations and
+  API/integration toolkits. Observe.AI serves regulated industries including
+  banking and financial services, healthcare, insurance, and travel and
+  hospitality, and maintains SOC 2, ISO 27001, and HIPAA compliance. The company
+  was added to the API Evangelist network as a portfolio company of Scale
+  Venture Partners and the SoftBank Vision Fund.
 url: https://raw.githubusercontent.com/api-evangelist/observeai/refs/heads/main/apis.yml
 x-type: company
 x-source: vc-portfolio
@@ -13,10 +35,16 @@ x-tier: stub
 x-tier-reason: portfolio-lead
 specificationVersion: '0.20'
 created: '2026-07-17'
-modified: '2026-07-17'
+modified: '2026-07-20'
 tags:
 - Company
 - Ai Apps
+- Contact Center
+- Conversation Intelligence
+- Customer Support
+- Agentic AI
+- Voice AI
+- Quality Assurance
 apis: []
 maintainers:
 - FN: Kin Lane
@@ -26,3 +54,34 @@ maintainers:
 common:
 - type: Website
   url: https://www.observe.ai/
+- type: Blog
+  url: https://www.observe.ai/blog
+- type: Support
+  url: https://help.observe.ai/hc/en-us
+- type: TermsOfService
+  url: https://www.observe.ai/terms
+- type: PrivacyPolicy
+  url: https://www.observe.ai/privacy-policy
+- type: GitHubOrganization
+  url: https://github.com/observeai
+- type: Integrations
+  url: https://www.observe.ai/integrations
+- type: StatusPage
+  url: https://status.observe.ai/
+- type: Lifecycle
+  url: lifecycle/observeai-lifecycle.yml
+- type: TrustCenter
+  url: security/observeai-trust-center.yml
+- type: Compliance
+  url: https://www.observe.ai/trust
+- type: VulnerabilityDisclosure
+  url: security/observeai-vulnerability-disclosure.yml
+- type: Security
+  url: https://www.observe.ai/contact-center-security
+- type: DomainSecurity
+  url: security/observeai-domain-security.yml
+x-enrichment:
+  date: '2026-07-20'
+  status: enriched
+  artifacts_added: 4
+  pass: local-v1

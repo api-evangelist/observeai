@@ -1,0 +1,19 @@
+generated: '2026-07-20'
+method: searched
+source: https://status.observe.ai/
+status_page: https://status.observe.ai/
+status_page_provider: Atlassian Statuspage
+components:
+- AI Agents
+- AI Copilot
+- Conversation Intelligence
+instances:
+- Standard
+- Restricted (US)
+- EU
+notes: >-
+  Observe.AI publishes a public Atlassian Statuspage covering its AI Agents,
+  AI Copilot, and Conversation Intelligence services across Standard,
+  Restricted (US), and EU instances, with 90-day uptime history and scheduled
+  maintenance notices. No public versioning or deprecation policy is published
+  (Observe.AI ships no public developer portal or OpenAPI at this time).
