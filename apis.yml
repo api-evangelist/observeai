@@ -1,15 +1,22 @@
 aid: observeai
 accessModel:
-  pricing: unknown
-  onboarding: unknown
+  pricing: contract
+  onboarding: sales-gated
   trial: false
   try_now: false
   public: false
-  label: Unknown
-  confidence: low
-  source: []
-  generated: '2026-07-22'
-  method: derived
+  label: Sales-gated
+  confidence: high
+  source:
+  - https://api-docs.observe.ai/#tag/Authentication
+  - https://api-docs.observe.ai/#tag/ReportingService-Overview
+  - https://aws.amazon.com/marketplace/pp/prodview-q2xrm5ud6rkro
+  note: >-
+    The API documentation is fully public, but access is not. App credentials are
+    requested from help@observe.ai or a CSM, and the tenant base URL is issued by
+    support ticket, so nothing can be called without an existing contract.
+  generated: '2026-08-14'
+  method: searched
 image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/observeai.png
 name: Observe.AI
 description: >-
@@ -22,20 +29,25 @@ description: >-
   write data and trigger workflows, backed by 250+ prebuilt integrations and
   API/integration toolkits. Observe.AI serves regulated industries including
   banking and financial services, healthcare, insurance, and travel and
-  hospitality, and maintains SOC 2, ISO 27001, and HIPAA compliance. The company
-  was added to the API Evangelist network as a portfolio company of Scale
-  Venture Partners and the SoftBank Vision Fund.
+  hospitality, and maintains SOC 2, ISO 27001, and HIPAA compliance. Its public
+  developer surface is the Reporting APIs at api-docs.observe.ai — an OpenAPI
+  3.0.1 contract covering asynchronous export of interactions, GenAI summaries,
+  Auto QA and manual evaluations, coachings and ack/dispute state, plus a Data
+  Subject Request deletion API and a scheduled bulk export to Snowflake or S3
+  described by sixteen JSON Schemas. The company was added to the API Evangelist
+  network as a portfolio company of Scale Venture Partners and the SoftBank
+  Vision Fund.
 url: https://raw.githubusercontent.com/api-evangelist/observeai/refs/heads/main/apis.yml
 x-type: company
 x-source: vc-portfolio
 x-backed-by:
 - scale-venture-partners
 - softbank-vision-fund
-x-tier: stub
-x-tier-reason: portfolio-lead
+x-tier: enriched
+x-tier-reason: published-openapi-harvested
 specificationVersion: '0.20'
 created: '2026-07-17'
-modified: '2026-07-20'
+modified: '2026-08-14'
 tags:
 - Company
 - Ai Apps
@@ -45,7 +57,89 @@ tags:
 - Agentic AI
 - Voice AI
 - Quality Assurance
-apis: []
+- Reporting
+- OpenAPI
+- Speech Analytics
+apis:
+- name: Observe.AI Reporting APIs
+  description: >-
+    Asynchronous REST APIs that export Observe.AI contact-center data into
+    external systems: Interactions (Moments, transcripts and metadata for voice
+    calls, webchat and email), Summarization AI (GenAI summaries), Evaluations
+    (Auto QA and manual evaluation forms with question-level and aggregate
+    scores), Coachings (coaching sessions with mapped evaluations and notes),
+    Ack/Dispute state changes, and DSR (Data Subject Request) deletion. Every
+    reporting call is a two-step async flow — POST registers a request and
+    returns a request_id, then GET polls that id until COMPLETED and returns a
+    pre-signed S3 URL valid for 24 hours. Auth is OAuth 2.0 client-credentials
+    (App ID + App Secret exchanged for a 2-hour bearer JWT).
+  humanURL: https://api-docs.observe.ai/
+  baseURL: https://kong.observe.ai/
+  tags:
+  - contact-center
+  - conversation-intelligence
+  - quality-assurance
+  - reporting
+  - call-transcripts
+  - agent-performance
+  - coaching
+  - summarization
+  - data-subject-request
+  properties:
+  - type: OpenAPI
+    url: openapi/observeai-reporting-apis-openapi.yml
+  - type: Documentation
+    url: https://api-docs.observe.ai/
+  - type: APIReference
+    url: https://api-docs.observe.ai/
+  - type: GettingStarted
+    url: https://api-docs.observe.ai/#tag/ReportingService-Overview
+  - type: Authentication
+    url: authentication/observeai-authentication.yml
+  - type: Conventions
+    url: conventions/observeai-conventions.yml
+  - type: RateLimits
+    url: rate-limits/observeai-rate-limits.yml
+  - type: ErrorCatalog
+    url: errors/observeai-problem-types.yml
+  - type: DataModel
+    url: data-model/observeai-data-model.yml
+  - type: ChangeLog
+    url: changelog/observeai-changelog.yml
+  - type: Overlay
+    url: overlays/observeai-reporting-apis-overlay.yaml
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-interaction-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-autoqa-evaluation-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-manual-evaluation-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-coaching-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-interaction-summary-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-agent-performance-assignment-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-audit-assignment-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-autoqa-ack-dispute-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-calibration-assignment-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-contact-reason-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-evaluation-template-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-manual-ack-dispute-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-sentiment-metric-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-team-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-user-login-activity-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-user-v1.schema.json
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
@@ -57,7 +151,7 @@ common:
 - type: Blog
   url: https://www.observe.ai/blog
 - type: Support
-  url: https://help.observe.ai/hc/en-us
+  url: https://help.observe.ai/
 - type: TermsOfService
   url: https://www.observe.ai/terms
 - type: PrivacyPolicy
@@ -80,8 +174,42 @@ common:
   url: https://www.observe.ai/contact-center-security
 - type: DomainSecurity
   url: security/observeai-domain-security.yml
+- type: DeveloperPortal
+  url: https://api-docs.observe.ai/
+- type: Documentation
+  url: https://api-docs.observe.ai/
+- type: APIReference
+  url: https://api-docs.observe.ai/
+- type: GettingStarted
+  url: https://api-docs.observe.ai/#tag/ReportingService-Overview
+- type: ChangeLog
+  url: changelog/observeai-changelog.yml
+- type: Deprecation
+  url: https://api-docs.observe.ai/#tag/CallsReportVsInteractions
+- type: Authentication
+  url: authentication/observeai-authentication.yml
+- type: Conventions
+  url: conventions/observeai-conventions.yml
+- type: RateLimits
+  url: rate-limits/observeai-rate-limits.yml
+- type: ErrorCatalog
+  url: errors/observeai-problem-types.yml
+- type: DataModel
+  url: data-model/observeai-data-model.yml
+- type: Conformance
+  url: conformance/observeai-conformance.yml
+- type: Plans
+  url: plans/observeai-plans-pricing.yml
+- type: Pricing
+  url: https://aws.amazon.com/marketplace/pp/prodview-q2xrm5ud6rkro
+- type: SignUp
+  url: https://app.observe.ai/login
+- type: AgentSkill
+  url: skills/_index.yml
+- type: LLMsTxt
+  url: llms/observeai-llms.txt
 x-enrichment:
-  date: '2026-07-20'
+  date: '2026-08-14'
   status: enriched
-  artifacts_added: 4
+  artifacts_added: 36
   pass: local-v1
