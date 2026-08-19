@@ -1,0 +1,126 @@
+generated: '2026-08-14'
+method: searched
+source: https://api-docs.observe.ai/
+derived_from: openapi/observeai-reporting-apis-openapi.yml
+summary: >-
+  Observe.AI's Reporting APIs are an asynchronous request/poll/download surface,
+  not a synchronous CRUD API. Every report is registered with a POST that returns
+  a request_id, polled with a GET until status COMPLETED, and then downloaded
+  from a pre-signed S3 URL that expires after 24 hours. This shape — job queue
+  plus object-store handoff — is the single most important convention for any
+  client or agent integrating with the platform.
+authentication:
+  style: OAuth 2.0 client credentials -> bearer JWT
+  header: 'Authorization: Bearer <auth_token>'
+  token_lifetime_seconds: 7200
+  see: authentication/observeai-authentication.yml
+async_job_model:
+  supported: true
+  pattern: register -> poll -> download
+  register:
+    method: POST
+    returns: request_id
+    schema: PostJobResponse
+  poll:
+    method: GET
+    path_param: request_id
+    schema: GetJobResponse
+    statuses:
+    - QUEUED
+    - CREATED
+    - PROGRESS
+    - COMPLETED
+    - STOPPED
+    - FAILED
+    poll_budget: 20 requests per minute per app credential
+  download:
+    transport: pre-signed S3 URL returned in the GET response
+    ttl_hours: 24
+    note: >-
+      The S3 URL obtained in the API response is valid for 24 hours. Reporting
+      payloads are therefore never returned inline; a client must follow the URL
+      before it expires or re-poll.
+idempotency:
+  supported: false
+  header: null
+  note: >-
+    No Idempotency-Key header, no idempotent-retry contract, and no 409 conflict
+    semantics are documented or present in the OpenAPI. A retried POST creates a
+    second reporting job and consumes another unit of the 2000/day quota. This is
+    a genuine absence, not an unsearched gap — no Idempotency pointer is emitted.
+pagination:
+  supported: true
+  style: page-number
+  request_fields:
+  - page
+  - size
+  response_fields:
+  - page
+  - size
+  - total_pages
+  - total_size
+  max_page_size:
+    interactions_without_transcripts: 1000
+    evaluations: 1000
+  note: >-
+    Field naming changed at the Calls Report -> Interactions migration:
+    totalPages became total_pages and totalResults became total_size. The whole
+    Interactions response moved from camelCase to snake_case.
+date_windows:
+  supported: true
+  max_window_days: 90
+  applies_to:
+  - Interactions
+  - Evaluations
+  - Coachings
+  - Ack/Dispute
+  note: >-
+    The duration between end_date and start_date must not exceed 90 days. There
+    is no limit on how far back the window may start, subject to the account's
+    data retention settings.
+field_naming:
+  case: snake_case
+  legacy_case: camelCase (Calls Report API, deprecated 31-Dec-2022)
+versioning:
+  scheme: uri-path
+  versions:
+  - v1
+  - v2
+  note: >-
+    v2 is not a whole-API version bump — it exists only under
+    /v2/data/reports/interactions, where it carries the Summarization AI
+    (GenAI summaries) variant of the Interactions surface. v1 and v2 are
+    concurrent, not successive.
+  see: lifecycle/observeai-lifecycle.yml
+request_tracing:
+  request_id_header: null
+  note: >-
+    No correlation/request-id response header is documented. The request_id in
+    the body is a job identifier, not a trace identifier.
+error_envelope:
+  shape: '{"message": "<string>"}'
+  rfc9457: false
+  see: errors/observeai-problem-types.yml
+rate_limit_signaling:
+  headers_published: false
+  status_on_exhaustion: 429
+  see: rate-limits/observeai-rate-limits.yml
+base_url:
+  templated: true
+  server: https://{base_url}
+  note: >-
+    The published OpenAPI declares a single templated server, and the Getting
+    Started guide states "Please reach out to your CSMs or raise support ticket
+    to receive the Base URL for your instance." The base URL is therefore
+    per-tenant/per-cluster and is not published. https://kong.observe.ai is the
+    host Observe.AI names in its own Calls-Report-vs-Interactions comparison
+    table as the endpoint for the async Interactions API, and is used as the
+    catalog baseURL; it resolves and answers with the gateway's own 403 JSON.
+bulk_export:
+  supported: true
+  transports:
+  - Snowflake Data Share
+  - S3 share (gzip JSON, <ENTITY>_<timestamp>.json.gz)
+  datasets: 16
+  schemas: json-schema/ (JSON Schema draft 2020-12, harvested verbatim)
+  docs: https://api-docs.observe.ai/bulk-export/

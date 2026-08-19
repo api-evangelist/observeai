@@ -1,0 +1,420 @@
+{
+"$schema": "https://json-schema.org/draft/2020-12/schema",
+"title": "MANUAL_EVALUATION_V1",
+"description": "JSON schema for Observe.ai bulk S3 export of manual evaluation records. Each file is gzip-compressed JSON (MANUAL_EVALUATION_V1_<timestamp>.json.gz). Each record is one JSON object.",
+"type": "object",
+"properties": {
+  "id": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Unique identifier for this record."
+  },
+  "template_id": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Identifier of the evaluation template/form used."
+  },
+  "meeting_id": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Observe.ai interaction (meeting) identifier this record relates to."
+  },
+  "evaluator_id": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Observe.ai user identifier for the evaluator."
+  },
+  "partner_evaluator_id": {
+    "type": [
+      "array",
+      "null"
+    ],
+    "items": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Partner-system evaluator identifier."
+    },
+    "description": "Partner-system identifier for the evaluator."
+  },
+  "evaluator_name": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Full name of the evaluator."
+  },
+  "evaluator_email": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Email address of the evaluator."
+  },
+  "evaluator_status": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Evaluator account status in Observe.ai."
+  },
+  "evaluation_purpose": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Purpose/type of the evaluation."
+  },
+  "agent_id": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Observe.ai user identifier for the agent."
+  },
+  "partner_agent_id": {
+    "type": [
+      "array",
+      "null"
+    ],
+    "items": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Partner-system agent identifier."
+    },
+    "description": "Partner-system agent identifier(s) linked to the Observe.ai agent."
+  },
+  "agent_name": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Full name of the agent."
+  },
+  "agent_email": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Email address of the agent."
+  },
+  "agent_status": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Agent account status in Observe.ai (e.g. ACTIVE / IN_ACTIVE)."
+  },
+  "started_at": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "format": "date-time",
+    "description": "UTC timestamp when the evaluation/session was started."
+  },
+  "created_at": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "format": "date-time",
+    "description": "UTC timestamp when the record was created."
+  },
+  "modified_at": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "format": "date-time",
+    "description": "UTC timestamp when the record was last modified."
+  },
+  "status": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Current status of the record."
+  },
+  "ack_info": {
+    "type": [
+      "object",
+      "null"
+    ],
+    "properties": {
+      "ackStatus": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "description": "Current acknowledgement/dispute status."
+      },
+      "ackInitTime": {
+        "type": [
+          "integer",
+          "null"
+        ],
+        "description": "Epoch ms when the agent opened/initiated acknowledgement."
+      },
+      "ackTime": {
+        "type": [
+          "integer",
+          "null"
+        ],
+        "description": "Epoch ms when the agent acknowledged the evaluation."
+      },
+      "comment": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "description": "Agent comment left at acknowledgement time."
+      },
+      "ackScoreInfo": {
+        "description": "Score snapshot captured at acknowledgement time.",
+        "note": "Nested object; additional fields may appear in your export."
+      },
+      "disputeRaisedById": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "description": "User id who raised the dispute."
+      },
+      "disputeRaisedAt": {
+        "type": [
+          "integer",
+          "null"
+        ],
+        "description": "Epoch ms when the dispute was raised."
+      },
+      "disputedQuestions": {
+        "description": "Question ids/details disputed by the agent.",
+        "note": "Nested object; additional fields may appear in your export."
+      },
+      "raiseDisputeComment": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "description": "Agent comment explaining the dispute."
+      },
+      "raiseDisputeScoreInfo": {
+        "description": "Score snapshot captured when the dispute was raised.",
+        "note": "Nested object; additional fields may appear in your export."
+      },
+      "disputeSharedWith": {
+        "description": "User ids the dispute was shared with for resolution.",
+        "note": "Nested object; additional fields may appear in your export."
+      },
+      "disputeResolvedById": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "description": "User id who resolved the dispute."
+      },
+      "disputeResolvedAt": {
+        "type": [
+          "integer",
+          "null"
+        ],
+        "description": "Epoch ms when the dispute was resolved."
+      },
+      "disputeResolveComment": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "description": "Resolver comment explaining the resolution."
+      },
+      "disputeResolvedQuestions": {
+        "description": "Question ids/details affected by the resolution.",
+        "note": "Nested object; additional fields may appear in your export."
+      },
+      "disputeResolvedScoreInfo": {
+        "description": "Score snapshot captured at resolution time.",
+        "note": "Nested object; additional fields may appear in your export."
+      },
+      "disputePartialResolvedById": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "description": "User id who partially resolved the dispute."
+      },
+      "disputePartialResolvedAt": {
+        "type": [
+          "integer",
+          "null"
+        ],
+        "description": "Epoch ms when the dispute was partially resolved."
+      },
+      "disputePartialResolveComment": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "description": "Resolver comment for the partial resolution."
+      },
+      "disputePartialResolvedQuestions": {
+        "description": "Question ids/details affected by the partial resolution.",
+        "note": "Nested object; additional fields may appear in your export."
+      },
+      "disputePartialResolvedScoreInfo": {
+        "description": "Score snapshot captured at partial-resolution time.",
+        "note": "Nested object; additional fields may appear in your export."
+      },
+      "disputeRejectedById": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "description": "User id who rejected the dispute."
+      },
+      "disputeRejectedAt": {
+        "type": [
+          "integer",
+          "null"
+        ],
+        "description": "Epoch ms when the dispute was rejected."
+      },
+      "disputeRejectComment": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "description": "Resolver comment explaining the rejection."
+      }
+    },
+    "description": "Acknowledgement / dispute metadata for this evaluation."
+  },
+  "section_score_responses": {
+    "description": "Per-section score breakdown for the evaluation.",
+    "note": "Nested object; additional fields may appear in your export."
+  },
+  "response": {
+    "type": [
+      "array",
+      "null"
+    ],
+    "items": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "questionId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Identifier of the evaluation template question."
+        },
+        "selectedOption": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true,
+          "description": "Selected answer option IDs for this question."
+        },
+        "obtainedScore": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "description": "Score obtained for this question."
+        }
+      },
+      "description": "One question answer in this evaluation. Additional fields may be present in your export beyond those listed here."
+    },
+    "description": "Raw evaluator/AI responses captured for the evaluation questions."
+  },
+  "result": {
+    "description": "Computed evaluation result payload.",
+    "note": "Nested object; additional fields may appear in your export."
+  },
+  "pre_bonus_score": {
+    "type": [
+      "number",
+      "null"
+    ],
+    "description": "Score achieved before bonus/penalty adjustments."
+  },
+  "obtained_score": {
+    "type": [
+      "number",
+      "null"
+    ],
+    "description": "Total score obtained on the evaluation."
+  },
+  "total_score": {
+    "type": [
+      "number",
+      "null"
+    ],
+    "description": "Maximum possible score for the evaluation/template."
+  },
+  "calculated_score": {
+    "type": [
+      "object",
+      "null"
+    ],
+    "properties": {
+      "value": {
+        "type": [
+          "number",
+          "null"
+        ],
+        "description": "Final/effective calculated score."
+      }
+    },
+    "description": "Computed scoring breakdown for the evaluation."
+  },
+  "bonus": {
+    "type": [
+      "number",
+      "null"
+    ],
+    "description": "Bonus points applied to the evaluation score."
+  },
+  "penalty": {
+    "type": [
+      "number",
+      "null"
+    ],
+    "description": "Penalty points applied to the evaluation score."
+  },
+  "time_took_to_evaluate": {
+    "type": [
+      "number",
+      "null"
+    ],
+    "description": "Time (seconds) taken by the evaluator to complete the evaluation."
+  }
+},
+"$defs": {
+  "date_value": {
+    "type": [
+      "integer",
+      "null"
+    ],
+    "description": "Unix epoch milliseconds. Used for acknowledgement and dispute timestamps in ack_info."
+  }
+}
+}

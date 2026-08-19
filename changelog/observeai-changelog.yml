@@ -1,0 +1,134 @@
+generated: '2026-08-14'
+method: searched
+source: https://api-docs.observe.ai/#tag/ReleaseNotes
+docs: https://api-docs.observe.ai/
+scheme: dated release notes embedded in the OpenAPI as x-traitTag sections
+current_version: v2 (Summarization AI Interactions); v1 for all other reporting surfaces
+feed: null
+feed_note: >-
+  Release notes are published only as HTML tables inside the OpenAPI tag
+  descriptions on api-docs.observe.ai. There is no RSS/Atom feed, no dated
+  changelog page, and no per-entry permalink.
+entries:
+- date: '2026-02-10'
+  section: DSR Release Notes
+  breaking: false
+  additions:
+  - Initial release of the DSR (Data Subject Request) delete and status APIs
+    (POST /v1/dsr/delete/on-demand, GET /v1/dsr/delete/{job_id}/status).
+- date: '2025-02-12'
+  section: Getting Started
+  breaking: false
+  highlights:
+  - Added a section directing clients to request their instance-specific Base URL
+    via CSM or a support ticket.
+- date: '2024-08-12'
+  section: Coaching GET APIs
+  breaking: false
+  additions:
+  - Coaching Ack release.
+- date: '2024-07-22'
+  section: Summarization AI API
+  breaking: false
+  additions:
+  - Introduced Summarization AI APIs (sync and async) under /v2/data/reports/interactions.
+- date: '2023-10-11'
+  section: Ack Dispute API
+  breaking: false
+  additions:
+  - Introduced Ack Dispute APIs (sync and async).
+- date: '2023-04-18'
+  section: Getting Started
+  breaking: false
+  highlights:
+  - POST reporting rate limit raised from 500 to 2000 requests/day.
+- date: '2023-04-12'
+  section: Interactions, Evaluations, Coachings API
+  breaking: false
+  additions:
+  - Field descriptions added for partner_agent_id, partner_evaluator_id and
+    partner_coach_id.
+- date: '2023-02-21'
+  section: Interactions API
+  breaking: false
+  additions:
+  - Field descriptions added for source_partner_meeting_id and sequence.
+- date: '2023-02-09'
+  section: Evaluations API
+  breaking: false
+  highlights:
+  - Field descriptions added for Acknowledgement/Dispute status.
+- date: '2023-02-06'
+  section: Authentication
+  breaking: false
+  highlights:
+  - Create Auth Token rate limit raised from 500 to 1500 requests/day.
+- date: '2023-02-03'
+  section: Evaluations API
+  breaking: false
+  additions:
+  - New field evaluation_purpose added to the Evaluations API.
+- date: '2023-01-05'
+  section: Getting Started
+  breaking: false
+  highlights:
+  - POST reporting rate limit raised from 300 to 500 requests/day.
+- date: '2022-12-08'
+  section: Authentication, Interactions API, Evaluations API
+  breaking: false
+  additions:
+  - Pagination introduced in the Evaluations API (max 1000 evaluations/page).
+  - Agent Ack/Dispute status added to the Evaluations API.
+  highlights:
+  - Rate limit of 500 requests/day introduced for Create Auth Token.
+  - Latency reduced for Get Interactions By Ids.
+- date: '2022-11-25'
+  section: Interactions API
+  breaking: false
+  additions:
+  - Moment theme added to Get Interactions and Get Interactions By Ids responses.
+  highlights:
+  - Maximum page size for Interactions requests without transcripts raised to 1000.
+- date: '2022-11-16'
+  section: Getting Started
+  breaking: false
+  highlights:
+  - POST reporting rate limit raised from 100 to 300 requests/day.
+- date: '2022-10-12'
+  section: Evaluations API
+  breaking: true
+  highlights:
+  - Default evaluation type changed to Manual.
+- date: '2022-09-19'
+  section: Evaluations API
+  breaking: true
+  highlights:
+  - Removed the irrelevant field 'present:true' from all Evaluations, Coaching
+    and Interactions reports.
+- date: '2022-09-14'
+  section: Evaluations API
+  breaking: false
+  additions:
+  - Evaluations API upgraded to return Auto QA evaluations in addition to manual
+    evaluations.
+- date: '2022-07-20'
+  section: Interactions API
+  breaking: false
+  additions:
+  - New Interactions By Ids API.
+- date: '2022-06-29'
+  section: Getting Started
+  breaking: false
+  highlights:
+  - POST reporting rate limit raised from 30 to 100 requests/day.
+- date: '2022-06-27'
+  section: Calls Report API vs Interactions API
+  breaking: false
+  highlights:
+  - Added a section documenting the differences between the Calls Report API and
+    the Interactions API ahead of the 31-Dec-2022 deprecation.
+observations:
+- >-
+  The public release notes stop in Feb 2025 apart from the single Feb 2026 DSR
+  entry. Eighteen of the twenty-one dated entries predate 2024, so the visible
+  cadence of the Reporting API changelog has slowed markedly.

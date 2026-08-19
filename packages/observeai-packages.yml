@@ -1,0 +1,53 @@
+generated: '2026-08-14'
+method: searched
+source: >-
+  Registry searches against npm, PyPI, RubyGems, crates.io and GitHub, plus the
+  Observe.AI API documentation portal (https://api-docs.observe.ai/).
+package_count: 0
+official_sdk_count: 0
+packages: []
+finding: >-
+  Observe.AI publishes no first-party client library in any public registry. The
+  API documentation portal ships no SDK section, no code samples beyond raw
+  HTTP, and no download link; integration is expected to be hand-rolled HTTP
+  against the OAuth 2.0 + async-poll flow, or handled by Observe.AI's own 250+
+  prebuilt connectors and professional services.
+registries_checked:
+- registry: npm
+  queries:
+  - observeai
+  - observe-ai
+  - '@observeai/sdk'
+  - observe-ai-sdk
+  result: 404 on all; no first-party package
+- registry: pypi
+  queries:
+  - observeai
+  - observe-ai
+  - observeai-sdk
+  result: >-
+    "observeai" returns 200 but is NOT first-party — it is an unrelated
+    "Librarie for ai observability" at version 0.0.0, published 2024-12-09 by
+    mourad.mourafiq@gmail.com with homepage github.com/mmourafiq/observeai. Not
+    catalogued as an Observe.AI package.
+- registry: rubygems
+  queries:
+  - observeai
+  result: 404
+- registry: crates.io
+  queries:
+  - observeai
+  result: 403 (crates.io blocks unauthenticated UA); no package surfaced via search
+- registry: github
+  queries:
+  - github.com/observeai
+  result: >-
+    The account exists but is a personal USER account, not an organization, with
+    a single public repository — phoneme-bert-data (research dataset, last
+    pushed 2021-03-30). No SDK, no sample code, no spec mirror.
+- registry: maven-central
+  result: no first-party artifact found
+- registry: nuget
+  result: no first-party artifact found
+- registry: pkg.go.dev
+  result: no first-party module found

@@ -1,0 +1,283 @@
+{
+"$schema": "https://json-schema.org/draft/2020-12/schema",
+"title": "CALIBRATION_ASSIGNMENT_V1",
+"description": "JSON schema for Observe.ai bulk S3 export of calibration assignment records. Each file is gzip-compressed JSON (CALIBRATION_ASSIGNMENT_V1_<timestamp>.json.gz). Each record is one JSON object.",
+"type": "object",
+"properties": {
+  "_id": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Unique identifier for this record (source system primary key)."
+  },
+  "assignment_configuration_id": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Identifier of the parent assignment configuration."
+  },
+  "name": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Display name."
+  },
+  "start_time": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "format": "date-time",
+    "description": "UTC timestamp when the record/session started."
+  },
+  "end_time": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "format": "date-time",
+    "description": "UTC timestamp when the record/session ended."
+  },
+  "team_id": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Identifier of the associated team."
+  },
+  "meeting_id": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Observe.ai interaction (meeting) identifier this record relates to."
+  },
+  "agent_id": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Observe.ai user identifier for the agent."
+  },
+  "evaluator_id": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Observe.ai user identifier for the evaluator."
+  },
+  "evaluation_id": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Identifier of the related evaluation."
+  },
+  "created_by_user_id": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Identifier of the user who created the assignment."
+  },
+  "assignment_progress": {
+    "type": [
+      "number",
+      "null"
+    ],
+    "description": "Overall completion progress of the assignment (0-1 or %)."
+  },
+  "evaluator_match_score": {
+    "type": [
+      "number",
+      "null"
+    ],
+    "description": "Evaluator match score."
+  },
+  "question_match_score": {
+    "type": [
+      "array",
+      "null"
+    ],
+    "items": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "questionId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Evaluation template question identifier."
+        },
+        "matchScore": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "description": "Percentage match for this question between evaluator and final calibration (0-100)."
+        },
+        "scoreVariance": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "description": "Score variance for this question between evaluator and final calibration."
+        },
+        "isQuestionAligned": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "description": "Alignment indicator for the question (1 aligned, 0 not aligned; null for non-scorable question types)."
+        }
+      },
+      "description": "Per-question calibration match result."
+    },
+    "description": "Per-question match score(s) between evaluators/auditors."
+  },
+  "status": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Current status of the record."
+  },
+  "evaluation_template_id": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Identifier of the evaluation template used for this assignment."
+  },
+  "created_at": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "format": "date-time",
+    "description": "UTC timestamp when the record was created."
+  },
+  "modified_at": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "format": "date-time",
+    "description": "UTC timestamp when the record was last modified."
+  },
+  "final_evaluation_id": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Identifier of the evaluation selected as the final calibrated evaluation."
+  },
+  "final_evaluation_submitted_at": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "format": "date-time",
+    "description": "UTC timestamp when the final calibrated evaluation was submitted."
+  },
+  "calibration_evaluation_comment": {
+    "type": [
+      "array",
+      "null"
+    ],
+    "items": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "questionId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Evaluation template question identifier."
+        },
+        "calibrationComment": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Evaluator's comment for this question."
+        },
+        "finalCalibrationComment": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Final calibrator's comment for this question."
+        }
+      },
+      "description": "Per-question calibration comments."
+    },
+    "description": "Comments captured during the calibration session."
+  },
+  "final_calibration_score": {
+    "type": [
+      "number",
+      "null"
+    ],
+    "description": "Final agreed calibration score."
+  },
+  "evaluator_calibration_score": {
+    "type": [
+      "number",
+      "null"
+    ],
+    "description": "Calibration score submitted by the evaluator."
+  },
+  "evaluator_score_variance": {
+    "type": [
+      "number",
+      "null"
+    ],
+    "description": "Score variance between the evaluator and the final calibrated score."
+  },
+  "final_calibrator_id": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Identifier of the user who finalized the calibration."
+  },
+  "aligned_questions_count": {
+    "type": [
+      "number",
+      "null"
+    ],
+    "description": "Number of questions aligned between evaluator and final calibration."
+  },
+  "scorable_questions_count": {
+    "type": [
+      "number",
+      "null"
+    ],
+    "description": "Number of scorable questions in the template."
+  },
+  "alignment_percentage": {
+    "type": [
+      "number",
+      "null"
+    ],
+    "description": "Percentage of questions aligned between evaluator and final calibration."
+  },
+  "third_party_id": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "External/third-party identifier associated with this calibration record."
+  }
+}
+}

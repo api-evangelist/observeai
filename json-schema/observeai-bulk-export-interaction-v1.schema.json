@@ -1,0 +1,515 @@
+{
+"$schema": "https://json-schema.org/draft/2020-12/schema",
+"$id": "https://observe.ai/schemas/bulk-export/v1/INTERACTION_V1.s3.schema.json",
+"title": "INTERACTION_V1",
+"description": "JSON schema for Observe.ai bulk S3 export of interaction records. Each file is gzip-compressed JSON (INTERACTION_V1_<timestamp>.json.gz) Each record is exported as one JSON object. Field names use lowercase snake_case.",
+"type": "object",
+"additionalProperties": false,
+"required": [
+  "id",
+  "account_id",
+  "agent_id"
+],
+"properties": {
+  "id": {
+    "type": "string",
+    "description": "Primary key. Observe.ai interaction (meeting) identifier.",
+    "examples": [
+      "a1b2c3d4-e5f6-4789-a012-3456789abcde"
+    ]
+  },
+  "account_id": {
+    "type": "string",
+    "description": "Observe.ai account identifier.",
+    "examples": [
+      "507f1f77bcf86cd799439011"
+    ]
+  },
+  "agent_id": {
+    "type": "string",
+    "description": "Observe.ai user identifier for the agent on the interaction.",
+    "examples": [
+      "507f191e810c19729de860ea"
+    ]
+  },
+  "partner_agent_id": {
+    "type": [
+      "array",
+      "null"
+    ],
+    "description": "Partner-system agent identifiers linked to the Observe.ai agent.",
+    "items": {
+      "type": "string"
+    },
+    "examples": [
+      [
+        "12345"
+      ]
+    ]
+  },
+  "agent_name": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Full name of the agent.",
+    "examples": [
+      "maria gonzales"
+    ]
+  },
+  "agent_email": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "format": "email",
+    "description": "Email address of the agent.",
+    "examples": [
+      "maria.gonzales@observeeats.com"
+    ]
+  },
+  "agent_status": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Agent account status in Observe.ai.",
+    "enum": [
+      "ACTIVE",
+      "IN_ACTIVE",
+      null
+    ],
+    "examples": [
+      "ACTIVE"
+    ]
+  },
+  "source_partner_meeting_id": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Interaction identifier from the source/partner system.",
+    "examples": [
+      "b2c3d4e5-f6a7-4890-b123-456789abcdef",
+      "1756685103302.0"
+    ]
+  },
+  "provider_id": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Call/chat provider identifier, when available.",
+    "examples": [
+      null
+    ]
+  },
+  "sequence": {
+    "type": [
+      "integer",
+      "null"
+    ],
+    "description": "Sequence number for multi-segment interactions, when available.",
+    "examples": [
+      null
+    ]
+  },
+  "interaction_url": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "format": "uri",
+    "description": "Deep link to the interaction in the Observe.ai application.",
+    "examples": [
+      "https://app.observe.ai/call/a1b2c3d4-e5f6-4789-a012-3456789abcde"
+    ]
+  },
+  "duration": {
+    "type": [
+      "integer",
+      "null"
+    ],
+    "description": "Interaction duration in seconds.",
+    "examples": [
+      1380
+    ]
+  },
+  "language": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Detected or configured interaction language.",
+    "examples": [
+      "ENGLISH"
+    ]
+  },
+  "channel": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Interaction channel / entity type.",
+    "examples": [
+      "CHAT",
+      "EMAIL",
+      "CALL"
+    ]
+  },
+  "created_at": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "format": "date-time",
+    "description": "UTC timestamp when the interaction record was created.",
+    "examples": [
+      "2025-09-02T00:17:51.243Z"
+    ]
+  },
+  "updated_at": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "format": "date-time",
+    "description": "UTC timestamp when the interaction record was last modified.",
+    "examples": [
+      "2025-09-02T00:17:54.840Z"
+    ]
+  },
+  "interaction_start_time": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "format": "date-time",
+    "description": "UTC timestamp when the interaction started.",
+    "examples": [
+      "2025-09-02T11:00:00Z"
+    ]
+  },
+  "interaction_meta_data": {
+    "type": [
+      "array",
+      "null"
+    ],
+    "description": "Customer-defined metadata parameters attached to the interaction. Keys are account-specific.",
+    "items": {
+      "$ref": "#/$defs/interaction_meta_data_item"
+    },
+    "examples": [
+      [
+        {
+          "name": "Order_Status",
+          "value": [
+            "Canceled"
+          ]
+        }
+      ]
+    ]
+  },
+  "transcripts": {
+    "type": [
+      "array",
+      "null"
+    ],
+    "description": "Ordered transcript utterances for the interaction. Null or empty when transcripts are not included in export.",
+    "items": {
+      "$ref": "#/$defs/transcript_utterance"
+    },
+    "examples": [
+      [
+        {
+          "start_time": 0,
+          "order": 0,
+          "end_time": 28500,
+          "phrase": "Thank you for reaching out to Observe Eats Partner Support, my name is Emily. How may I assist you today?",
+          "speaker": "AGENT"
+        }
+      ]
+    ]
+  },
+  "moment_categories": {
+    "type": [
+      "array",
+      "null"
+    ],
+    "description": "Scorecard categories and detected moments for the interaction.",
+    "items": {
+      "$ref": "#/$defs/moment_category"
+    },
+    "examples": [
+      [
+        {
+          "moment_category_id": "c3d4e5f6-a7b8-4901-c234-567890abcdef",
+          "moment_category_name": "Process Adherence",
+          "moments": [
+            {
+              "moment_id": "d4e5f6a7-b8c9-4012-d345-678901abcdef",
+              "moment_name": "Greeting Compliance",
+              "moment_theme": "NEUTRAL",
+              "present": true,
+              "snippets": [
+                {
+                  "confidence": 1,
+                  "convId": 0,
+                  "endTime": 1500,
+                  "evidence": "Thank you",
+                  "startTime": 0
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    ]
+  }
+},
+"$defs": {
+  "interaction_meta_data_item": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "name",
+      "value"
+    ],
+    "properties": {
+      "name": {
+        "type": "string",
+        "description": "Metadata field name configured for the account.",
+        "examples": [
+          "Order_Status",
+          "thread_id"
+        ]
+      },
+      "value": {
+        "type": "array",
+        "description": "One or more values for the metadata field.",
+        "items": {
+          "type": "string"
+        },
+        "examples": [
+          [
+            "Canceled"
+          ],
+          [
+            "1756685103302"
+          ]
+        ]
+      }
+    }
+  },
+  "transcript_utterance": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "start_time",
+      "order",
+      "end_time",
+      "phrase",
+      "speaker"
+    ],
+    "properties": {
+      "start_time": {
+        "type": "integer",
+        "description": "Utterance start offset in milliseconds from interaction start.",
+        "examples": [
+          0,
+          10000
+        ]
+      },
+      "order": {
+        "type": "integer",
+        "description": "Conversation turn order (conv_id from source transcript).",
+        "examples": [
+          0,
+          1
+        ]
+      },
+      "end_time": {
+        "type": "integer",
+        "description": "Utterance end offset in milliseconds from interaction start.",
+        "examples": [
+          28500,
+          10200
+        ]
+      },
+      "phrase": {
+        "type": "string",
+        "description": "Transcript text for the utterance.",
+        "examples": [
+          "hi there",
+          "thanks for calling support how can i help"
+        ]
+      },
+      "speaker": {
+        "type": "string",
+        "description": "Speaker label for the utterance.",
+        "enum": [
+          "AGENT",
+          "CUSTOMER"
+        ],
+        "examples": [
+          "AGENT",
+          "CUSTOMER"
+        ]
+      }
+    }
+  },
+  "moment_category": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "moment_category_id",
+      "moment_category_name",
+      "moments"
+    ],
+    "properties": {
+      "moment_category_id": {
+        "type": "string",
+        "description": "Scorecard / moment category identifier.",
+        "examples": [
+          "c3d4e5f6-a7b8-4901-c234-567890abcdef"
+        ]
+      },
+      "moment_category_name": {
+        "type": "string",
+        "description": "Scorecard / moment category display name.",
+        "examples": [
+          "Process Adherence",
+          "Compliance & AHT"
+        ]
+      },
+      "moments": {
+        "type": "array",
+        "description": "Moments (criteria) evaluated under this category.",
+        "items": {
+          "$ref": "#/$defs/moment"
+        }
+      }
+    }
+  },
+  "moment": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "moment_id",
+      "moment_name",
+      "moment_theme",
+      "present",
+      "snippets"
+    ],
+    "properties": {
+      "moment_id": {
+        "type": "string",
+        "description": "Moment (criteria) identifier.",
+        "examples": [
+          "d4e5f6a7-b8c9-4012-d345-678901abcdef"
+        ]
+      },
+      "moment_name": {
+        "type": "string",
+        "description": "Moment (criteria) display name.",
+        "examples": [
+          "Greeting Compliance",
+          "Voicemail"
+        ]
+      },
+      "moment_theme": {
+        "type": "string",
+        "description": "Theme associated with the moment.",
+        "examples": [
+          "NEUTRAL",
+          "POSITIVE",
+          "NEGATIVE"
+        ]
+      },
+      "present": {
+        "type": "boolean",
+        "description": "Whether the moment was detected on the interaction.",
+        "examples": [
+          true,
+          false
+        ]
+      },
+      "snippets": {
+        "type": "array",
+        "description": "Evidence snippets supporting moment detection. Uses camelCase field names from source criteria data.",
+        "items": {
+          "$ref": "#/$defs/moment_snippet"
+        }
+      }
+    }
+  },
+  "moment_snippet": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "confidence",
+      "convId",
+      "endTime",
+      "evidence",
+      "startTime"
+    ],
+    "properties": {
+      "confidence": {
+        "type": "number",
+        "description": "Detection confidence score.",
+        "examples": [
+          1,
+          0.9106445233333332
+        ]
+      },
+      "convId": {
+        "type": "integer",
+        "description": "Conversation turn identifier for the evidence snippet.",
+        "examples": [
+          0,
+          6
+        ]
+      },
+      "driver": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "description": "Driver label associated with the snippet, if applicable."
+      },
+      "endTime": {
+        "type": "integer",
+        "description": "Evidence end offset in milliseconds.",
+        "examples": [
+          1500,
+          21326
+        ]
+      },
+      "evidence": {
+        "type": "string",
+        "description": "Matched phrase or evidence text.",
+        "examples": [
+          "Thank you",
+          "voice mail of"
+        ]
+      },
+      "modelConfidence": {
+        "type": "number",
+        "description": "Model-level detection confidence score.",
+        "examples": [
+          0,
+          0.9106445233333332
+        ]
+      },
+      "startTime": {
+        "type": "integer",
+        "description": "Evidence start offset in milliseconds.",
+        "examples": [
+          0,
+          20927
+        ]
+      }
+    }
+  }
+}
+}

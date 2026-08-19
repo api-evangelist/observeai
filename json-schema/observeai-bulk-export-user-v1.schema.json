@@ -1,0 +1,73 @@
+{
+"$schema": "https://json-schema.org/draft/2020-12/schema",
+"title": "USER_V1",
+"description": "JSON schema for Observe.ai bulk S3 export of user records. Each file is gzip-compressed JSON (USER_V1_<timestamp>.json.gz). Each record is one JSON object.",
+"type": "object",
+"properties": {
+  "id": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Unique identifier for this record."
+  },
+  "email": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Email address of the user."
+  },
+  "enabled": {
+    "type": [
+      "boolean",
+      "null"
+    ],
+    "description": "Whether the user account is enabled."
+  },
+  "full_name": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Full name of the user."
+  },
+  "teamids": {
+    "type": [
+      "array",
+      "null"
+    ],
+    "items": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Team identifier."
+    },
+    "description": "Identifiers of teams the user belongs to."
+  },
+  "role": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Role assigned to the user (e.g. AGENT, ADMIN, EVALUATOR)."
+  },
+  "created_at": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "format": "date-time",
+    "description": "UTC timestamp when the record was created."
+  },
+  "modified_at": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "format": "date-time",
+    "description": "UTC timestamp when the record was last modified."
+  }
+}
+}

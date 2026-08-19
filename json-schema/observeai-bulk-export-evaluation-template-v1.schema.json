@@ -1,0 +1,134 @@
+{
+"$schema": "https://json-schema.org/draft/2020-12/schema",
+"title": "EVALUATION_TEMPLATE_V1",
+"description": "JSON schema for Observe.ai bulk S3 export of evaluation template records. Each file is gzip-compressed JSON (EVALUATION_TEMPLATE_V1_<timestamp>.json.gz). Each record is one JSON object.",
+"type": "object",
+"properties": {
+  "id": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Unique identifier for this record."
+  },
+  "name": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Display name."
+  },
+  "max_score": {
+    "type": [
+      "number",
+      "null"
+    ],
+    "description": "Maximum possible score for the template."
+  },
+  "sections": {
+    "type": [
+      "array",
+      "null"
+    ],
+    "items": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": ["string", "null"],
+          "description": "Section ID."
+        },
+        "name": {
+          "type": ["string", "null"],
+          "description": "Section name shown in the form."
+        },
+        "description": {
+          "type": ["string", "null"],
+          "description": "Section description text."
+        },
+        "type": {
+          "type": ["string", "null"],
+          "enum": ["ACCORDION", "CLUBBED", "OTHER", null],
+          "description": "Section display type."
+        },
+        "order": {
+          "type": ["integer", "null"],
+          "description": "Display order of this section in the form."
+        }
+      },
+      "description": "One section in the evaluation template."
+    },
+    "description": "Section layout and settings for this template."
+  },
+  "questions": {
+    "type": ["array", "null"],
+    "description": "Question list used in this template.",
+    "items": {
+      "type": "object",
+      "description": "One question in the evaluation template.",
+      "properties": {
+        "_id": { "type": ["string", "null"], "description": "Question ID." },
+        "phrase": { "type": ["string", "null"], "description": "Question prompt shown to reviewers." },
+        "description": { "type": ["string", "null"], "description": "Question description text." },
+        "sectionId": { "type": ["string", "null"], "description": "Section ID this question belongs to." },
+        "type": { "type": ["string", "null"], "description": "Question type (e.g. SINGLE_SELECTION_DROPDOWN)." },
+        "required": { "type": ["boolean", "null"], "description": "Whether this question is mandatory." },
+        "order": { "type": ["integer", "null"], "description": "Display order of this question." },
+        "score": { "type": ["number", "null"], "description": "Question score weight/value." },
+        "options": {
+          "type": ["array", "null"],
+          "description": "Answer choices for this question.",
+          "items": {
+            "type": "object",
+            "description": "One answer option.",
+            "properties": {
+              "id": { "type": ["string", "null"], "description": "Option ID." },
+              "_id": { "type": ["string", "null"], "description": "Option ID (legacy key)." },
+              "display_text": { "type": ["string", "null"], "description": "Option text shown to reviewers." },
+              "displayText": { "type": ["string", "null"], "description": "Option text shown to reviewers (legacy key)." },
+              "ScoreConfigName": { "type": ["string", "null"], "description": "Optional score config name." },
+              "is_comment_mandatory": { "type": ["boolean", "null"], "description": "Whether selecting this option requires a comment." },
+              "isCommentMandatory": { "type": ["boolean", "null"], "description": "Whether selecting this option requires a comment (legacy key)." },
+              "option_type": { "type": ["string", "null"], "description": "Option type." },
+              "optionType": { "type": ["string", "null"], "description": "Option type (legacy key)." },
+              "theme": { "type": ["string", "null"], "description": "Theme/style metadata for this option." },
+              "score_unit": { "type": ["string", "null"], "description": "How the score is interpreted." },
+              "scoreUnit": { "type": ["string", "null"], "description": "How the score is interpreted (legacy key)." },
+              "score": { "type": ["number", "null"], "description": "Score value associated with this option." },
+              "order": { "type": ["integer", "null"], "description": "Display order of this option." }
+            }
+          }
+        },
+        "conditionalLogic": {
+          "type": ["object", "null"],
+          "description": "Optional logic that controls visibility/behavior based on previous answers.",
+          "properties": {
+            "defaultOptionId": { "type": ["string", "null"], "description": "Default option used when no rule matches." },
+            "equation": {
+              "type": "object",
+              "properties": {
+                "operator": { "type": ["string", "null"], "description": "Logical operator joining operands (e.g. OR, AND)." },
+                "operands": {
+                  "type": ["array", "null"],
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "operator": { "type": ["string", "null"], "description": "Operand operator (e.g. NODE)." },
+                      "questionOptionNode": {
+                        "type": "object",
+                        "properties": {
+                          "optionId": { "type": ["string", "null"], "description": "Referenced option ID." },
+                          "questionId": { "type": ["string", "null"], "description": "Referenced question ID." }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+}

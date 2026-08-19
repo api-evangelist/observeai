@@ -1,0 +1,85 @@
+generated: '2026-08-14'
+method: derived
+source: openapi/observeai-reporting-apis-openapi.yml
+docs: https://api-docs.observe.ai/
+format: proprietary
+format_note: >-
+  Observe.AI does NOT use RFC 9457 problem+json. Errors are returned as a flat
+  JSON object with a single `message` string (schemas ErrorMessage and
+  RateLimitMessage) and every response is declared with the wildcard media type
+  `*/*` rather than application/json or application/problem+json. There is no
+  machine-readable error `code`, no `type` URI, and no per-error remediation
+  field — an agent can only branch on the HTTP status, not on a stable error
+  identifier.
+envelope:
+  shape: '{"message": "<human-readable string>"}'
+  field: message
+  schemas:
+  - ErrorMessage
+  - RateLimitMessage
+  media_type: '*/*'
+problems:
+- status: 400
+  title: Bad Request
+  meaning: >-
+    The request payload failed validation — commonly a start_date/end_date range
+    exceeding the per-API maximum (90 days for Interactions, Evaluations,
+    Coachings and Ack/Dispute), a malformed date, or a page size above the
+    allowed maximum.
+  remediation: Correct the request body and resubmit; the request_id is not created.
+  operations: 15 of 16
+- status: 401
+  title: Unauthorized
+  meaning: >-
+    Missing, malformed or expired bearer token. Observe.AI access tokens expire
+    after 7200 seconds (2 hours).
+  remediation: >-
+    Re-run POST /v1/oauth/token with the App ID and App Secret and retry with
+    the new token. Budget for this — the token endpoint is itself capped at
+    1500 requests/day.
+  operations: 16 of 16
+- status: 403
+  title: Access Denied / Forbidden
+  meaning: >-
+    The credential is valid but not entitled to the requested resource or
+    account. The live gateway returns this shape for every unauthenticated
+    call: {"error_code":"access_denied","error_description":"ticket/userId is
+    missing in authorization"}.
+  remediation: Confirm the app credential is provisioned for the account and product.
+  operations: 16 of 16
+  observed: true
+  observed_at: https://kong.observe.ai/
+- status: 404
+  title: Not Found / Request Not Found
+  meaning: >-
+    The polled request_id (or DSR job_id) does not exist, or has aged out. Note
+    the inconsistent casing across operations — "Request Not Found", "Request
+    Not found" and "Not Found" are all used for the same condition.
+  remediation: Re-register the reporting request with the POST operation.
+  operations: 14 of 16
+- status: 405
+  title: Method Not Allowed
+  meaning: The HTTP method is not supported on this path.
+  remediation: Use POST to register a reporting request and GET to poll it.
+  operations: 13 of 16
+- status: 429
+  title: Rate Limit Exceeded
+  meaning: >-
+    The App ID exceeded its published quota — 2000 POST reporting requests/day,
+    20 GET polls/minute, or 1500 auth tokens/day.
+  remediation: >-
+    Back off and retry. No Retry-After or RateLimit-* header is published, so
+    the client must implement blind exponential backoff.
+  example_body: '{"message": "API rate limit exceeded"}'
+  schema: RateLimitMessage
+  operations: 13 of 16
+- status: 500
+  title: Internal Server Error
+  meaning: Unhandled server-side failure.
+  remediation: Retry with backoff; escalate to help@observe.ai or the CSM if persistent.
+  operations: 16 of 16
+gaps:
+- No error code registry — the docs publish no enumerated error identifiers.
+- No application/problem+json; media type is the wildcard '*/*'.
+- 404 description text is inconsistent across operations for the same condition.
+- No 409 or conflict semantics; the API has no idempotency contract.

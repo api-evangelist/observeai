@@ -1,0 +1,68 @@
+{
+"$schema": "https://json-schema.org/draft/2020-12/schema",
+"title": "INTERACTION_SUMMARY_V1",
+"description": "JSON schema for Observe.ai bulk S3 export of interaction summary records. Each file is gzip-compressed JSON (INTERACTION_SUMMARY_V1_<timestamp>.json.gz). Each record is one JSON object.",
+"type": "object",
+"properties": {
+  "interaction_id": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Observe.ai interaction identifier this record relates to."
+  },
+  "account_id": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Observe.ai account identifier."
+  },
+  "interaction_time": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "format": "date-time",
+    "description": "UTC timestamp of the related interaction."
+  },
+  "modified_at": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "format": "date-time",
+    "description": "UTC timestamp when the record was last modified."
+  },
+  "summary_data": {
+    "type": [
+      "array",
+      "null"
+    ],
+    "items": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "title": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Section title (e.g. enrichment/model name)."
+        },
+        "body": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Generated summary text for this section."
+        }
+      },
+      "description": "One AI-generated summary section."
+    },
+    "description": "AI-generated summary content for the interaction."
+  }
+}
+}

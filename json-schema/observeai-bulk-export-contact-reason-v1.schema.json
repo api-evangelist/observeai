@@ -1,0 +1,118 @@
+{
+"$schema": "https://json-schema.org/draft/2020-12/schema",
+"title": "CONTACT_REASON_V1",
+"description": "JSON schema for Observe.ai bulk S3 export of contact reason records. Each file is gzip-compressed JSON (CONTACT_REASON_V1_<timestamp>.json.gz). Each record is one JSON object.",
+"type": "object",
+"properties": {
+  "interaction_id": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Observe.ai interaction identifier this record relates to."
+  },
+  "account_id": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Observe.ai account identifier."
+  },
+  "interaction_time": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "format": "date-time",
+    "description": "UTC timestamp of the related interaction."
+  },
+  "contact_reason_data": {
+    "type": [
+      "array",
+      "null"
+    ],
+    "items": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "enrichmentId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Enrichment/model identifier."
+        },
+        "enrichmentName": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Enrichment/model display name."
+        },
+        "enrichmentType": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "INTENT_BASED_HIERARCHICAL_DATA",
+            "INTENT_BASED_CUSTOM_HIERARCHICAL_DATA",
+            null
+          ],
+          "description": "Enrichment type."
+        },
+        "enrichmentValue": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "L1, L2, ... Ln (dynamic keys)": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "properties": {
+                  "driverId": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "description": "Driver/insight identifier at this level."
+                  },
+                  "driverName": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "description": "Driver/insight display name at this level."
+                  },
+                  "level": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "description": "Level label, e.g. L1, L2."
+                  }
+                },
+                "description": "Driver detected at this hierarchy level."
+              }
+            },
+            "description": "One driver hierarchy path, keyed dynamically by level (L1, L2, ... Ln \u2014 number of levels varies by model depth). Each level key maps to a driver node."
+          },
+          "description": "One driver hierarchy path detected for this enrichment on the interaction."
+        }
+      },
+      "description": "One AI enrichment (contact-reason model) result for the interaction."
+    },
+    "description": "AI-classified contact reason details for the interaction."
+  }
+}
+}

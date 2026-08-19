@@ -1,0 +1,256 @@
+generated: '2026-08-14'
+method: derived
+source: json-schema/ (16 bulk-export JSON Schema 2020-12 documents)
+also_derived_from: openapi/observeai-reporting-apis-openapi.yml
+docs: https://api-docs.observe.ai/bulk-export/
+summary: >-
+  The Observe.AI domain is anchored on the Interaction — one customer
+  conversation on voice, webchat or an external channel. Everything else hangs
+  off it: transcripts and Moments, AI-generated summaries, sentiment metrics and
+  contact reasons enrich the interaction; evaluations (Auto QA and manual) score
+  it against an evaluation template; ack/dispute records track the agent's
+  response to a score; coachings close the loop with the agent. Users, teams and
+  accounts form the org graph, and assignment entities (agent performance, audit,
+  calibration) are the work-queue layer that routes interactions to evaluators.
+  Nearly every entity carries a paired partner_* identifier, which is the
+  customer's own id for the same person or conversation — the join key back into
+  the customer's CRM/CCaaS.
+id_conventions:
+  primary_key: id or _id
+  external_mirror: partner_<entity>_id
+  external_mirror_note: >-
+    partner_agent_id, partner_evaluator_id, partner_coach_id and
+    source_partner_meeting_id hold the identifier from the client's own system,
+    letting Observe.AI records be joined to CRM/CCaaS/WFM records without a
+    lookup table. Field descriptions for these were added across 2023.
+  legacy_alias:
+    meeting_id: >-
+      Evaluation entities still key interactions as meeting_id (and the legacy
+      Calls Report API used observeCallId); the Interactions surface renamed the
+      same concept to id / interaction_id. All three refer to one interaction.
+entities:
+- name: Interaction
+  schema: json-schema/observeai-bulk-export-interaction-v1.schema.json
+  api: POST /v1/data/reports/interactions, GET /v1/data/reports/interactions/{request_id}
+  key: id
+  channels:
+  - CALL
+  - CHAT
+  - EXTERNAL
+  aliases:
+  - meeting_id
+  - interaction_id
+  - observeCallId (deprecated)
+- name: InteractionSummary
+  schema: json-schema/observeai-bulk-export-interaction-summary-v1.schema.json
+  api: POST /v2/data/reports/interactions, GET /v2/data/reports/interactions/{request_id}
+  key: interaction_id
+- name: SentimentMetric
+  schema: json-schema/observeai-bulk-export-sentiment-metric-v1.schema.json
+  key: interaction_id
+- name: ContactReason
+  schema: json-schema/observeai-bulk-export-contact-reason-v1.schema.json
+  key: interaction_id
+- name: EvaluationTemplate
+  schema: json-schema/observeai-bulk-export-evaluation-template-v1.schema.json
+  key: id
+  structure: template -> sections -> questions (each with max_score)
+- name: ManualEvaluation
+  schema: json-schema/observeai-bulk-export-manual-evaluation-v1.schema.json
+  api: POST /v1/data/reports/evaluations, GET /v1/data/reports/evaluations/{request_id}
+  key: id
+- name: AutoQAEvaluation
+  schema: json-schema/observeai-bulk-export-autoqa-evaluation-v1.schema.json
+  api: POST /v1/data/reports/evaluations
+  key: id
+  note: evaluator_id is "NA" and evaluator_name is "Observe.AI" for Auto QA.
+- name: ManualAckDispute
+  schema: json-schema/observeai-bulk-export-manual-ack-dispute-v1.schema.json
+  api: POST /v1/data/reports/evaluation/ackdisputedetails
+  key: evaluation_id
+- name: AutoQAAckDispute
+  schema: json-schema/observeai-bulk-export-autoqa-ack-dispute-v1.schema.json
+  key: evaluation_id
+- name: Coaching
+  schema: json-schema/observeai-bulk-export-coaching-v1.schema.json
+  api: POST /v1/data/reports/coachings, GET /v1/data/reports/coachings/{request_id}
+  key: id
+- name: AgentPerformanceAssignment
+  schema: json-schema/observeai-bulk-export-agent-performance-assignment-v1.schema.json
+  key: id
+- name: AuditAssignment
+  schema: json-schema/observeai-bulk-export-audit-assignment-v1.schema.json
+  key: _id
+- name: CalibrationAssignment
+  schema: json-schema/observeai-bulk-export-calibration-assignment-v1.schema.json
+  key: _id
+- name: User
+  schema: json-schema/observeai-bulk-export-user-v1.schema.json
+  key: id
+  roles:
+  - agent
+  - evaluator
+  - coach
+  - calibrator
+- name: UserLoginActivity
+  schema: json-schema/observeai-bulk-export-user-login-activity-v1.schema.json
+  key: _id
+- name: Team
+  schema: json-schema/observeai-bulk-export-team-v1.schema.json
+  key: _id
+- name: DsrDeleteJob
+  schema: openapi/observeai-reporting-apis-openapi.yml#DsrDeleteResponse
+  api: POST /v1/dsr/delete/on-demand, GET /v1/dsr/delete/{job_id}/status
+  key: job_id
+  targets:
+  - AUDIO_TRANSCRIPT
+  - AUDIO
+  - TRANSCRIPT
+  - SCREEN_RECORDING
+relationships:
+- from: Interaction
+  to: Account
+  type: belongs_to
+  via: account_id
+- from: Interaction
+  to: User
+  type: belongs_to
+  via: agent_id
+- from: InteractionSummary
+  to: Interaction
+  type: belongs_to
+  via: interaction_id
+- from: SentimentMetric
+  to: Interaction
+  type: belongs_to
+  via: interaction_id
+- from: ContactReason
+  to: Interaction
+  type: belongs_to
+  via: interaction_id
+- from: ManualEvaluation
+  to: Interaction
+  type: belongs_to
+  via: meeting_id
+- from: ManualEvaluation
+  to: EvaluationTemplate
+  type: belongs_to
+  via: template_id
+- from: ManualEvaluation
+  to: User
+  type: belongs_to
+  via: evaluator_id
+- from: ManualEvaluation
+  to: User
+  type: belongs_to
+  via: agent_id
+- from: AutoQAEvaluation
+  to: Interaction
+  type: belongs_to
+  via: meeting_id
+- from: AutoQAEvaluation
+  to: EvaluationTemplate
+  type: belongs_to
+  via: template_id
+- from: ManualAckDispute
+  to: ManualEvaluation
+  type: belongs_to
+  via: evaluation_id
+- from: ManualAckDispute
+  to: EvaluationTemplate
+  type: belongs_to
+  via: evaluation_form_id
+- from: AutoQAAckDispute
+  to: AutoQAEvaluation
+  type: belongs_to
+  via: evaluation_id
+- from: Coaching
+  to: User
+  type: belongs_to
+  via: agent_id
+- from: Coaching
+  to: User
+  type: belongs_to
+  via: coach_id
+- from: EvaluationTemplate
+  to: ManualEvaluation
+  type: has_many
+  via: template_id
+- from: AgentPerformanceAssignment
+  to: Team
+  type: belongs_to
+  via: team_id
+- from: AgentPerformanceAssignment
+  to: EvaluationTemplate
+  type: belongs_to
+  via: evaluation_template_id
+- from: AgentPerformanceAssignment
+  to: User
+  type: belongs_to
+  via: created_by_user_id
+- from: AuditAssignment
+  to: Team
+  type: belongs_to
+  via: team_id
+- from: AuditAssignment
+  to: EvaluationTemplate
+  type: belongs_to
+  via: evaluation_template_id
+- from: CalibrationAssignment
+  to: Interaction
+  type: belongs_to
+  via: meeting_id
+- from: CalibrationAssignment
+  to: ManualEvaluation
+  type: belongs_to
+  via: evaluation_id
+- from: CalibrationAssignment
+  to: ManualEvaluation
+  type: has_one
+  via: final_evaluation_id
+- from: CalibrationAssignment
+  to: User
+  type: belongs_to
+  via: final_calibrator_id
+- from: CalibrationAssignment
+  to: Team
+  type: belongs_to
+  via: team_id
+- from: UserLoginActivity
+  to: Account
+  type: belongs_to
+  via: account_id
+- from: User
+  to: Team
+  type: belongs_to
+  via: team
+enumerations:
+  interaction_channel:
+  - CALL
+  - CHAT
+  - EXTERNAL
+  agent_status:
+  - ACTIVE
+  - IN_ACTIVE
+  evaluation_type:
+  - Manual
+  - Auto QA
+  evaluation_purpose:
+  - AGENT_PERFORMANCE
+  - CALIBRATION
+  - FINAL_CALIBRATION
+  ack_status:
+  - NOT_INITIATED
+  - AWAITING_ACK
+  - ACKED
+  - IN_DISPUTE
+  - DISPUTE_ACCEPTED
+  - DISPUTE_PARTIAL
+  - DISPUTE_REJECTED
+  job_status:
+  - QUEUED
+  - CREATED
+  - PROGRESS
+  - COMPLETED
+  - STOPPED
+  - FAILED

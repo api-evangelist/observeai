@@ -1,0 +1,86 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for Observe.AI Reporting APIs
+  version: 1.0.0
+extends: openapi/observeai-reporting-apis-openapi.yml
+x-generated: '2026-08-14'
+x-method: generated
+x-source: >-
+  Derived from the verbatim spec at https://api-docs.observe.ai/swagger.yaml plus
+  the Observe.AI documentation portal. Captures API Evangelist annotations and
+  the defects found in the published contract; the harvested spec is never
+  mutated.
+actions:
+- target: $.info
+  update:
+    x-apievangelist-slug: observeai
+    x-apievangelist-harvested-from: https://api-docs.observe.ai/swagger.yaml
+    x-apievangelist-harvested-on: '2026-08-14'
+    version: '2026-02-10'
+    contact:
+      name: Observe.AI Support
+      email: help@observe.ai
+      url: https://help.observe.ai/
+- target: $.info
+  update:
+    x-apievangelist-notes:
+    - The published document declares no info.version; the date of the most
+      recent release note (DSR, 2026-02-10) is proposed above.
+    - components.securitySchemes contains four object schemas (DsrDeleteRequest,
+      DsrRule, DsrDeleteResponse, DsrStatusResponse) that belong in
+      components.schemas. Only bearerAuth is a security scheme.
+    - No root-level security requirement is declared; only the two DSR
+      operations reference bearerAuth, although the docs require the same bearer
+      token on all sixteen operations.
+    - Every response uses the wildcard media type '*/*' rather than
+      application/json.
+    - Twelve of sixteen operations have no summary, and operationIds are
+      human-prose strings with spaces ("Create Auth Token") rather than
+      code-safe identifiers.
+- target: $.servers
+  update:
+    x-apievangelist-base-url-note: >-
+      The single templated server https://{base_url} is correct and deliberate —
+      Observe.AI issues a per-tenant cluster base URL via CSM or support ticket.
+      https://kong.observe.ai is the host Observe.AI names in its own
+      Calls-Report-vs-Interactions comparison table for the async Interactions
+      API and is recorded as the catalog baseURL.
+- target: $
+  update:
+    x-apievangelist-conventions: conventions/observeai-conventions.yml
+    x-apievangelist-errors: errors/observeai-problem-types.yml
+    x-apievangelist-rate-limits: rate-limits/observeai-rate-limits.yml
+    x-apievangelist-authentication: authentication/observeai-authentication.yml
+    x-apievangelist-data-model: data-model/observeai-data-model.yml
+    x-apievangelist-lifecycle: lifecycle/observeai-lifecycle.yml
+    x-apievangelist-changelog: changelog/observeai-changelog.yml
+- target: $
+  update:
+    x-apievangelist-async-contract:
+      pattern: register -> poll -> download
+      register_returns: request_id
+      poll_statuses:
+      - QUEUED
+      - CREATED
+      - PROGRESS
+      - COMPLETED
+      - STOPPED
+      - FAILED
+      download: pre-signed S3 URL, 24-hour TTL
+      max_date_window_days: 90
+- target: $.paths['/v1/dsr/delete/on-demand'].post
+  update:
+    x-agentic-access:
+      action-class: acting
+      consequence: safety-critical
+      human-in-the-loop: required
+      audit: required
+      note: >-
+        Irreversibly deletes call audio, transcripts and screen recordings
+        matched by metadata rules. No dry-run mode and no undo is published.
+- target: $.paths['/v1/oauth/token'].post
+  update:
+    x-apievangelist-note: >-
+      Token lifetime is 7200 seconds and this endpoint is itself capped at 1500
+      requests/day per app credential — cache the token rather than minting one
+      per call.

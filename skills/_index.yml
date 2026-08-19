@@ -1,0 +1,42 @@
+generated: '2026-08-14'
+method: generated
+source: openapi/observeai-reporting-apis-openapi.yml + https://api-docs.observe.ai/
+note: >-
+  Observe.AI publishes no skills, AGENTS.md or agent operating guide of its own.
+  These four are generated from the harvested OpenAPI and the documentation
+  portal, and every step is grounded in an operationId that exists verbatim in
+  openapi/observeai-reporting-apis-openapi.yml.
+skills:
+- file: observeai-export-interactions.md
+  name: Export Observe.AI interactions for a date range
+  api: openapi/observeai-reporting-apis-openapi.yml
+  operations:
+  - Create Auth Token
+  - Create Interaction Request
+  - Get Interactions
+- file: observeai-pull-qa-evaluations.md
+  name: Pull Observe.AI QA evaluations and their ack/dispute state
+  api: openapi/observeai-reporting-apis-openapi.yml
+  operations:
+  - Create Auth Token
+  - Create Evaluation Request
+  - Get Evaluations
+  - Create Ack Dispute Request
+  - Get Ack Dispute Details
+  - Get Ack Dispute Details By Ids
+- file: observeai-fetch-genai-summaries.md
+  name: Fetch Observe.AI GenAI interaction summaries
+  api: openapi/observeai-reporting-apis-openapi.yml
+  operations:
+  - Create Auth Token
+  - Create Summaries Request
+  - Get Summaries
+  - Get Summaries By Ids
+  - Get Interactions By Ids
+- file: observeai-submit-dsr-deletion.md
+  name: Submit and track an Observe.AI DSR deletion request
+  api: openapi/observeai-reporting-apis-openapi.yml
+  operations:
+  - Create Auth Token
+  - Create Dsr Delete Request
+  - Get Dsr Delete Status

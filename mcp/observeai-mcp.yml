@@ -1,0 +1,98 @@
+generated: '2026-08-14'
+method: derived
+status: candidate
+source: openapi/observeai-reporting-apis-openapi.yml
+deployment:
+  mode: none
+  endpoint: null
+  install: null
+  package: null
+  auth: unknown
+  verified: probed
+deployment_note: >-
+  Observe.AI ships no MCP server that an agent can reach. Its own integrations
+  page states "our open APIs and Model Context Protocol support let you connect
+  any internal or third-party system" — that is Observe.AI acting as an MCP
+  CLIENT, pulling customer systems into its AI agents, not a server it exposes.
+  No hosted endpoint exists: mcp.observe.ai does not resolve in DNS, and a
+  tools/list JSON-RPC POST to https://api.observe.ai/mcp and
+  https://kong.observe.ai/mcp returns the gateway's blanket
+  {"error_code":"access_denied"} 403 that every path on those hosts returns, so
+  it is not evidence of an MCP surface. No @observeai npm package and no MCP
+  registry listing exists. The tools below are a DERIVED candidate set, one per
+  published OpenAPI operation — nothing here is published by Observe.AI.
+probes:
+- url: https://mcp.observe.ai/mcp
+  method: POST tools/list
+  status: DNS NXDOMAIN
+- url: https://api.observe.ai/mcp
+  method: POST tools/list
+  status: 403
+- url: https://kong.observe.ai/mcp
+  method: POST tools/list
+  status: 403
+- url: https://www.observe.ai/mcp
+  method: POST tools/list
+  status: 405
+server:
+  name: observeai
+  transport: null
+  url: null
+tools:
+- name: create_auth_token
+  description: Exchange an App ID and App Secret for a 2-hour OAuth 2.0 bearer JWT.
+  source_operation: openapi/observeai-reporting-apis-openapi.yml#Create Auth Token
+- name: create_interaction_request
+  description: >-
+    Register an asynchronous request for interaction records (Moments,
+    transcripts and metadata for voice calls, webchat and email) over a date
+    window of up to 90 days. Returns a request_id.
+  source_operation: openapi/observeai-reporting-apis-openapi.yml#Create Interaction Request
+- name: get_interactions
+  description: Poll a request_id and, once COMPLETED, return the pre-signed S3 URL for the interactions report.
+  source_operation: openapi/observeai-reporting-apis-openapi.yml#Get Interactions
+- name: get_interactions_by_ids
+  description: Fetch interaction records for an explicit list of interaction ids.
+  source_operation: openapi/observeai-reporting-apis-openapi.yml#Get Interactions By Ids
+- name: create_summaries_request
+  description: Register an asynchronous request for GenAI Summarization AI summaries of interactions.
+  source_operation: openapi/observeai-reporting-apis-openapi.yml#Create Summaries Request
+- name: get_summaries
+  description: Poll a summaries request_id and return the report URL once COMPLETED.
+  source_operation: openapi/observeai-reporting-apis-openapi.yml#Get Summaries
+- name: get_summaries_by_ids
+  description: Fetch interaction summaries for an explicit list of interaction ids.
+  source_operation: openapi/observeai-reporting-apis-openapi.yml#Get Summaries By Ids
+- name: create_evaluation_request
+  description: >-
+    Register an asynchronous request for evaluation forms and submitted
+    evaluations (Auto QA and manual) with question-level and aggregate scores.
+  source_operation: openapi/observeai-reporting-apis-openapi.yml#Create Evaluation Request
+- name: get_evaluations
+  description: Poll an evaluations request_id and return the report URL once COMPLETED.
+  source_operation: openapi/observeai-reporting-apis-openapi.yml#Get Evaluations
+- name: create_coaching_request
+  description: Register an asynchronous request for coaching sessions with mapped evaluations and notes.
+  source_operation: openapi/observeai-reporting-apis-openapi.yml#Create Coaching Request
+- name: get_coachings
+  description: Poll a coachings request_id and return the report URL once COMPLETED.
+  source_operation: openapi/observeai-reporting-apis-openapi.yml#Get Coachings
+- name: create_ack_dispute_request
+  description: Register an asynchronous request for evaluation acknowledgement and dispute state changes.
+  source_operation: openapi/observeai-reporting-apis-openapi.yml#Create Ack Dispute Request
+- name: get_ack_dispute_details
+  description: Poll an ack/dispute request_id and return the report URL once COMPLETED.
+  source_operation: openapi/observeai-reporting-apis-openapi.yml#Get Ack Dispute Details
+- name: get_ack_dispute_details_by_ids
+  description: Fetch ack/dispute details for an explicit list of evaluation ids.
+  source_operation: openapi/observeai-reporting-apis-openapi.yml#Get Ack Dispute Details By Ids
+- name: create_dsr_delete_request
+  description: >-
+    Submit a Data Subject Request deletion job for AUDIO, TRANSCRIPT,
+    AUDIO_TRANSCRIPT or SCREEN_RECORDING matched by metadata rules. Destructive
+    and irreversible — requires human approval before an agent invokes it.
+  source_operation: openapi/observeai-reporting-apis-openapi.yml#Create Dsr Delete Request
+  consequence: safety-critical
+- name: get_dsr_delete_status
+  description: Check the processing status of a DSR deletion job by job_id.
+  source_operation: openapi/observeai-reporting-apis-openapi.yml#Get Dsr Delete Status

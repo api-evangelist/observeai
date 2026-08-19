@@ -1,0 +1,103 @@
+{
+"$schema": "https://json-schema.org/draft/2020-12/schema",
+"title": "USER_LOGIN_ACTIVITY_V1",
+"description": "JSON schema for Observe.ai bulk S3 export of user login activity records. Each file is gzip-compressed JSON (USER_LOGIN_ACTIVITY_V1_<timestamp>.json.gz). Each record is one JSON object.",
+"type": "object",
+"properties": {
+  "_id": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Unique identifier for this record (source system primary key)."
+  },
+  "appid": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Application identifier associated with the login session."
+  },
+  "expiry": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "format": "date-time",
+    "description": "UTC timestamp when the login session expires."
+  },
+  "status": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Current status of the record."
+  },
+  "created_at": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "format": "date-time",
+    "description": "UTC timestamp when the record was created."
+  },
+  "modified_at": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "format": "date-time",
+    "description": "UTC timestamp when the record was last modified."
+  },
+  "_class": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Internal source-system class/type discriminator."
+  },
+  "userid": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Observe.ai user identifier."
+  },
+  "email": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Email address of the user."
+  },
+  "login_type": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Method used to log in (e.g. PASSWORD, SSO)."
+  },
+  "account_id": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Observe.ai account identifier."
+  },
+  "power_user": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Whether the user is flagged as a power user."
+  },
+  "logout_time": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "format": "date-time",
+    "description": "UTC timestamp when the user logged out."
+  }
+}
+}

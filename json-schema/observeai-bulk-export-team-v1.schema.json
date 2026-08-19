@@ -1,0 +1,36 @@
+{
+"$schema": "https://json-schema.org/draft/2020-12/schema",
+"title": "TEAM_V1",
+"description": "JSON schema for Observe.ai bulk S3 export of team records. Each file is gzip-compressed JSON (TEAM_V1_<timestamp>.json.gz). Each record is one JSON object.",
+"type": "object",
+"properties": {
+  "_id": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Unique identifier for this record (source system primary key)."
+  },
+  "name": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Display name."
+  },
+  "status": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Current status of the record."
+  },
+  "team_type": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Type/category of the team."
+  }
+}
+}

@@ -1,0 +1,79 @@
+{
+"$schema": "https://json-schema.org/draft/2020-12/schema",
+"title": "SENTIMENT_METRIC_V1",
+"description": "JSON schema for Observe.ai bulk S3 export of sentiment metric records. Each file is gzip-compressed JSON (SENTIMENT_METRIC_V1_<timestamp>.json.gz). Each record is one JSON object.",
+"type": "object",
+"properties": {
+  "interaction_id": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Observe.ai interaction identifier this record relates to."
+  },
+  "account_id": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Observe.ai account identifier."
+  },
+  "interaction_time": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "format": "date-time",
+    "description": "UTC timestamp of the related interaction."
+  },
+  "metrics": {
+    "type": [
+      "object",
+      "null"
+    ],
+    "properties": {
+      "agent": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "sentiment_score": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Overall agent sentiment score for the interaction."
+          }
+        },
+        "description": "Agent-side sentiment metrics (dynamic keys) plus overall sentiment score."
+      },
+      "customer": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "sentiment_score": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Overall customer sentiment score for the interaction."
+          }
+        },
+        "description": "Customer-side sentiment metrics (dynamic keys) plus overall sentiment score."
+      }
+    },
+    "description": "Sentiment metric values computed for the interaction."
+  },
+  "modified_at": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "format": "date-time",
+    "description": "UTC timestamp when the record was last modified."
+  }
+}
+}

@@ -1,6 +1,53 @@
-generated: '2026-07-20'
+generated: '2026-08-14'
 method: searched
-source: https://status.observe.ai/
+source: https://api-docs.observe.ai/
+sources:
+- https://status.observe.ai/
+- https://api-docs.observe.ai/#tag/CallsReportVsInteractions
+- openapi/observeai-reporting-apis-openapi.yml
+versioning:
+  scheme: uri-path
+  current: v1
+  concurrent:
+  - v1
+  - v2
+  docs: https://api-docs.observe.ai/
+  note: >-
+    /v2 exists only for the Interactions surface, carrying the Summarization AI
+    (GenAI summaries) variant introduced 22-Jul-2024. It is a parallel product
+    surface, not a successor version — /v1/data/reports/interactions remains
+    current alongside it.
+deprecation:
+  policy_url: https://api-docs.observe.ai/#tag/CallsReportVsInteractions
+  policy_published: true
+  policy_note: >-
+    Observe.AI has published a real, dated deprecation with a migration guide:
+    the Calls Report API (POST
+    https://api.observe.ai/v1/reports/accounts/{account_name}/data, HTTP Basic
+    auth, synchronous, PDF-documented) was deprecated with a stated deprecation
+    date of 31-Dec-2022 and clients were directed to the asynchronous
+    OAuth-2.0-based Interactions API. The notice includes a field-by-field
+    old-to-new mapping table. Basic Auth for all APIs was retired on the same
+    date.
+  sunset_header: false
+  deprecation_header: false
+  rfc8594: false
+  header_note: >-
+    No Sunset or Deprecation response headers (RFC 8594) are documented or
+    present in the OpenAPI; deprecation is communicated in prose and via the CSM.
+  deprecated_surfaces:
+  - name: Calls Report API
+    endpoint: https://api.observe.ai/v1/reports/accounts/{account_name}/data
+    auth: Basic
+    deprecation_date: '2022-12-31'
+    replacement: POST /v1/data/reports/interactions (Interactions API)
+  - name: HTTP Basic authentication
+    deprecation_date: '2022-12-31'
+    replacement: OAuth 2.0 App Credentials flow
+deprecated_operations: []
+deprecated_operations_note: >-
+  No operation in the published OpenAPI carries `deprecated: true`; the deprecated
+  Calls Report API was removed from the spec rather than marked.
 status_page: https://status.observe.ai/
 status_page_provider: Atlassian Statuspage
 components:
@@ -11,9 +58,17 @@ instances:
 - Standard
 - Restricted (US)
 - EU
-notes: >-
-  Observe.AI publishes a public Atlassian Statuspage covering its AI Agents,
-  AI Copilot, and Conversation Intelligence services across Standard,
-  Restricted (US), and EU instances, with 90-day uptime history and scheduled
-  maintenance notices. No public versioning or deprecation policy is published
-  (Observe.AI ships no public developer portal or OpenAPI at this time).
+sla:
+  url: null
+  uptime_target: null
+  note: >-
+    No public SLA document is served. https://www.observe.ai/service-level-agreement
+    returns 404 and the terms page at https://www.observe.ai/terms returns HTTP
+    401 (Webflow page password). SLA terms appear to be contractual only.
+support:
+  contact: help@observe.ai
+  portal: https://help.observe.ai/
+  escalation: Customer Success Manager (CSM)
+  note: >-
+    Credential provisioning, base-URL assignment and deprecation notices all
+    route through the CSM rather than a self-serve developer portal.

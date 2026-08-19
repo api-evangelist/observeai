@@ -1,0 +1,4111 @@
+---
+openapi: 3.0.1
+info:
+  title: Reporting APIs
+  description: |
+    Reporting APIs are a collection of RESTful APIs that provide a convenient and secure way for integrating reporting data from Observe.AI into external system of your choice. These APIs are asynchronous and render data in a JSON format. Observe.AI uses OAuth 2.0 protocol for authentication of APIs. Please refer to Authentication section to obtain credentials to access Reporting APIs. Below are the 3 APIs that we support -
+          <ol>
+              <li><a href="#tag/Interactions">Interactions API</a>- To fetch Moments, Transcripts and Interactions(Voice calls, Webchat, Email) metadata</li>
+              <li><a href="#tag/Evaluations">Evaluations API</a> - To fetch Evaluation forms and submitted Evaluations along with question-wise scores and aggregate scores.</li>
+              <li><a href="#tag/Coachings"> Coachings API </a> - To fetch Coaching sessions with mapped Evaluations and related Notes.</li>
+              <li><a href="#tag/Ack Dispute Flow"> Ack Dispute API </a> - To fetch Ack/Dispute state changes for Evaluations.</li>
+              <li><a href="#tag/Summary"> Summarization AI API </a> - To fetch GenAI-based Summaries along with Moments, Transcripts and metadata for all Interactions(Voice calls, Webchat).</li>
+          </ol>
+  x-logo:
+    url: 'https://cdn.observe.ai/observeaiLogo.png'
+
+tags:
+  - name: Authentication
+    x-displayName: Authentication
+    description: |
+
+      OAuth 2.0, which stands for “Open Authorization”, is a standard design to allow a website or application to access resources hosted by other web apps on behalf of a user
+
+      <b>Note</b>: If you have been using Basic Auth for the APIs, we request you to switch to OAuth2.0 based Auth for the APIs by 31-Dec-2022. Detailed instructions to create API Credentials and make the switch to OAuth are documented as below. Please reach out to your CSM for more details.
+
+      <h2> OAuth App Credential Flow </h2>
+
+      The App Credentials flow is recommended for server-side (AKA confidential) client applications with no end user, which normally describes machine-to-machine communication. Your application needs to securely store its app ID and secret and pass those to Observe Authentication Api in exchange for an access token.
+
+      <h3> Steps required for generating access token </h3>
+
+        1. API Credential Generation:
+      <ul>
+         <li>To get access for API credentials, please contact help@observe.ai.</li>
+         <li>AppId and AppSecret required to create access tokens, you can generate max of 3 apps.</li>
+
+         - Select New App Id and App Secret.<br>
+
+           <img src="https://cdn.observe.ai/apicredentials_generation.png"/><br>
+
+         - Add your app name.<br>
+
+           <img src="https://cdn.observe.ai/apicredentials_appname.png"/><br>
+
+         - Download the credentials, <b>these can not viewed/downloaded later.</b><br>
+
+           <img src="https://cdn.observe.ai/apicredentials_download.png"/><br>
+      </ul>
+        2. Access Token
+      <ul>
+         <li>You can create accessToken, using AppId and AppSecret from step 1.</li>
+
+         <li><b>Access Token expires in 2 hrs, needs to be created again after expiry time.</b></li>
+
+         <li>The 'Create Auth Token API' API has a rate limit of 1500 requests per day.</li>
+      </ul>
+
+      <li> The video in Getting Started outlines these steps in detail </li>
+
+
+  - name: Interactions
+    x-displayName: Interactions API
+    description: |
+      Interactions API is an omnichannel API can be used to obtain all the data related to the interactions like Moments, Transcripts and metadata related to Interactions(including Voice calls and Web chat).
+
+      Please note -
+      <ol>
+        <li>Allow 24 hrs to pass before pulling Interactions. ie., For Interactions completed on 14-Jan by 12:00AM PST, they would be available via APIs by 15-Jan by 12:00AM PST.</li>
+        <li>You can pull Interactions for 30 days at a time i.e., the duration between the end_date and the start_date should not exceed 30 days.</li>
+        <li>There is no limit as to how far back in the past you want to go for pulling Interactions. You can go back to the first ever evaluation on the platform unless data retention limits have been set.</li>
+        <li>Interactions API gives a paginated response so the customer need to specify the page number and the desired amount of interactions in a page. By default, page_size is set to 100</li>
+        <li>There is flexibility to either include or exclude Transcript in the API response by setting a query parameter includeTranscript. By default it is set to false.</li>
+        <li>The S3 URL obtained in the API response (with the interactions) is valid for 24 hours.</li>
+        <li>Clients using ‘Calls report API’ are requested to switch to ‘Interactions API’ which provides several benefits listed <a href="#tag/CallsReportVsInteractions">here</a>. ‘Calls report API’ will be deprecated after 31-Dec-2022. Please reach out to your CSM for more details.</li>
+        <li>If you have been using Basic Auth for the APIs, we request you to switch to OAuth2.0 based Auth for the APIs by 31-Dec-2022. Detailed instructions to create API Credentials and make the switch to OAuth are documented <a href="#tag/Authentication">here</a>. Please reach out to your CSM for more details.</li>
+        <li>If you need to pull Interactions by ID, there is a separate synchronous API - <a href="#tag/Interactions/operation/Get Interactions By Ids">Get Interactions By Ids</a>.</li>
+      </ol>
+  - name: Summary
+    x-displayName: Summarization AI API
+    description: |
+      Summarization AI API can be used to pull the data related to summaries for a particular interaction including calls and chats.
+
+      Please note -
+      <ol>
+        <li> Summaries can only be extracted if they are available for the interaction.</li>
+        <li>Allow 24 hrs to pass before pulling summaries. ie., For summaries completed on 14-Jan by 12:00AM PST, they would be available via APIs by 15-Jan by 12:00AM PST.</li>
+        <li>You can pull Summaries for 30 days at a time i.e., the duration between the end_date and the start_date should not exceed 30 days.</li>
+        <li>There is no limit as to how far back in the past you want to go for pulling summaries. You can retrieve summaries from the very first ones generated on the platform, unless data retention limits have been set.</li>
+        <li>Summarization AI API gives a paginated response so the customer need to specify the page number and the desired amount of summaries in a page. By default, page_size is set to 100</li>
+        <li>There is flexibility to either include or exclude Transcript in the API response by setting a query parameter includeTranscript. By default it is set to false.</li>
+        <li>The S3 URL obtained in the API response (with the summaries) is valid for 24 hours.</li>
+        <li>If you need to pull Summaries by ID, there is a separate synchronous API - <a href="#tag/Summary/operation/Get Summaries By Ids">Get Summaries By Ids</a>.</li>
+      </ol>
+
+  - name: Evaluations
+    x-displayName: Evaluations API
+    description: |
+      Evaluations API can be used to pull all the Evaluations(Manual and Auto QA)  done on Observe AI platform.
+
+      Please note -
+          <ol>
+            <li>Allow 24 hrs to pass before pulling Evaluations. ie., For Evaluations completed on 14-Jan by 12:00AM PST, they would be available via APIs by 15-Jan by 12:00AM PST.</li>
+            <li>You can pull Evaluations for 90 days at a time i.e., the duration between the end_date and the start_date should not exceed 90 days.</li>
+            <Li>There is no limit as to how far back in the past you want to go for pulling Evaluations. You can go back to the first ever evaluation on the platform unless data retention limits have been set.</li>
+            <li> All the Evaluations that were Submitted, Edited and Deleted in the date-range will be available in the API response.</li>
+              <ul>
+                <li>Lets take an example to explain it further - when you pull Evaluations for 15 days(say for start_date - 15-Jan and end_date 30-Jan) on 15-Feb via an API call, you get all Evaluations that were -</li>
+                  <ul>
+                    <li>submitted between 15-jan and 30-jan with "status": "SUBMITTED"</li>
+                    <li>submitted before 15-jan but modified/deleted between 15-jan and 30-jan with "status"="EDITED" / "status"="DELETED"</li>
+                    <li>submitted between 15-jan and 30-jan but modified after 30-jan until the pull date(15-Feb) with "status"="EDITED"</li>
+                  </ul>
+              </ul>
+            <li>The S3 URL obtained in the API response (with the evaluations) is valid for 24 hours.
+                                      </li>
+            <li>If you have been using Basic Auth for the APIs, we request you to switch to OAuth2.0 based Auth for the APIs by 31-Dec-2022. Detailed instructions to create API Credentials and make the switch to OAuth are documented <a href="#tag/Authentication">here</a>. Please reach out to your CSM for more details.</li>
+          </ol>
+  - name: Coachings
+    x-displayName: Coachings API
+    description: |
+      Coachings API can be used to pull all the Coaching sessions done on Observe AI platform.
+      Please note -
+        <ol>
+          <li>Allow 24 hrs to pass before pulling Coaching sessions. ie., For Coaching sessions completed on 14-Jan by 12:00AM PST, they would be available via APIs by 15-Jan by 12:00AM PST.</li>
+          <li>You can pull Coaching sessions for 90 days at a time i.e., the duration between the end_date and the start_date should not exceed 90 days.</li>
+          <Li>There is no limit as to how far back in the past you want to go for pulling Coaching sessions. You can go back to the first ever coaching session on the platform unless data retention limits have been set.</li>
+          <li> All the Coaching sessions that were Submitted, Edited and Deleted in the date-range will be available in the API response.</li>
+            <ul>
+              <li>Lets take an example to explain it further - when you pull Coaching sessions for 15 days(say for start_date - 15-Jan and end_date 30-Jan) on 15-Feb via an API call, you get all Coaching sessions that were -</li>
+                <ul>
+                  <li>submitted between 15-jan and 30-jan with "status": "SUBMITTED"</li>
+                  <li>submitted before 15-jan but modified/deleted between 15-jan and 30-jan with "status"="EDITED" / "status"="DELETED"</li>
+                  <li>submitted between 15-jan and 30-jan but modified after 30-jan until the pull date(15-Feb) with "status"="EDITED"</li>
+                </ul>
+            </ul>
+          <li>The S3 URL obtained in the API response (with the coaching sessions) is valid for 24 hours.
+                          </li>
+          <li>If you have been using Basic Auth for the APIs, we request you to switch to OAuth2.0 based Auth for the APIs by 31-Dec-2022. Detailed instructions to create API Credentials and make the switch to OAuth are documented <a href="#tag/Authentication">here</a>. Please reach out to your CSM for more details.</li>
+        </ol>
+  - name: Ack Dispute Flow
+    x-displayName: Evaluations/Ack Dispute API
+    tags:
+      - Ack Dispute Flow
+    description: |
+      Ack Dispute API can be used to pull all evaluation related data which are sent for acknowledgment or dispute.
+
+      Please note -
+          <ol>
+            <li>Allow 24 hrs to pass before pulling Ack Dispute Data. ie., For Evaluations completed on 14-Jan by 12:00AM PST, they would be available via APIs by 15-Jan by 12:00AM PST.</li>
+            <li>You can pull Ack Dispute for 90 days at a time i.e., the duration between the end_date and the start_date should not exceed 90 days.</li>
+            <Li>There is no limit as to how far back in the past you want to go for pulling Ack Dispuet Data. You can go back to the first ever evaluation on the platform unless data retention limits have been set.</li>
+            <li>The S3 URL obtained in the API response (with the evaluations) is valid for 24 hours.
+                                      </li>
+            <li>If you have been using Basic Auth for the APIs, we request you to switch to OAuth2.0 based Auth for the APIs by 31-Dec-2022. Detailed instructions to create API Credentials and make the switch to OAuth are documented <a href="#tag/Authentication">here</a>. Please reach out to your CSM for more details.</li>
+          </ol>
+  - name: ReportingService-Overview
+    x-displayName: Getting Started
+    description: |
+      The flow below outlines the steps that you need to follow to fetch any type of Reporting data from Observe.ai.
+         <img src="https://cdn.observe.ai/reportingFlow.png"/><br>
+      Lets go through these steps in a little more detail. You need to create OAuth2.0 based API credentials and then use those credentials to pull Reporting Data from Observe.ai.The first 2 steps need to be executed once for every app that you want to create. The next 3 steps need to be repeated for very Reporting API request.<br>
+      <ul>
+         <li><b>Step 1:</b> Create API credentials by following the instructions in <a href="/#tag/Authentication">Authentication</a></li>
+         <li><b>Step 2:</b> Download the App ID and App Secret once they are generated. They are not going to be available either to to Observe.ai or to you if you miss downloading them the first time.</li>
+         <li><b>Step 3</b>: Use App ID and App Secret to Get a Auth token that is needed for every Reporting API call that you would want to make. <b>Please note that Auth token expires after 2 hours(7200 seconds).</b> You need to send this Auth token in every Reporting API request that you wish to make. Repeat this Step once the Auth token expires.</li>
+         <li><b>Step 4</b>: Every Reporting API is an asynchronous API i.e., you need to send a request(POST API) for certain type of Reporting data. Your request will be queued and a Request ID will be assigned to you in the API Response.</li>
+        <li><b>Step 5</b>:Once you receive the Request ID, you can keep polling(using GET API) to check on the status of Request ID. Once the Request ID status is set to COMPLETED, you receive S3 URL for the Reporting data in the API response.
+        </li>
+      </ul>
+      The video below provides the walkthrough of the above steps in sequence.
+            <video width="500px" height="500px" controls="controls"/> <source src="https://cdn.observe.ai/oAuthDemo_latest.mp4" type="video/mp4"> </video>
+      <h2>Base URLs </h2>
+
+      Please reach out to your CSMs or raise support ticket to receive the Base URL for your instance.
+      
+      
+      <h2>Rate Limits</h2>
+
+      The following Rate Limits are applicable at App ID level. We recommend clients to create one app each for accessing each API.
+
+      <table>
+      <tr>
+      <th>API</th>
+      <th>Rate Limit Per Api Credentials</th>
+      </tr>
+      <tr>
+      <td><b>POST</b> Create Reporting Request</td>
+      <td>2000(Requests/day)</td>
+      </tr>
+      <tr>
+      <td><b>GET</b> Get Reporting Request Details</td>
+      <td>20(Requests/min)</td>
+      </tr>
+      <tr>
+      <td><b>POST</b> Create Auth token</td>
+      <td>1500(Requests/day)</td>
+      </tr>
+      </table>
+    x-traitTag: true
+  - name: DSR-Overview
+    x-displayName: DSR Getting Started
+    description: |
+      The flow below outlines the steps you need to follow to submit and track DSR deletion requests.
+      <ul>
+        <li><b>Step 1:</b> Create API credentials by following the instructions in <a href="/#tag/Authentication">Authentication</a>.</li>
+        <li><b>Step 2:</b> Download the App ID and App Secret once they are generated. They are not available later.</li>
+        <li><b>Step 3:</b> Use App ID and App Secret to get an auth token via <code>POST /v1/oauth/token</code>. The token is required for every DSR API call.</li>
+        <li><b>Step 4:</b> Submit a DSR deletion request using <code>POST /v1/dsr/delete/on-demand</code>. The request is queued and a job ID is returned.</li>
+        <li><b>Step 5:</b> Poll the job status using <code>GET /v1/dsr/delete/{job_id}/status</code> until the status is terminal.</li>
+      </ul>
+    x-traitTag: true
+  - name: DSR
+    x-displayName: DSR Deletion API
+    description: |
+      DSR (Data Subject Request) deletion APIs allow customers to submit metadata-based deletion requests and check
+      the processing status of those requests.
+
+      <h3>Authentication</h3>
+      OAuth 2.0 Bearer Token is required. Use App ID and App Secret to generate a token via
+      <code>POST /v1/oauth/token</code>, then pass it as <code>Authorization: Bearer &lt;auth_token&gt;</code>.
+      See <a href="#tag/Authentication">Authentication</a> for the full credential flow.
+  - name: DSR Release Notes
+    x-displayName: DSR Release Notes
+    description: |
+      <ul>
+        <li><b>2026-02-10</b>: Initial release of DSR delete and status APIs.</li>
+      </ul>
+  - name: Bulk-Export-Overview
+    x-displayName: Getting Started
+    description: |
+      Bulk Export delivers Observe.ai platform data to your environment via Snowflake Data Share or S3.
+      Each dataset is exported on a schedule and includes field-level schemas for both delivery methods.
+
+      Use the <a href="/bulk-export">Data Definitions</a> guide for export file naming, Snowflake view names,
+      and column/JSON field definitions for every dataset.
+    x-traitTag: true
+  - name: Bulk-Export-Data-Definitions
+    x-displayName: Data Definitions
+    description: |
+      Reference documentation for every dataset in your Observe.ai bulk export.
+      Each entity documents Snowflake Share columns and S3 Share JSON field definitions.
+
+      <p><a href="/bulk-export"><strong>Open Bulk Export Data Definitions →</strong></a></p>
+    x-traitTag: true
+  - name: ReleaseNotes
+    x-displayName: Release Notes
+    description: |
+
+      The release notes lists down the enhancements done and issues fixed in the chronological order for your reference-
+
+      <table>
+      <tr>
+      <th style="width:15%">Date</th>
+      <th>Enhancements</th>
+      <th>Updated Sections</th>
+      </tr>
+      <tr>
+      <td>27-Jun-2022</td>
+      <td>Added a new section stating the differences between Calls Report API and Interactions API</td>
+      <td>Calls Report API vs Interactions API</td>
+      </tr>
+      <tr>
+      <td>29-Jun-2022</td>
+      <td>Increased the rate limit value of the POST API from 30 to 100 per day.</td>
+      <td>Getting Started</td>
+      </tr>
+      <tr>
+      <td>20-Jul-2022</td>
+      <td>Added new Interactions By Ids API.</td>
+      <td>Interactions API</td>
+      </tr>
+      <tr>
+      <td>14-Sep-2022</td>
+      <td>Upgraded Evaluations API to provide Auto QA Evaluations in addition to Manual Evaluations.</td>
+      <td>Evaluations API</td>
+      </tr>
+      <tr>
+      <td>19-Sep-2022</td>
+      <td>Removed irrelevant field 'present:true' from all Evaluations, Coaching, Interactions Reports.</td>
+      <td>Evaluations API</td>
+      </tr>
+      <tr>
+      <td>12-Oct-2022</td>
+      <td>Changed default evaluation type to Manual.</td>
+      <td>Evaluations API</td>
+      </tr>
+      <tr>
+      <td>16-Nov-2022</td>
+      <td>Increased the rate limit value of the POST API from 100 to 300 per day.</td>
+      <td>Getting Started</td>
+      </tr>
+      <tr>
+      <td>25-Nov-2022</td>
+      <td>
+      <ul>
+      <li>Added Moment theme in ‘Get Interactions’ and ‘Get Interactions By Ids’ API response.</li>
+      <li>Increased maximum page size for Interactions request without transcripts to 1000.</li>
+      </ul>
+      </td>
+      <td>Interactions API</td>
+      </tr>
+      <tr>
+      <td>08-Dec-2022</td>
+      <td>Introduced Rate Limit of 500 requests/day for ‘Create Auth Token API’</td>
+      <td>Authentication</td>
+      </tr>
+      <tr>
+      <td>08-Dec-2022</td>
+      <td>Reduced latency for ‘Get Interactions By Ids’ API.</td>
+      <td>Interactions API</td>
+      </tr>
+      <tr>
+      <td>08-Dec-2022</td>
+      <td>
+      <ul>
+      <li>Introduced pagination in Evaluations API with a max limit of 1000 evaluations/page</li>
+      <li>Added Agent Ack/Dispute status in Evaluations API</li>
+      </ul>
+      </td>
+      <td>Evaluations API</td>
+      </tr>
+      <tr>
+      <td>05-Jan-2023</td>
+      <td>Increased the rate limit value of the POST API from 300 to 500 per day.</td>
+      <td>Getting Started</td>
+      </tr>
+      <tr>
+      <td>03-Feb-2023</td>
+      <td>Added a new field called  evaluation purpose in Evaluations API.</td>
+      <td>Evaluations API</td>
+      </tr>
+      <tr>
+      <td>06-Feb-2023</td>
+      <td>Increased the rate limit value of the 'Create Auth Token API' from 500 to 1500 per day.</td>
+      <td>Authentication</td>
+      </tr>
+      <tr>
+      <td>09-Feb-2023</td>
+      <td>Added field descriptions for Acknowledgement/Dispute Status in Evaluations API.</td>
+      <td>Evaluations API</td>
+      </tr>
+      <tr>
+      <td>21-Feb-2023</td>
+      <td>Added field descriptions for source_partner_meeting_id and sequence in Interactions API.</td>
+      <td>Interactions API</td>
+      </tr>
+      <tr>
+      <td>12-April-2023</td>
+      <td>
+      <ul>
+      <li>Added field descriptions for partner_agent_id in Interactions Api.</li>
+      <li>Added field descriptions for partner_agent_id and partner_evaluator_id in Evaluations Api.</li>
+      <li>Added field descriptions for partner_agent_id and partner_coach_id in Coachings Api.</li>
+      </ul>
+      </td>
+      <td>Interactions, Evaluations, Coachings API</td>
+      </tr>
+      <tr>
+      <td>18-April-2023</td>
+      <td>Increased the rate limit value of the POST API from 500 to 2000 per day.</td>
+      <td>Getting Started</td>
+      </tr>
+      <tr>
+      <td>11-Oct-2023</td>
+      <td>Introduced Ack Dispute APIs - Sync and Async APIs.</td>
+      <td>Ack Dispute API</td>
+      </tr>
+      <tr>
+      <td>22-July-2024</td>
+      <td>Introduced Summarization AI APIs - Sync and Async APIs.</td>
+      <td>Summarization AI API</td>
+      </tr>
+      <tr>
+      <td>12-Aug-2024</td>
+      <td>Coaching Ack Release.</td>
+      <td>Coaching GET APIs</td>
+      </tr>
+      <tr>
+      <td>12-Feb-2025</td>
+      <td>Added section guiding clients to request their specific Base URL via CSM or support ticket.</td>
+      <td>Getting Started</td>
+      </tr>
+      </table>
+
+
+  - name: CallsReportVsInteractions
+    x-displayName: Calls Report API vs Interactions API
+    description: |
+      Interactions API is an upgraded API to pull Calls and other interactions from Observe.AI. All the clients using 'Calls Report API' are requested to transition to 'Interactions API' by 31-Dec-2022. The following table lists out the benefits of using Interactions API.
+
+      <table>
+        <tr>
+        <th> </th>
+        <th> </th>
+        <th><b>Calls Report API(old API)</b></th>
+        <th><b>Interactions API(new API)</b></th>
+        </tr>
+        <tr>
+        <td>1.</td>
+        <td>Omnichannel</td>
+        <td>No<br> <br><i>Calls report API could only be used to fetch data related to Voice calls.</i></td>
+        <td>Yes<br> <br><i>Interactions API can be used to fetch Moments, Transcripts and metadata for Voice calls and Webchat.</i></td>
+        </tr>
+        <tr>
+        <td>2.</td>
+        <td>Authentication</td>
+        <td>Basic</td>
+        <td>OAuth2.0<br> <br><i>The process for creating API Credentials is documented <a href="#tag/Authentication">here</a></i></td>
+        </tr>
+        <tr>
+        <td>3.</td>
+        <td>Type of API</td>
+        <td>Synchronous<br> <br><i>POST API was used to fetch  Calls. If the volume is huge, there was a chance for timeout.<br>endpoint: POST API -<a href=https://api.observe.ai/v1/reports/accounts/{account_name}/data>https://api.observe.ai/v1/reports/accounts/{account_name}/data</a></i></td>
+        <td>Asynchronous<br> <br><i>Use POST API to register a data request and get a request ID. Use a GET API to poll on request ID and get the reporting data. These steps are explained in details here - <a href="#tag/Interactions">Interactions API section</a><br>endpoint: POST API -<a href=https://kong.observe.ai/v1/data/reports/interactions>https://kong.observe.ai/v1/data/reports/interactions</a><br>GET API -<a href=https://kong.observe.ai/v1/data/reports/interactions/{request_id}>https://kong.observe.ai/v1/data/reports/interactions/{request_id}</a></i></td>
+        </tr>
+        <tr>
+        <td>4.</td>
+        <td>Richness of Response</td>
+        <td>Medium</td>
+        <td>High<br> <br><i>There is more data and better structured data in the  Interactions API response when compared to Calls Report API. Check the table under 200 OK response here to view the enriched response.</i></td>
+        </tr>
+        <tr>
+        <td>5.</td>
+        <td>Documentation</td>
+        <td>PDF<br> <br><i>Shared with clients in the past.</i></td>
+        <td>API Documentation portal(<a href=https://api-docs.observe.ai/>https://api-docs.observe.ai</a>)</td>
+        </tr>
+        <tr>
+        <td>6.</td>
+        <td>Deprecation date</td>
+        <td>31-Dec-2022</i></td>
+        <td>NA</td>
+        </tr>
+      </table>
+
+      The difference between Calls Report API and Interactions API response is listed below. Some new fields have been added and some existing fields have been modified. The new and modified fields are highlighted in bold for quick reference
+
+      <table>
+      <tr>
+      <th> </th>
+      <th><b>Field in Calls Report API</b></th>
+      <th><b>Description</b></th>
+      <th><b>Field in Interactions API</b></th>
+      <th><b>Description</b></th>
+      </tr>
+      <tr>
+      <td>1.</td>
+      <td>page</td>
+      <td>The current page number of the response from the total response present between the given date range.</td>
+      <td>page</td>
+      <td>The current page number of the response from the total response present between the given date range.</td>
+      </tr>
+      </tr>
+      <tr>
+      <td>2.</td>
+      <td>size</td>
+      <td>Number of calls (meetings) present in the current page</td>
+      <td>size</td>
+      <td>Number of interactions present in the current page</td>
+      </tr>
+      <tr>
+      <td>3.</td>
+      <td>totalPages</td>
+      <td>Total number of pages present for the given date range.</td>
+      <td><b>total_pages</b></td>
+      <td>Total number of pages present for the given date range.</td>
+      </tr>
+      <tr>
+      <td>4.</td>
+      <td>totalResults</td>
+      <td>Total number of calls (meetings) present for the given date range.</td>
+      <td><b>total_size</b></td>
+      <td>Total number of interactions present for the given date range.</td>
+      </tr>
+      <tr>
+      <td>5.</td>
+      <td>meetings</td>
+      <td>This is the list of calls (meetings) included in the report. Each call in this list is associated with a meeting ID. Inside of each meeting, the following fields can be found.</td>
+      <td><b>interactions</b></td>
+      <td>This is the list of interactions (call, chat, external) included in the report.<br> Each interaction in this list is associated with an interaction ID. Inside of each interactions following fields can be found</td>
+      </tr>
+      <tr>
+      <td>6.</td>
+      <td>observeCallId</td>
+      <td>This id represents the id of that particular call (meeting).</td>
+      <td><b>id</b></td>
+      <td>This id represents the id of that particular interaction.</td>
+      </tr>
+      <tr>
+      <td>7.</td>
+      <td>~</td>
+      <td>~</td>
+      <td><b>account_id</b></td>
+      <td>This id represents the id of that particular account.</td>
+      </tr>
+      <tr>
+      <td>8.</td>
+      <td>~</td>
+      <td>~</td>
+      <td><b>agent_id</b></td>
+      <td>This id represents the id of the agent who has participated in that particular interaction.</td>
+      </tr>
+      <tr>
+      <td>9.</td>
+      <td>agentName</td>
+      <td>The name of the agent who has participated in that particular call (meeting).</td>
+      <td><b>agent_name</b></td>
+      <td>The name of the agent who has participated in that particular interaction.</td>
+      </tr>
+      <tr>
+      <td>10.</td>
+      <td>agentEmail</td>
+      <td>The email of the agent who has participated in that particular call (meeting).</td>
+      <td><b>agent_email</b></td>
+      <td>The email of the agent who has participated in that particular interaction.</td>
+      </tr>
+      <tr>
+      <td>11.</td>
+      <td>agentActive</td>
+      <td>This is a boolean field which represents whether the agent is active or not.</td>
+      <td><b>agent_status</b></td>
+      <td>This is a String field which depicts if the agent is active or not. (ACTIVE or IN_ACTIVE)</td>
+      </tr>
+      <tr>
+      <td>12.</td>
+      <td>~</td>
+      <td>~</td>
+      <td><b>duration</b></td>
+      <td>This is an integer field which represents how much time (seconds) did the interaction happen.</td>
+      </tr>
+      <tr>
+      <td>13.</td>
+      <td>~</td>
+      <td>~</td>
+      <td><b>language</b></td>
+      <td>This is a field which represents in which language did the communication happen during the interaction.</td>
+      </tr>
+      <tr>
+      <td>14.</td>
+      <td>~</td>
+      <td>~</td>
+      <td><b>channel</b></td>
+      <td>This field represents the type of interaction. (CALL, CHAT, EXTERNAL).</td>
+      </tr>
+      <tr>
+      <td>15.</td>
+      <td>callProviderId</td>
+      <td>The id which originates from the source recording platform.</td>
+      <td><b>provider_id</b></td>
+      <td>The id which originates from the source recording platform.</td>
+      </tr>
+      <tr>
+      <td>16.</td>
+      <td>transcripts</td>
+      <td>The list of call (meeting) transcripts divided by speaker. The fields under the transcripts are</td>
+      <td>transcripts</td>
+      <td>The list of transcripts of an interaction divided by speaker. The fields under the transcripts are:</td>
+      </tr>
+      <tr>
+      <td>17.</td>
+      <td>phrase</td>
+      <td>A snippet from the transcript corresponding to one of the two speakers.</td>
+      <td>phrase</td>
+      <td>A snippet from the transcript corresponding to one of the two speakers.</td>
+      </tr>
+      <tr>
+      <td>18..</td>
+      <td>speaker</td>
+      <td>This is the speaker of the phrase - Agent or customer.</td>
+      <td>speaker</td>
+      <td>This is the speaker of the phrase - Agent or customer.</td>
+      </tr>
+      <tr>
+      <td>19.</td>
+      <td>startTime</td>
+      <td>The phrase start time in milliseconds.</td>
+      <td><b>start_time</b></td>
+      <td>The phrase start time in milliseconds.</td>
+      </tr>
+      <tr>
+      <td>20.</td>
+      <td>endTime</td>
+      <td>The phrase end time in milliseconds.</td>
+      <td><b>end_time</b></td>
+      <td>The phrase end time in milliseconds.</td>
+      </tr>
+      <tr>
+      <td>21.</td>
+      <td>order</td>
+      <td>The position of each phrase in a transcript.</td>
+      <td>order</td>
+      <td>The position of each phrase in a transcript.</td>
+      </tr>
+      <tr>
+      <td>22.</td>
+      <td>~</td>
+      <td>~</td>
+      <td><b>moment_catgories</b></td>
+      <td>The list of moment categories contains all the moment categories found in the interactions. The fields under the moment categories are:</td>
+      </tr>
+      <tr>
+      <td>23.</td>
+      <td>~</td>
+      <td>~</td>
+      <td><b>moment_catgory_id</b></td>
+      <td>This id represents that particular moment_category</td>
+      </tr>
+      <tr>
+      <td>24.</td>
+      <td>~</td>
+      <td>~</td>
+      <td><b>moment_category_name</b></td>
+      <td>The name of the particular moment_category.</td>
+      </tr>
+      <tr>
+      <td>25.</td>
+      <td>scorecard</td>
+      <td>This is where all the moments (points of interests) found in the call (meeting) are included. This part of the report also contains its own set of fields.</td>
+      <td><b>moments</b></td>
+      <td>The list of moments present under a particular moment category. The fields under the moment are:</td>
+      </tr>
+      <tr>
+      <td>26.</td>
+      <td>~</td>
+      <td>~</td>
+      <td><b>moment_id</b></td>
+      <td>The id which represents that particular moment.</td>
+      </tr>
+      <tr>
+      <td>27.</td>
+      <td>name</td>
+      <td>The moment name as configured in the Observe.AI user interface in the 'Moments' tab.</td>
+      <td><b>moment_name</b></td>
+      <td>The moment name as configured in the Observe.AI user interface in the 'Moments' tab.</td>
+      </tr>
+      <tr>
+      <td>28.</td>
+      <td>Evidence</td>
+      <td>The list of phrases from a transcript in which moments were found. Inside This evidence there are three more fields</td>
+      <td><b>snippets</b></td>
+      <td>The list of phrases from a transcript in which moments were found. Inside This evidence there are three more fields</td>
+      </tr>
+      <tr>
+      <td>29.</td>
+      <td>evidence</td>
+      <td>The actual phrase or keyword that matches a moment's criteria.</td>
+      <td>evidence</td>
+      <td>The actual phrase or keyword that matches a moment's criteria.</td>
+      </tr>
+      <tr>
+      <td>30.</td>
+      <td>startTime</td>
+      <td>The phrase start time in milliseconds.</td>
+      <td><b>start_time</b></td>
+      <td>The phrase start time in milliseconds.</td>
+      </tr>
+      <tr>
+      <td>31.</td>
+      <td>endTime</td>
+      <td>The phrase end time in milliseconds.</td>
+      <td><b>end_time</b></td>
+      <td>The phrase end time in milliseconds.</td>
+      </tr>
+      <tr>
+      <td>32.</td>
+      <td>~</td>
+      <td>~</td>
+      <td><b>order</b></td>
+      <td>The position of each phrase in a transcript.</td>
+      </tr>
+      <tr>
+      <td>33.</td>
+      <td>~</td>
+      <td>~</td>
+      <td><b>found</b></td>
+      <td>It determines whether the moment is found in the call or not.</td>
+      </tr>
+      <tr>
+      <td>34.</td>
+      <td>~</td>
+      <td>~</td>
+      <td><b>created_at</b></td>
+      <td>The time at which the interaction was created in the DB.</td>
+      </tr>
+      <tr>
+      <td>35.</td>
+      <td>~</td>
+      <td>~</td>
+      <td><b>updated_at</b></td>
+      <td>The time at which the interaction was last updated.</td>
+      </tr>
+      <tr>
+      <td>36.</td>
+      <td>callTime</td>
+      <td>The start timestamp of the call (meeting) in Unix time format in milliseconds.</td>
+      <td><b>interaction_start_time</b></td>
+      <td>The start timestamp of the interaction in ISO time format.</td>
+      </tr>
+      <tr>
+      <td>37.</td>
+      <td>callMetadata</td>
+      <td>This contains all the call(meeting) metadata which is used to create filters and present in call info.</td>
+      <td><b>interaction_meta_data</b></td>
+      <td>This contains all the interaction metadata which is used to create filters and present in interaction info.</td>
+      </tr>
+      </table>
+
+x-tagGroups:
+  - name: Reporting APIs
+    tags:
+      - ReportingService-Overview
+      - Authentication
+      - Interactions
+      - Summary
+      - Evaluations
+      - Coachings
+      - Ack Dispute Flow
+      - CallsReportVsInteractions
+      - ReleaseNotes
+  - name: DSR APIs
+    tags:
+      - DSR-Overview
+      - DSR
+      - DSR Release Notes
+  - name: Bulk Export
+    tags:
+      - Bulk-Export-Overview
+      - Bulk-Export-Data-Definitions
+servers:
+  - url: https://{base_url}
+    description: Generated server url, where `{base_url}` corresponds to the specific cluster's base URL.
+paths:
+  "/v1/oauth/token":
+    post:
+      tags:
+        - Authentication
+      operationId: Create Auth Token
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/OauthTokenRequest"
+      consumes:
+        - application/json
+      produces:
+        - '*/*'
+      parameters:
+        - in: body
+          name: oauthTokenRequest
+          description: oauthTokenRequest
+          required: true
+          schema:
+            $ref: '#/components/schemas/OauthTokenRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            "*/*":
+              schema:
+                "$ref": '#/components/schemas/OauthTokenResponse'
+              examples:
+                '0':
+                  value: >-
+                    {"auth_token":"", "expires_in":7200 (in seconds)}
+        '401':
+          description: Unauthorized
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+              examples:
+                '0':
+                  value: >-
+                    {"error_code": "auth_token_error",
+                    "error_description": "Invalid/Inactive Credentials"}
+        '403':
+          description: Forbidden
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+        '404':
+          description: Not Found
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+  "/v1/dsr/delete/on-demand":
+    post:
+      tags:
+        - DSR
+      summary: Submit DSR deletion request
+      operationId: Create Dsr Delete Request
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/DsrDeleteRequest"
+            examples:
+              '0':
+                value:
+                  entity_type: TRANSCRIPT
+                  rules:
+                    - type: OAI_METADATA
+                      name: Region
+                      values:
+                        - UK
+                    - type: CUSTOMER_METADATA
+                      name: Campaign
+                      values:
+                        - iPhone
+      responses:
+        '200':
+          description: OK
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/DsrDeleteResponse"
+              examples:
+                '0':
+                  value:
+                    job_id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+                    status: QUEUED
+                    message: Deletion job accepted and queued for processing.
+                    requested_at: "2025-12-04T08:00:00Z"
+                    expected_completion_by: "2026-01-03T08:00:00Z"
+        '400':
+          description: Bad Request
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+              examples:
+                '0':
+                  value:
+                    error_code: bad_request
+                    error_description: Entity type is not supported
+        '401':
+          description: Unauthorized
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+        '403':
+          description: Forbidden
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+        '500':
+          description: Internal Server Error
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+  "/v1/dsr/delete/{job_id}/status":
+    get:
+      tags:
+        - DSR
+      summary: Get DSR deletion status
+      operationId: Get Dsr Delete Status
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: job_id
+          required: true
+          schema:
+            type: string
+          description: Job ID returned by the delete request
+      responses:
+        '200':
+          description: OK
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/DsrStatusResponse"
+              examples:
+                '0':
+                  value:
+                    request_id: "2a7c7e37-7a65-4d6f-9b2b-3b421b3b45ab"
+                    status: PROGRESS
+                    status_message: null
+        '400':
+          description: Bad Request
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+        '401':
+          description: Unauthorized
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+        '403':
+          description: Forbidden
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+        '500':
+          description: Internal Server Error
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+  "/v1/data/reports/interactions":
+    post:
+      tags:
+        - Interactions
+      operationId: Create Interaction Request
+      parameters:
+        - "$ref": "#/components/parameters/Page"
+        - "$ref": "#/components/parameters/InteractionsSize"
+        - "$ref": "#/components/parameters/IncludeTranscript"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/RawJobRequest"
+      responses:
+        '200':
+          description: Ok
+          content:
+            "/*":
+              schema:
+                "$ref": "#/components/schemas/PostJobResponse"
+              examples:
+                '0':
+                  value: >-
+                    {"request_id":"3058bc09-f9fc-4586-bc7c-498b95a63ec2",<br>"start_date":"2022-03-03T00:00:12.000+00:00","end_date":"2022-04-04T00:16:00.000+00:00","status":"INPROGRESS"}
+        '400':
+          description: Bad Request
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+              examples:
+                '0':
+                  value: >-
+                    {"error_code":"bad_request","error_description":"similar job
+                    already exists with request id
+                    3058bc09-b974-4468-ae1f-f7b9b28067f1"}
+        '401':
+          description: Unauthorized
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+              examples:
+                '0':
+                  value: >-
+                    {"error_code": "auth_token_error",
+                    "error_description": "invalid auth token"}
+        '403':
+          description: Access Denied
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+              examples:
+                '0':
+                  value: >-
+                    {"error_code":"access_denied","error_description":"unauthorized_user"}
+        '404':
+          description: Request Not Found
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+              examples:
+                '0':
+                  value: >-
+                    {"timestamp":"2022-05-12T06:27:39.587+00:00","status":404,"error":"Not
+                    Found","message":"No message
+                    available","path":"/v1/data/reports/interaction"}
+        '405':
+          description: Method Not Allowed
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+              examples:
+                '0':
+                  value: >-
+                    {"timestamp": "2022-05-17T04:21:37.669+00:00",
+                    "status": 405,
+                    "error": "Method Not Allowed",
+                    "message": "Request method 'GET' not supported",
+                    "path": "/v1/data/reports/interactions"}
+        '429':
+          description: Rate Limit Exceeded
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/RateLimitMessage"
+
+              examples:
+                '0':
+                  value: |-
+                    {"message": "API rate limit exceeded"}
+        '500':
+          description: Internal Server Error
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+  "/v2/data/reports/interactions":
+    post:
+      tags:
+        - Summary
+      operationId: Create Summaries Request
+      parameters:
+        - "$ref": "#/components/parameters/Page"
+        - "$ref": "#/components/parameters/InteractionsSize"
+        - "$ref": "#/components/parameters/IncludeTranscript"
+        - "$ref": "#/components/parameters/IncludeSummary"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/RawJobRequest"
+      responses:
+        '200':
+          description: Ok
+          content:
+            "/*":
+              schema:
+                "$ref": "#/components/schemas/PostJobResponse"
+              examples:
+                '0':
+                  value: >-
+                    {"request_id":"3058bc09-f9fc-4586-bc7c-498b95a63ec2",<br>"start_date":"2022-03-03T00:00:12.000+00:00","end_date":"2022-04-04T00:16:00.000+00:00","status":"INPROGRESS"}
+        '400':
+          description: Bad Request
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+              examples:
+                '0':
+                  value: >-
+                    {"error_code":"bad_request","error_description":"similar job
+                    already exists with request id
+                    3058bc09-b974-4468-ae1f-f7b9b28067f1"}
+        '401':
+          description: Unauthorized
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+              examples:
+                '0':
+                  value: >-
+                    {"error_code": "auth_token_error",
+                    "error_description": "invalid auth token"}
+        '403':
+          description: Access Denied
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+              examples:
+                '0':
+                  value: >-
+                    {"error_code":"access_denied","error_description":"unauthorized_user"}
+        '404':
+          description: Request Not Found
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+              examples:
+                '0':
+                  value: >-
+                    {"timestamp":"2022-05-12T06:27:39.587+00:00","status":404,"error":"Not
+                    Found","message":"No message
+                    available","path":"/v1/data/reports/interaction"}
+        '405':
+          description: Method Not Allowed
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+              examples:
+                '0':
+                  value: >-
+                    {"timestamp": "2022-05-17T04:21:37.669+00:00",
+                    "status": 405,
+                    "error": "Method Not Allowed",
+                    "message": "Request method 'GET' not supported",
+                    "path": "/v1/data/reports/interactions"}
+        '429':
+          description: Rate Limit Exceeded
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/RateLimitMessage"
+
+              examples:
+                '0':
+                  value: |-
+                    {"message": "API rate limit exceeded"}
+        '500':
+          description: Internal Server Error
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+  "/v1/data/reports/evaluations":
+    post:
+      tags:
+        - Evaluations
+      operationId: Create Evaluation Request
+      parameters:
+        - "$ref": "#/components/parameters/Page"
+        - "$ref": "#/components/parameters/Size"
+        - "$ref": "#/components/parameters/EvaluationType"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/RawJobRequest"
+      responses:
+        '200':
+          description: Ok
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/PostJobResponse"
+              examples:
+                '0':
+                  value: >-
+                    {"request_id":"3058bc09-f9fc-4586-bc7c-498b95a63ec2","start_date":"2022-03-03T00:00:12.000+00:00","end_date":"2022-04-04T00:16:00.000+00:00","status":"INPROGRESS"}
+        '400':
+          description: Bad Request
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+              examples:
+                '0':
+                  value: >-
+                    {"error_code":"bad_request","error_description":"similar job
+                    already exists with request id
+                    3058bc09-b974-4468-ae1f-f7b9b28067f1"}
+        '401':
+          description: Unauthorized
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+              examples:
+                '0':
+                  value: >-
+                    {"error_code": "auth_token_error",
+                    "error_description": "invalid auth token"}
+        '403':
+          description: Access Denied
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+              examples:
+                '0':
+                  value: >-
+                    {"error_code":"access_denied","error_description":"unauthorized_user"}
+        '404':
+          description: Request Not found
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+              examples:
+                '0':
+                  value: >-
+                    {"timestamp":"2022-05-12T06:27:39.587+00:00","status":404,"error":"Not
+                    Found","message":"No message
+                    available","path":"/v1/data/reports/evaluation"}
+        '405':
+          description: Method Not Allowed
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+              examples:
+                '0':
+                  value: >-
+                    {"timestamp": "2022-05-17T04:21:37.669+00:00",
+                    "status": 405,
+                    "error": "Method Not Allowed",
+                    "message": "Request method 'GET' not supported",
+                    "path": "/v1/data/reports/evaluations"}
+        '429':
+          description: Rate Limit Exceeded
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/RateLimitMessage"
+              examples:
+                '0':
+                  value: |-
+                    {"message": "API rate limit exceeded"}
+        '500':
+          description: Internal Server Error
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+  "/v1/data/reports/coachings":
+    post:
+      tags:
+        - Coachings
+      operationId: Create Coaching Request
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/RawJobRequest"
+      responses:
+        '200':
+          description: Ok
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/PostJobResponse"
+              examples:
+                '0':
+                  value: >-
+                    {"request_id":"3058bc09-f9fc-4586-bc7c-498b95a63ec2","start_date":"2022-03-03T00:00:12.000+00:00","end_date":"2022-04-04T00:16:00.000+00:00","status":"INPROGRESS"}
+        '400':
+          description: Bad Request
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+              examples:
+                '0':
+                  value: >-
+                    {"error_code":"bad_request","error_description":"similar job
+                    already exists with request id
+                    3058bc09-b974-4468-ae1f-f7b9b28067f1"}
+        '401':
+          description: Unauthorized
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+              examples:
+                '0':
+                  value: >-
+                    {"error_code": "auth_token_error",
+                    "error_description": "invalid auth token"}
+        '403':
+          description: Access Denied
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+              examples:
+                '0':
+                  value: >-
+                    {"error_code":"access_denied","error_description":"unauthorized_user"}
+        '404':
+          description: Request Not Found
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+              examples:
+                '0':
+                  value: >-
+                    {"timestamp":"2022-05-12T06:27:39.587+00:00","status":404,"error":"Not
+                    Found","message":"No message
+                    available","path":"/v1/data/reports/coaching"}
+        '405':
+          description: Method Not Allowed
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+              examples:
+                '0':
+                  value: >-
+                    {"timestamp": "2022-05-17T04:21:37.669+00:00",
+                    "status": 405,
+                    "error": "Method Not Allowed",
+                    "message": "Request method 'GET' not supported",
+                    "path": "/v1/data/reports/evaluations"}
+        '429':
+          description: Rate Limit Exceeded
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/RateLimitMessage"
+              examples:
+                '0':
+                  value: |-
+                    {"message": "API rate limit exceeded"}
+        '500':
+          description: Internal Server Error
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+  "/v1/data/reports/evaluation/ackdisputedetails":
+    post:
+      tags:
+        - Ack Dispute Flow
+      operationId: Create Ack Dispute Request
+      parameters:
+        - "$ref": "#/components/parameters/Page"
+        - "$ref": "#/components/parameters/Size"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/RawJobRequest"
+      responses:
+        '200':
+          description: Ok
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/PostJobResponse"
+              examples:
+                '0':
+                  value: >-
+                    {"request_id":"3058bc09-f9fc-4586-bc7c-498b95a63ec2","start_date":"2022-03-03T00:00:12.000+00:00","end_date":"2022-04-04T00:16:00.000+00:00","status":"INPROGRESS"}
+        '400':
+          description: Bad Request
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+              examples:
+                '0':
+                  value: >-
+                    {"error_code":"bad_request","error_description":"similar job
+                    already exists with request id
+                    3058bc09-b974-4468-ae1f-f7b9b28067f1"}
+        '401':
+          description: Unauthorized
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+              examples:
+                '0':
+                  value: >-
+                    {"error_code": "auth_token_error",
+                    "error_description": "invalid auth token"}
+        '403':
+          description: Access Denied
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+              examples:
+                '0':
+                  value: >-
+                    {"error_code":"access_denied","error_description":"unauthorized_user"}
+        '404':
+          description: Request Not found
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+              examples:
+                '0':
+                  value: >-
+                    {"timestamp":"2022-05-12T06:27:39.587+00:00","status":404,"error":"Not
+                    Found","message":"No message
+                    available","path":"/v1/data/reports/evaluation"}
+        '405':
+          description: Method Not Allowed
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+              examples:
+                '0':
+                  value: >-
+                    {"timestamp": "2022-05-17T04:21:37.669+00:00",
+                    "status": 405,
+                    "error": "Method Not Allowed",
+                    "message": "Request method 'GET' not supported",
+                    "path": "/v1/data/reports/evaluations"}
+        '429':
+          description: Rate Limit Exceeded
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/RateLimitMessage"
+              examples:
+                '0':
+                  value: |-
+                    {"message": "API rate limit exceeded"}
+        '500':
+          description: Internal Server Error
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+  "/v1/data/reports/evaluation/ackdisputedetails/{request_id}":
+    get:
+      tags:
+        - Ack Dispute Flow
+      operationId: Get Ack Dispute Details
+      parameters:
+        - name: request_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: |
+            Report field Description:
+            <table>
+              <tr>
+                <th>Param Name</th>
+                <th>Type</th>
+                <th>Description</th>
+              </tr>
+              <tr>
+                <td>page</td>
+                <td>integer</td>
+                <td>The current page number of the response from the total response present between the given date range</td>
+              </tr>
+              <tr>
+                <td>size</td>
+                <td>integer</td>
+                <td>Number of interactions present in the current page</td>
+              </tr>
+              <tr>
+                <td>total_pages</td>
+                <td>integer</td>
+                <td>Total number of pages present for the given date range.</td>
+              </tr>
+              <tr>
+                <td>total_size</td>
+                <td>integer</td>
+                <td>Total number of interactions present for the given date range.</td>
+              </tr>
+              <tr>
+                <td>ack_dispute_details</td>
+                <td>List</td>
+                <td>List of all the Evaluations with Ack Dispute Details.</td>
+              </tr>
+              <tr>
+                <td>evaluation_id</td>
+                <td>String</td>
+                <td>ID of the evaluation.</td>
+              </tr>
+              <tr>
+                <td>evaluation_form_id</td>
+                <td>String</td>
+                <td>ID of the template/evaluation form.</td>
+              </tr>
+              <tr>
+                <td>ack_status</td>
+                <td>String</td>
+                <td>
+                  Captures current status of Evaluation form in the Acknowledgement-Dispute workflow
+                  <ul>
+                  <li>NOT_INITIATED - Evaluation form is submitted without initiating for Acknowledgement</li>
+                  <li>AWAITING_ACK - Agent has been notified of Evaluation. Acknowledgement pending from Agent</li>
+                  <li>ACKED - Agent Acknowledged the Evaluation</li>
+                  <li>IN_DISPUTE - Dispute raised(typically by Agent or Supervisor) on Evaluation form and awaiting resolution</li>
+                  <li>DISPUTE_ACCEPTED - Dispute has been accepted by resolver(typically QA Analyst/QA Manager)</li>
+                  <li>DISPUTE_PARTIAL - Dispute has been partially accepted by resolver(typically QA Analyst/QA Manager)</li>
+                  <li>DISPUTE_REJECTED - Dispute has been rejected  by resolver(typically QA Analyst/QA Manager)</li>
+                  </ul>
+                </td>
+              </tr>
+              <tr>
+                <td>timeline</td>
+                <td>List</td>
+                <td>List of timelines in the given time range for this particular evaluation id.</td>
+              </tr>
+              <tr>
+                <td>timeline.time</td>
+                <td>String</td>
+                <td>Timestamp of the timeline.</td>
+              </tr>
+              <tr>
+                <td>timeline.comment</td>
+                <td>String</td>
+                <td>Comment.</td>
+              </tr>
+              <tr>
+                <td>timeline.score_info</td>
+                <td>Object</td>
+                <td>Status of the Evaluation Form in this timeline.</td>
+              </tr>
+              <tr>
+                <td>timeline.disputed_questions</td>
+                <td>Object</td>
+                <td>Disputed Questions of the Evaluation Form in this timeline.</td>
+              </tr>
+              <tr>
+                <td>timeline.dispute_resolved_questions</td>
+                <td>Object</td>
+                <td>Dispute Resolved Questions of the Evaluation Form in this timeline.</td>
+              </tr>
+              <tr>
+                <td>timeline.dispute_partial_resolved_questions</td>
+                <td>Object</td>
+                <td>Dispute Partial Resolved Questions of the Evaluation Form in this timeline.</td>
+              </tr>
+              <tr>
+                <td>timeline.dispute_shared_with</td>
+                <td>List</td>
+                <td>List of users to whome Dispute was shared.</td>
+              </tr>
+              <tr>
+                <td>scoreinfo.prebonus_score</td>
+                <td>double</td>
+                <td>Prebonus Score for the Evaluation.</td>
+              </tr>
+              <tr>
+                <td>scoreinfo.bonus</td>
+                <td>double</td>
+                <td>Bonus for the Evaluation.</td>
+              </tr>
+              <tr>
+                <td>scoreinfo.penalty</td>
+                <td>double</td>
+                <td>Penalty for the Evaluation.</td>
+              </tr>
+              <tr>
+                <td>scoreinfo.obtained_score</td>
+                <td>double</td>
+                <td>Obtained Score for the Evaluation.</td>
+              </tr>
+              <tr>
+                <td>scoreinfo.total_score</td>
+                <td>double</td>
+                <td>Total Score for the Evaluation.</td>
+              </tr>
+              <tr>
+                <td>scoreinfo.result</td>
+                <td>Object</td>
+                <td>Result for the Evaluation.</td>
+              </tr>
+              <tr>
+                <td>scoreinfo.calculated_score</td>
+                <td>Object</td>
+                <td>Calculated Score for the Evaluation.</td>
+              </tr>
+              <tr>
+                <td>qaquestionresponse.question_id</td>
+                <td>String</td>
+                <td>Question ID.</td>
+              </tr>
+              <tr>
+                <td>qaquestionresponse.selected_option</td>
+                <td>List</td>
+                <td>Selected options for each question.</td>
+              </tr>
+              <tr>
+                <td>qaquestionresponse.obtained_score</td>
+                <td>List</td>
+                <td>Score obtained for each question.</td>
+              </tr>
+              <tr>
+                <td>qaquestionresponse.comment</td>
+                <td>String</td>
+                <td>Comment.</td>
+              </tr>
+              <tr>
+                <td>qaquestionresponse.is_fail</td>
+                <td>integer</td>
+                <td>If that Agent has failed that question or not.</td>
+              </tr>
+              <tr>
+                <td>qaquestionresponse.is_auto_fail</td>
+                <td>integer</td>
+                <td>Is autofail</td>
+              </tr>
+              <tr>
+                <td>qaquestionresponse.visibility_logic_applied</td>
+                <td>integer</td>
+                <td>Is visibility logic applied.</td>
+              </tr>
+            </table>
+
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/GetJobResponse"
+              examples:
+                '0':
+                  value: >-
+                    {"start_date":"2022-03-03T00:00:12.000+00:00","end_date":"2022-04-04T00:14:00.000+00:00","status":"COMPLETED","url":"https://e2e-data-out.s3.amazonaws.com/reports/ackdispute/3058bc09-6d4d-4f22-9f69-6992f3520e56.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20220510T045319Z&X-Amz-SignedHeaders=host&X-Amz-Expires=86400&X-Amz-Credential=YOUR_AWS_ACCESS_KEY_ID%2FYYYYMMDD%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Signature=YOUR_AWS_SIGNATURE_PLACEHOLDER"}
+        '400':
+          description: Bad Request
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+        '401':
+          description: Unauthorized
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+              examples:
+                '0':
+                  value: >-
+                    {"error_code": "auth_token_error",
+                    "error_description": "invalid auth token"}
+        '403':
+          description: Access Denied
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+              examples:
+                '0':
+                  value: >-
+                    {"error_code":"access_denied","error_description":"unauthorized_user"}
+        '404':
+          description: Not Found
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+              examples:
+                '0':
+                  value: >-
+                    {"error_code":"resource_not_found","error_description":"jobId
+                    3058bc09-da96-490c-824f-f42646160f0a of type INTERACTION not
+                    found or does not belong to the account"}
+                '1':
+                  value: >-
+                    {"timestamp": "2022-05-17T04:23:16.247+00:00",
+                    "status": 404,
+                    "error": "Not Found",
+                    "message": "No message available",
+                    "path": "/v1/data/reports/interaction/489690ba-1a58-44f3-9674-b5be9768d313"}
+        '405':
+          description: Method Not Allowed
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+              examples:
+                '0':
+                  value: >-
+                    {"timestamp": "2022-05-17T04:21:37.669+00:00",
+                    "status": 405,
+                    "error": "Method Not Allowed",
+                    "message": "Request method 'POST' not supported",
+                    "path": "/v1/data/reports/interactioms/3058bc09-da96-490c-824f-f42646160f0a"}
+        '429':
+          description: Rate Limit Exceeded
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/RateLimitMessage"
+              examples:
+                '0':
+                  value: |-
+                    {"message": "API rate limit exceeded"}
+        '500':
+          description: Internal Server Error
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+  "/v1/data/reports/evaluation/ackdisputedetails/ids":
+    post:
+      tags:
+        - Ack Dispute Flow
+      operationId: Get Ack Dispute Details By Ids
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/AckDisputeFlowRequestIds"
+      responses:
+        '200':
+          description: |
+            Report field Description:
+            <table>
+              <tr>
+                <th>Param Name</th>
+                <th>Type</th>
+                <th>Description</th>
+              </tr>
+              <tr>
+                <td>page</td>
+                <td>integer</td>
+                <td>The current page number of the response from the total response present between the given date range</td>
+              </tr>
+              <tr>
+                <td>size</td>
+                <td>integer</td>
+                <td>Number of interactions present in the current page</td>
+              </tr>
+              <tr>
+                <td>total_pages</td>
+                <td>integer</td>
+                <td>Total number of pages present for the given date range.</td>
+              </tr>
+              <tr>
+                <td>total_size</td>
+                <td>integer</td>
+                <td>Total number of interactions present for the given date range.</td>
+              </tr>
+              <tr>
+                <td>ack_dispute_details</td>
+                <td>List</td>
+                <td>List of all the Evaluations with Ack Dispute Details.</td>
+              </tr>
+              <tr>
+                <td>evaluation_id</td>
+                <td>String</td>
+                <td>ID of the evaluation.</td>
+              </tr>
+              <tr>
+                <td>evaluation_form_id</td>
+                <td>String</td>
+                <td>ID of the template/evaluation form.</td>
+              </tr>
+              <tr>
+                <td>ack_status</td>
+                <td>String</td>
+                <td>
+                  Captures current status of Evaluation form in the Acknowledgement-Dispute workflow
+                  <ul>
+                  <li>NOT_INITIATED - Evaluation form is submitted without initiating for Acknowledgement</li>
+                  <li>AWAITING_ACK - Agent has been notified of Evaluation. Acknowledgement pending from Agent</li>
+                  <li>ACKED - Agent Acknowledged the Evaluation</li>
+                  <li>IN_DISPUTE - Dispute raised(typically by Agent or Supervisor) on Evaluation form and awaiting resolution</li>
+                  <li>DISPUTE_ACCEPTED - Dispute has been accepted by resolver(typically QA Analyst/QA Manager)</li>
+                  <li>DISPUTE_PARTIAL - Dispute has been partially accepted by resolver(typically QA Analyst/QA Manager)</li>
+                  <li>DISPUTE_REJECTED - Dispute has been rejected  by resolver(typically QA Analyst/QA Manager)</li>
+                  </ul>
+                </td>
+              </tr>
+              <tr>
+                <td>timeline</td>
+                <td>List</td>
+                <td>List of timelines in the given time range for this particular evaluation id.</td>
+              </tr>
+              <tr>
+                <td>timeline.time</td>
+                <td>String</td>
+                <td>Timestamp of the timeline.</td>
+              </tr>
+              <tr>
+                <td>timeline.comment</td>
+                <td>String</td>
+                <td>Comment.</td>
+              </tr>
+              <tr>
+                <td>timeline.score_info</td>
+                <td>Object</td>
+                <td>Status of the Evaluation Form in this timeline.</td>
+              </tr>
+              <tr>
+                <td>timeline.disputed_questions</td>
+                <td>Object</td>
+                <td>Disputed Questions of the Evaluation Form in this timeline.</td>
+              </tr>
+              <tr>
+                <td>timeline.dispute_resolved_questions</td>
+                <td>Object</td>
+                <td>Dispute Resolved Questions of the Evaluation Form in this timeline.</td>
+              </tr>
+              <tr>
+                <td>timeline.dispute_partial_resolved_questions</td>
+                <td>Object</td>
+                <td>Dispute Partial Resolved Questions of the Evaluation Form in this timeline.</td>
+              </tr>
+              <tr>
+                <td>timeline.dispute_shared_with</td>
+                <td>List</td>
+                <td>List of users to whome Dispute was shared.</td>
+              </tr>
+              <tr>
+                <td>scoreinfo.prebonus_score</td>
+                <td>double</td>
+                <td>Prebonus Score for the Evaluation.</td>
+              </tr>
+              <tr>
+                <td>scoreinfo.bonus</td>
+                <td>double</td>
+                <td>Bonus for the Evaluation.</td>
+              </tr>
+              <tr>
+                <td>scoreinfo.penalty</td>
+                <td>double</td>
+                <td>Penalty for the Evaluation.</td>
+              </tr>
+              <tr>
+                <td>scoreinfo.obtained_score</td>
+                <td>double</td>
+                <td>Obtained Score for the Evaluation.</td>
+              </tr>
+              <tr>
+                <td>scoreinfo.total_score</td>
+                <td>double</td>
+                <td>Total Score for the Evaluation.</td>
+              </tr>
+              <tr>
+                <td>scoreinfo.result</td>
+                <td>Object</td>
+                <td>Result for the Evaluation.</td>
+              </tr>
+              <tr>
+                <td>scoreinfo.calculated_score</td>
+                <td>Object</td>
+                <td>Calculated Score for the Evaluation.</td>
+              </tr>
+              <tr>
+                <td>qaquestionresponse.question_id</td>
+                <td>String</td>
+                <td>Question ID.</td>
+              </tr>
+              <tr>
+                <td>qaquestionresponse.selected_option</td>
+                <td>List</td>
+                <td>Selected options for each question.</td>
+              </tr>
+              <tr>
+                <td>qaquestionresponse.obtained_score</td>
+                <td>List</td>
+                <td>Score obtained for each question.</td>
+              </tr>
+              <tr>
+                <td>qaquestionresponse.comment</td>
+                <td>String</td>
+                <td>Comment.</td>
+              </tr>
+              <tr>
+                <td>qaquestionresponse.is_fail</td>
+                <td>integer</td>
+                <td>If that Agent has failed that question or not.</td>
+              </tr>
+              <tr>
+                <td>qaquestionresponse.is_auto_fail</td>
+                <td>integer</td>
+                <td>Is autofail</td>
+              </tr>
+              <tr>
+                <td>qaquestionresponse.visibility_logic_applied</td>
+                <td>integer</td>
+                <td>Is visibility logic applied.</td>
+              </tr>
+            </table>
+
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/GetJobResponse"
+              examples:
+                '0':
+                  value: >-
+                    {"start_date":"2022-03-03T00:00:12.000+00:00","end_date":"2022-04-04T00:14:00.000+00:00","status":"COMPLETED","url":"https://e2e-data-out.s3.amazonaws.com/reports/ackdispute/3058bc09-6d4d-4f22-9f69-6992f3520e56.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20220510T045319Z&X-Amz-SignedHeaders=host&X-Amz-Expires=86400&X-Amz-Credential=YOUR_AWS_ACCESS_KEY_ID%2FYYYYMMDD%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Signature=YOUR_AWS_SIGNATURE_PLACEHOLDER"}
+        '400':
+          description: Bad Request
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+        '401':
+          description: Unauthorized
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+              examples:
+                '0':
+                  value: >-
+                    {"error_code": "auth_token_error",
+                    "error_description": "invalid auth token"}
+        '403':
+          description: Access Denied
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+              examples:
+                '0':
+                  value: >-
+                    {"error_code":"access_denied","error_description":"unauthorized_user"}
+        '404':
+          description: Not Found
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+              examples:
+                '0':
+                  value: >-
+                    {"error_code":"resource_not_found","error_description":"jobId
+                    3058bc09-da96-490c-824f-f42646160f0a of type INTERACTION not
+                    found or does not belong to the account"}
+                '1':
+                  value: >-
+                    {"timestamp": "2022-05-17T04:23:16.247+00:00",
+                    "status": 404,
+                    "error": "Not Found",
+                    "message": "No message available",
+                    "path": "/v1/data/reports/interaction/489690ba-1a58-44f3-9674-b5be9768d313"}
+        '405':
+          description: Method Not Allowed
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+              examples:
+                '0':
+                  value: >-
+                    {"timestamp": "2022-05-17T04:21:37.669+00:00",
+                    "status": 405,
+                    "error": "Method Not Allowed",
+                    "message": "Request method 'POST' not supported",
+                    "path": "/v1/data/reports/interactioms/3058bc09-da96-490c-824f-f42646160f0a"}
+        '429':
+          description: Rate Limit Exceeded
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/RateLimitMessage"
+              examples:
+                '0':
+                  value: |-
+                    {"message": "API rate limit exceeded"}
+        '500':
+          description: Internal Server Error
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+  "/v1/data/reports/interactions/{request_id}":
+    get:
+      tags:
+        - Interactions
+      operationId: Get Interactions
+      parameters:
+        - name: request_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: |
+            Report field Description:
+            <table>
+              <tr>
+                <th>Param Name</th>
+                <th>Type</th>
+                <th>Description</th>
+              </tr>
+              <tr>
+                <td>page</td>
+                <td>integer</td>
+                <td>The current page number of the response from the total response present between the given date range</td>
+              </tr>
+              <tr>
+                <td>size</td>
+                <td>integer</td>
+                <td>Number of interactions present in the current page</td>
+              </tr>
+              <tr>
+                <td>total_pages</td>
+                <td>integer</td>
+                <td>Total number of pages present for the given date range.</td>
+              </tr>
+              <tr>
+                <td>total_size</td>
+                <td>integer</td>
+                <td>Total number of interactions present for the given date range.</td>
+              </tr>
+              <tr>
+                <td>interactions</td>
+                <td>List</td>
+                <td>This is the list of interactions (call, chat, external) included in the report. Each interaction in this list is associated with an interaction ID. Inside of each interactions following fields can be found.</td>
+              </tr>
+              <tr>
+                <td>id</td>
+                <td>String</td>
+                <td>This id represents the id of that particular interaction</td>
+              </tr>
+              <tr>
+                <td>account_id</td>
+                <td>String</td>
+                <td>This id represents the id of that particular account.</td>
+              </tr>
+              <tr>
+                <td>agent_id</td>
+                <td>String</td>
+                <td>This id represents the id of the agent who has participated in that particular interaction.</td>
+              </tr>
+              <tr>
+                <td>partner_agent_id</td>
+                <td>String</td>
+                <td>This id represents the id of the agent who has participated in that particular interaction in the client system.</td>
+              </tr>
+              <tr>
+                <td>agent_name</td>
+                <td>String</td>
+                <td>The name of the agent who has participated in that particular interaction.</td>
+              </tr>
+              <tr>
+                <td>agent_email</td>
+                <td>String</td>
+                <td>The email of the agent who has participated in that particular interaction.</td>
+              </tr>
+              <tr>
+                <td>agent_status</td>
+                <td>String</td>
+                <td>This is a String field which depicts if the agent is active or not. (ACTIVE or IN_ACTIVE).</td>
+              </tr>
+              <tr>
+                <td>interaction_url</td>
+                <td>String</td>
+                <td>This field represents the url for the particular interaction.</td>
+              </tr>
+              <tr>
+                <td>duration</td>
+                <td>integer</td>
+                <td>This is an integer field which represents how much time (seconds) did the interaction happen.</td>
+              </tr>
+              <tr>
+                <td>source_partner_meeting_id</td>
+                <td>String</td>
+                <td>Incase of split interactions, source_partner_meeting_id is the unique identifier for the interaction before split. source_partner_meeting_id is same as unique identifier in the client system.</td>
+              </tr>
+              <tr>
+                <td>sequence</td>
+                <td>Integer</td>
+                <td>Incase of split interactions, the value of sequence signifies the position of this interaction post split. (Zero based index)</td>
+              </tr>
+              <tr>
+                <td>language</td>
+                <td>String</td>
+                <td>This is a field which represents in which language did the communication happen during the interaction.</td>
+              </tr>
+              <tr>
+                <td>channel</td>
+                <td>String</td>
+                <td>This field represents the type of interaction. (CALL, CHAT, EXTERNAL etc).</td>
+              </tr>
+              <tr>
+                <td>provider_id</td>
+                <td>String</td>
+                <td>The id which originates from the source recording platform.</td>
+              </tr>
+              <tr>
+                <td>transcripts</td>
+                <td>List</td>
+                <td>The list of transcripts of an interaction divided by speaker. The fields under the transcripts are:</td>
+              </tr>
+              <tr>
+                <td>transcripts.phrase</td>
+                <td>String</td>
+                <td>A snippet from the transcript corresponding to one of the two speakers.</td>
+              </tr>
+              <tr>
+                <td>transcripts.speaker</td>
+                <td>String</td>
+                <td>This is the speaker of the phrase - Agent or customer.</td>
+              </tr>
+              <tr>
+                <td>transcripts.start_time</td>
+                <td>integer</td>
+                <td>The phrase start time in milliseconds.</td>
+              </tr>
+              <tr>
+                <td>transcripts.end_time</td>
+                <td>integer</td>
+                <td>The phrase end time in milliseconds.</td>
+              </tr>
+              <tr>
+                <td>transcripts.order</td>
+                <td>integer</td>
+                <td>The position of each phrase in a transcript.</td>
+              </tr>
+              <tr>
+                <td>moment_categories</td>
+                <td>List</td>
+                <td>The list of moment categories contains all the moment categories found in the interactions. The fields under the moment categories are:</td>
+              </tr>
+              <tr>
+                <td>moment_categories.moment_category_id</td>
+                <td>String</td>
+                <td>This id represents that particular moment_category.</td>
+              </tr>
+              <tr>
+                <td>moment_categories.moment_category_name</td>
+                <td>String</td>
+                <td>The name of the particular moment_category.</td>
+              </tr>
+              <tr>
+                <td>moment_categories.moments</td>
+                <td>List</td>
+                <td>The list of moments present under a particular moment category. The fields under the moment are:</td>
+              </tr>
+              <tr>
+                <td>moments.moment_id</td>
+                <td>String</td>
+                <td>The id which represents that particular moment.</td>
+              </tr>
+              <tr>
+                <td>moments.moment_name</td>
+                <td>String</td>
+                <td>The moment name as configured in the Observe.AI userinterface in the 'Moments' tab.</td>
+              </tr>
+              <tr>
+                <td>moments.snippets</td>
+                <td>List</td>
+                <td>The list of phrases from a transcript in which momentswere found. Inside This snippets there are four more fields:</td>
+              </tr>
+              <tr>
+                <td>moments.moment_theme</td>
+                <td>String</td>
+                <td>The moment theme - Positive/Negative/Neutral as configured in the Observe.AI userinterface in the ‘Moments’ tab.</td>
+              </tr>
+              <tr>
+                <td>snippets.evidence</td>
+                <td>String</td>
+                <td>The actual phrase or keyword that matches amoment's criteria.</td>
+              </tr>
+              <tr>
+                <td>snippets.start_time</td>
+                <td>integer</td>
+                <td>The phrase start time in milliseconds.</td>
+              </tr>
+              <tr>
+                <td>snippets.end_time</td>
+                <td>integer</td>
+                <td>The phrase end time in milliseconds.</td>
+              </tr>
+              <tr>
+                <td>snippets.order</td>
+                <td>integer</td>
+                <td>The position of each phrase in a transcript.</td>
+              </tr>
+              <tr>
+                <td>moments.found</td>
+                <td>boolean</td>
+                <td>It determines whether the moment is found in the call or not.</td>
+              </tr>
+              <tr>
+                <td>created_at</td>
+                <td>Date</td>
+                <td>The time at which the interaction was created in the DB.</td>
+              </tr>
+              <tr>
+                <td>updated_at</td>
+                <td>Date</td>
+                <td>The time at which the interaction was last updated.</td>
+              </tr>
+              <tr>
+                <td>interaction_start_time</td>
+                <td>Date</td>
+                <td>The start timestamp of the interaction in ISO time format.</td>
+              </tr>
+              <tr>
+                <td>interaction_meta_data</td>
+                <td>(Key, Value) pair</td>
+                <td>This contains all the interaction metadata which is used to create filters and present in interaction info.</td>
+              </tr>
+            </table>
+
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/GetJobResponse"
+              examples:
+                '0':
+                  value: >-
+                    {"start_date":"2022-03-03T00:00:12.000+00:00","end_date":"2022-04-04T00:14:00.000+00:00","status":"COMPLETED","url":"https://e2e-data-out.s3.amazonaws.com/reports/interactions/3058bc09-6d4d-4f22-9f69-6992f3520e56.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20220510T045319Z&X-Amz-SignedHeaders=host&X-Amz-Expires=86400&X-Amz-Credential=YOUR_AWS_ACCESS_KEY_ID%2FYYYYMMDD%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Signature=YOUR_AWS_SIGNATURE_PLACEHOLDER"}
+        '400':
+          description: Bad Request
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+        '401':
+          description: Unauthorized
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+              examples:
+                '0':
+                  value: >-
+                    {"error_code": "auth_token_error",
+                    "error_description": "invalid auth token"}
+        '403':
+          description: Access Denied
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+              examples:
+                '0':
+                  value: >-
+                    {"error_code":"access_denied","error_description":"unauthorized_user"}
+        '404':
+          description: Not Found
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+              examples:
+                '0':
+                  value: >-
+                    {"error_code":"resource_not_found","error_description":"jobId
+                    3058bc09-da96-490c-824f-f42646160f0a of type INTERACTION not
+                    found or does not belong to the account"}
+                '1':
+                  value: >-
+                    {"timestamp": "2022-05-17T04:23:16.247+00:00",
+                    "status": 404,
+                    "error": "Not Found",
+                    "message": "No message available",
+                    "path": "/v1/data/reports/interaction/489690ba-1a58-44f3-9674-b5be9768d313"}
+        '405':
+          description: Method Not Allowed
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+              examples:
+                '0':
+                  value: >-
+                    {"timestamp": "2022-05-17T04:21:37.669+00:00",
+                    "status": 405,
+                    "error": "Method Not Allowed",
+                    "message": "Request method 'POST' not supported",
+                    "path": "/v1/data/reports/interactioms/3058bc09-da96-490c-824f-f42646160f0a"}
+        '429':
+          description: Rate Limit Exceeded
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/RateLimitMessage"
+              examples:
+                '0':
+                  value: |-
+                    {"message": "API rate limit exceeded"}
+        '500':
+          description: Internal Server Error
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+  "/v2/data/reports/interactions/{request_id}":
+    get:
+      tags:
+        - Summary
+      operationId: Get Summaries
+      parameters:
+        - name: request_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: |
+            Report field Description:
+            <table>
+              <tr>
+                <th>Param Name</th>
+                <th>Type</th>
+                <th>Description</th>
+              </tr>
+              <tr>
+                <td>page</td>
+                <td>integer</td>
+                <td>The current page number of the response from the total response present between the given date range</td>
+              </tr>
+              <tr>
+                <td>size</td>
+                <td>integer</td>
+                <td>Number of interactions present in the current page</td>
+              </tr>
+              <tr>
+                <td>total_pages</td>
+                <td>integer</td>
+                <td>Total number of pages present for the given date range.</td>
+              </tr>
+              <tr>
+                <td>total_size</td>
+                <td>integer</td>
+                <td>Total number of interactions present for the given date range.</td>
+              </tr>
+              <tr>
+                <td>interactions</td>
+                <td>List</td>
+                <td>This is the list of interactions (call, chat, external) included in the report. Each interaction in this list is associated with an interaction ID. Inside of each interactions following fields can be found.</td>
+              </tr>
+              <tr>
+                <td>id</td>
+                <td>String</td>
+                <td>This id represents the id of that particular interaction</td>
+              </tr>
+              <tr>
+                <td>account_id</td>
+                <td>String</td>
+                <td>This id represents the id of that particular account.</td>
+              </tr>
+              <tr>
+                <td>agent_id</td>
+                <td>String</td>
+                <td>This id represents the id of the agent who has participated in that particular interaction.</td>
+              </tr>
+              <tr>
+                <td>partner_agent_id</td>
+                <td>String</td>
+                <td>This id represents the id of the agent who has participated in that particular interaction in the client system.</td>
+              </tr>
+              <tr>
+                <td>agent_name</td>
+                <td>String</td>
+                <td>The name of the agent who has participated in that particular interaction.</td>
+              </tr>
+              <tr>
+                <td>agent_email</td>
+                <td>String</td>
+                <td>The email of the agent who has participated in that particular interaction.</td>
+              </tr>
+              <tr>
+                <td>agent_status</td>
+                <td>String</td>
+                <td>This is a String field which depicts if the agent is active or not. (ACTIVE or IN_ACTIVE).</td>
+              </tr>
+              <tr>
+                <td>interaction_url</td>
+                <td>String</td>
+                <td>This field represents the url for the particular interaction.</td>
+              </tr>
+              <tr>
+                <td>duration</td>
+                <td>integer</td>
+                <td>This is an integer field which represents how much time (seconds) did the interaction happen.</td>
+              </tr>
+              <tr>
+                <td>source_partner_meeting_id</td>
+                <td>String</td>
+                <td>Incase of split interactions, source_partner_meeting_id is the unique identifier for the interaction before split. source_partner_meeting_id is same as unique identifier in the client system.</td>
+              </tr>
+              <tr>
+                <td>sequence</td>
+                <td>Integer</td>
+                <td>Incase of split interactions, the value of sequence signifies the position of this interaction post split. (Zero based index)</td>
+              </tr>
+              <tr>
+                <td>language</td>
+                <td>String</td>
+                <td>This is a field which represents in which language did the communication happen during the interaction.</td>
+              </tr>
+              <tr>
+                <td>channel</td>
+                <td>String</td>
+                <td>This field represents the type of interaction. (CALL, CHAT, EXTERNAL etc).</td>
+              </tr>
+              <tr>
+                <td>provider_id</td>
+                <td>String</td>
+                <td>The id which originates from the source recording platform.</td>
+              </tr>
+              <tr>
+                <td>transcripts</td>
+                <td>List</td>
+                <td>The list of transcripts of an interaction divided by speaker. The fields under the transcripts are:</td>
+              </tr>
+              <tr>
+                <td>transcripts.phrase</td>
+                <td>String</td>
+                <td>A snippet from the transcript corresponding to one of the two speakers.</td>
+              </tr>
+              <tr>
+                <td>transcripts.speaker</td>
+                <td>String</td>
+                <td>This is the speaker of the phrase - Agent or customer.</td>
+              </tr>
+              <tr>
+                <td>transcripts.start_time</td>
+                <td>integer</td>
+                <td>The phrase start time in milliseconds.</td>
+              </tr>
+              <tr>
+                <td>transcripts.end_time</td>
+                <td>integer</td>
+                <td>The phrase end time in milliseconds.</td>
+              </tr>
+              <tr>
+                <td>transcripts.order</td>
+                <td>integer</td>
+                <td>The position of each phrase in a transcript.</td>
+              </tr>
+              <tr>
+                <td>summary</td>
+                <td>Object</td>
+                <td>The summary generated for the particular interaction.</td>
+              </tr>
+              <tr>
+                <td>summary.text</td>
+                <td>String</td>
+                <td>Summary text field containing all summary values for the particular interaction.</td>
+              </tr>
+              <tr>
+                <td>moment_categories</td>
+                <td>List</td>
+                <td>The list of moment categories contains all the moment categories found in the interactions. The fields under the moment categories are:</td>
+              </tr>
+              <tr>
+                <td>moment_categories.moment_category_id</td>
+                <td>String</td>
+                <td>This id represents that particular moment_category.</td>
+              </tr>
+              <tr>
+                <td>moment_categories.moment_category_name</td>
+                <td>String</td>
+                <td>The name of the particular moment_category.</td>
+              </tr>
+              <tr>
+                <td>moment_categories.moments</td>
+                <td>List</td>
+                <td>The list of moments present under a particular moment category. The fields under the moment are:</td>
+              </tr>
+              <tr>
+                <td>moments.moment_id</td>
+                <td>String</td>
+                <td>The id which represents that particular moment.</td>
+              </tr>
+              <tr>
+                <td>moments.moment_name</td>
+                <td>String</td>
+                <td>The moment name as configured in the Observe.AI userinterface in the 'Moments' tab.</td>
+              </tr>
+              <tr>
+                <td>moments.snippets</td>
+                <td>List</td>
+                <td>The list of phrases from a transcript in which momentswere found. Inside This snippets there are four more fields:</td>
+              </tr>
+              <tr>
+                <td>moments.moment_theme</td>
+                <td>String</td>
+                <td>The moment theme - Positive/Negative/Neutral as configured in the Observe.AI userinterface in the ‘Moments’ tab.</td>
+              </tr>
+              <tr>
+                <td>snippets.evidence</td>
+                <td>String</td>
+                <td>The actual phrase or keyword that matches amoment's criteria.</td>
+              </tr>
+              <tr>
+                <td>snippets.start_time</td>
+                <td>integer</td>
+                <td>The phrase start time in milliseconds.</td>
+              </tr>
+              <tr>
+                <td>snippets.end_time</td>
+                <td>integer</td>
+                <td>The phrase end time in milliseconds.</td>
+              </tr>
+              <tr>
+                <td>snippets.order</td>
+                <td>integer</td>
+                <td>The position of each phrase in a transcript.</td>
+              </tr>
+              <tr>
+                <td>moments.found</td>
+                <td>boolean</td>
+                <td>It determines whether the moment is found in the call or not.</td>
+              </tr>
+              <tr>
+                <td>created_at</td>
+                <td>Date</td>
+                <td>The time at which the interaction was created in the DB.</td>
+              </tr>
+              <tr>
+                <td>updated_at</td>
+                <td>Date</td>
+                <td>The time at which the interaction was last updated.</td>
+              </tr>
+              <tr>
+                <td>interaction_start_time</td>
+                <td>Date</td>
+                <td>The start timestamp of the interaction in ISO time format.</td>
+              </tr>
+              <tr>
+                <td>interaction_meta_data</td>
+                <td>(Key, Value) pair</td>
+                <td>This contains all the interaction metadata which is used to create filters and present in interaction info.</td>
+              </tr>
+            </table>
+
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/GetJobResponse"
+              examples:
+                '0':
+                  value: >-
+                    {"start_date":"2022-03-03T00:00:12.000+00:00","end_date":"2022-04-04T00:14:00.000+00:00","status":"COMPLETED","url":"https://e2e-data-out.s3.amazonaws.com/reports/interactions/3058bc09-6d4d-4f22-9f69-6992f3520e56.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20220510T045319Z&X-Amz-SignedHeaders=host&X-Amz-Expires=86400&X-Amz-Credential=YOUR_AWS_ACCESS_KEY_ID%2FYYYYMMDD%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Signature=YOUR_AWS_SIGNATURE_PLACEHOLDER"}
+        '400':
+          description: Bad Request
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+        '401':
+          description: Unauthorized
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+              examples:
+                '0':
+                  value: >-
+                    {"error_code": "auth_token_error",
+                    "error_description": "invalid auth token"}
+        '403':
+          description: Access Denied
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+              examples:
+                '0':
+                  value: >-
+                    {"error_code":"access_denied","error_description":"unauthorized_user"}
+        '404':
+          description: Not Found
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+              examples:
+                '0':
+                  value: >-
+                    {"error_code":"resource_not_found","error_description":"jobId
+                    3058bc09-da96-490c-824f-f42646160f0a of type INTERACTION not
+                    found or does not belong to the account"}
+                '1':
+                  value: >-
+                    {"timestamp": "2022-05-17T04:23:16.247+00:00",
+                    "status": 404,
+                    "error": "Not Found",
+                    "message": "No message available",
+                    "path": "/v1/data/reports/interaction/489690ba-1a58-44f3-9674-b5be9768d313"}
+        '405':
+          description: Method Not Allowed
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+              examples:
+                '0':
+                  value: >-
+                    {"timestamp": "2022-05-17T04:21:37.669+00:00",
+                    "status": 405,
+                    "error": "Method Not Allowed",
+                    "message": "Request method 'POST' not supported",
+                    "path": "/v1/data/reports/interactioms/3058bc09-da96-490c-824f-f42646160f0a"}
+        '429':
+          description: Rate Limit Exceeded
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/RateLimitMessage"
+              examples:
+                '0':
+                  value: |-
+                    {"message": "API rate limit exceeded"}
+        '500':
+          description: Internal Server Error
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+  "/v1/data/reports/interactions/ids":
+    post:
+      tags:
+        - Interactions
+      operationId: Get Interactions By Ids
+      parameters:
+        - "$ref": "#/components/parameters/IncludeTranscript"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/InteractionsRequest"
+      responses:
+        '200':
+          description: |
+            List of Interactions, each with following fields:
+            <table>
+              <tr>
+              <th>Field Name</th>
+              <th>Type</th>
+              <th>Description</th>
+              </tr>
+              <tr>
+              <td>id</td>
+              <td>String</td>
+              <td>This id represents the id of that particular interaction</td>
+              </tr>
+              <tr>
+              <td>account_id</td>
+              <td>String</td>
+              <td>This id represents the id of that particular account.</td>
+              </tr>
+              <tr>
+              <td>agent_id</td>
+              <td>String</td>
+              <td>This id represents the id of the agent who has participated in that particular interaction.</td>
+              </tr>
+              <tr>
+              <td>partner_agent_id</td>
+              <td>String</td>
+              <td>This id represents the id of the agent who has participated in that particular interaction in the client system.</td>
+              </tr>
+              <tr>
+              <td>agent_name</td>
+              <td>String</td>
+              <td>The name of the agent who has participated in that particular interaction.</td>
+              </tr>
+              <tr>
+              <td>agent_email</td>
+              <td>String</td>
+              <td>The email of the agent who has participated in that particular interaction.</td>
+              </tr>
+              <tr>
+              <td>agent_status</td>
+              <td>String</td>
+              <td>This is a String field which depicts if the agent is active or not. (ACTIVE or IN_ACTIVE).</td>
+              </tr>
+              <tr>
+              <td>interaction_url</td>
+              <td>String</td>
+              <td>This field represents the url for the particular interaction.</td>
+              </tr>
+              <tr>
+              <td>duration</td>
+              <td>integer</td>
+              <td>This is an integer field which represents how much time (seconds) did the interaction happen.</td>
+              </tr>
+              <tr>
+              <td>source_partner_meeting_id</td>
+              <td>String</td>
+              <td>Incase of split interactions, source_partner_meeting_id is the unique identifier for the interaction before split. source_partner_meeting_id is same as unique identifier in the client system.</td>
+              </tr>
+              <tr>
+              <td>sequence</td>
+              <td>Integer</td>
+              <td>Incase of split interactions, the value of sequence signifies the position of this interaction post split. (Zero based index)</td>
+              </tr>
+              <tr>
+              <td>language</td>
+              <td>String</td>
+              <td>This is a field which represents in which language did the communication happen during the interaction.</td>
+              </tr>
+              <tr>
+              <td>channel</td>
+              <td>String</td>
+              <td>This field represents the type of interaction. (CALL, CHAT, EXTERNAL etc).</td>
+              </tr>
+              <tr>
+              <td>provider_id</td>
+              <td>String</td>
+              <td>The id which originates from the source recording platform.</td>
+              </tr>
+              <tr>
+              <td>transcripts</td>
+              <td>List</td>
+              <td>The list of transcripts of an interaction divided by speaker. The fields under the transcripts are:</td>
+              </tr>
+              <tr>
+              <td>transcripts.phrase</td>
+              <td>String</td>
+              <td>A snippet from the transcript corresponding to one of the two speakers.</td>
+              </tr>
+              <tr>
+              <td>transcripts.speaker</td>
+              <td>String</td>
+              <td>This is the speaker of the phrase - Agent or customer.</td>
+              </tr>
+              <tr>
+              <td>transcripts.start_time</td>
+              <td>integer</td>
+              <td>The phrase start time in milliseconds.</td>
+              </tr>
+              <tr>
+              <td>transcripts.end_time</td>
+              <td>integer</td>
+              <td>The phrase end time in milliseconds.</td>
+              </tr>
+              <tr>
+              <td>transcripts.order</td>
+              <td>integer</td>
+              <td>The position of each phrase in a transcript.</td>
+              </tr>
+              <tr>
+              <td>moment_categories</td>
+              <td>List</td>
+              <td>The list of moment categories contains all the moment categories found in the interactions. The fields under the moment categories are:</td>
+              </tr>
+              <tr>
+              <td>moment_categories.moment_category_id</td>
+              <td>String</td>
+              <td>This id represents that particular moment_category.</td>
+              </tr>
+              <tr>
+              <td>moment_categories.moment_category_name</td>
+              <td>String</td>
+              <td>The name of the particular moment_category.</td>
+              </tr>
+              <tr>
+              <td>moment_categories.moments</td>
+              <td>List</td>
+              <td>The list of moments present under a particular moment category. The fields under the moment are:</td>
+              </tr>
+              <tr>
+              <td>moments.moment_id</td>
+              <td>String</td>
+              <td>The id which represents that particular moment.</td>
+              </tr>
+              <tr>
+              <td>moments.moment_name</td>
+              <td>String</td>
+              <td>The moment name as configured in the Observe.AI userinterface in the 'Moments' tab.</td>
+              </tr>
+              <tr>
+              <td>moments.snippets</td>
+              <td>List</td>
+              <td>The list of phrases from a transcript in which momentswere found. Inside This snippets there are four more fields:</td>
+              </tr>
+              <tr>
+              <td>moments.moment_theme</td>
+              <td>String</td>
+              <td>The moment theme - Positive/Negative/Neutral as configured in the Observe.AI userinterface in the ‘Moments’ tab.</td>
+              </tr>
+              <tr>
+              <td>snippets.evidence</td>
+              <td>String</td>
+              <td>The actual phrase or keyword that matches amoment's criteria.</td>
+              </tr>
+              <tr>
+              <td>snippets.start_time</td>
+              <td>integer</td>
+              <td>The phrase start time in milliseconds.</td>
+              </tr>
+              <tr>
+              <td>snippets.end_time</td>
+              <td>integer</td>
+              <td>The phrase end time in milliseconds.</td>
+              </tr>
+              <tr>
+              <td>snippets.order</td>
+              <td>integer</td>
+              <td>The position of each phrase in a transcript.</td>
+              </tr>
+              <tr>
+              <td>moments.found</td>
+              <td>boolean</td>
+              <td>It determines whether the moment is found in the call or not.</td>
+              </tr>
+              <tr>
+              <td>created_at</td>
+              <td>Date</td>
+              <td>The time at which the interaction was created in the DB.</td>
+              </tr>
+              <tr>
+              <td>updated_at</td>
+              <td>Date</td>
+              <td>The time at which the interaction was last updated.</td>
+              </tr>
+              <tr>
+              <td>interaction_start_time</td>
+              <td>Date</td>
+              <td>The start timestamp of the interaction in ISO time format.</td>
+              </tr>
+              <tr>
+              <td>interaction_meta_data</td>
+              <td>(Key, Value) pair</td>
+              <td>This contains all the interaction metadata which is used to create filters and present in interaction info.</td>
+              </tr>
+              </table>
+        '400':
+          description: Bad Request
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+              examples:
+                '0':
+                  value: >-
+                    {"error_code":"bad_request","error_description":"Maximum observe interaction ids that can be specified is 100"}
+                '1':
+                  value: >-
+                    {"error_code":"bad_request","error_description":"Specify atleast one observe interaction id"}
+                '2':
+                  value: >-
+                    {"error_code":"bad_request","error_description":"Maximum partner interaction ids that can be specified is 100"}
+                '3':
+                  value: >-
+                    {"error_code":"bad_request","error_description":"Specify atleast one partner interaction id"}
+                '4':
+                  value: >-
+                    {"error_code":"bad_request","error_description":"Either observe interaction ids or partner interaction ids can be present in a request, but not both"}
+                '5':
+                  value: >-
+                    {"error_code":"bad_request","error_description":"Either observe interaction ids or partner interaction ids should be present in the request"}
+        '401':
+          description: Unauthorized
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+              examples:
+                '0':
+                  value: >-
+                    {"error_code": "auth_token_error",
+                    "error_description": "invalid auth token"}
+        '403':
+          description: Access Denied
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+              examples:
+                '0':
+                  value: >-
+                    {"error_code":"access_denied","error_description":"unauthorized_user"}
+                '1':
+                  value: >-
+                    {"error_code":"access_denied","error_description":"No authentication header found"}
+                '2':
+                  value: >-
+                    {"error_code":"access_denied","error_description":"ticket/userId is missing in authorization"}
+        '404':
+          description: Request Not Found
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+              examples:
+                '0':
+                  value: >-
+                    {"timestamp":"2022-07-19T07:47:19.178+00:00","status":404,"error":"Not
+                    Found","message":"No message
+                    available","path":"/v1/data/reports/interactions/ids"}
+        '405':
+          description: Method Not Allowed
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+              examples:
+                '0':
+                  value: >-
+                    {"timestamp": "2022-05-17T04:21:37.669+00:00",
+                    "status": 405,
+                    "error": "Method Not Allowed",
+                    "message": "Request method 'POST' not supported",
+                    "path": "/v1/data/reports/interactions/ids"}
+        '429':
+          description: Rate Limit Exceeded
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/RateLimitMessage"
+
+              examples:
+                '0':
+                  value: |-
+                    {"message": "API rate limit exceeded"}
+        '500':
+          description: Internal Server Error
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+  "/v2/data/reports/interactions/ids":
+    post:
+      tags:
+        - Summary
+      operationId: Get Summaries By Ids
+      parameters:
+        - "$ref": "#/components/parameters/IncludeTranscript"
+        - "$ref": "#/components/parameters/IncludeSummary"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/InteractionsRequest"
+      responses:
+        '200':
+          description: |
+            List of Interactions, each with following fields:
+            <table>
+              <tr>
+              <th>Field Name</th>
+              <th>Type</th>
+              <th>Description</th>
+              </tr>
+              <tr>
+              <td>id</td>
+              <td>String</td>
+              <td>This id represents the id of that particular interaction</td>
+              </tr>
+              <tr>
+              <td>account_id</td>
+              <td>String</td>
+              <td>This id represents the id of that particular account.</td>
+              </tr>
+              <tr>
+              <td>agent_id</td>
+              <td>String</td>
+              <td>This id represents the id of the agent who has participated in that particular interaction.</td>
+              </tr>
+              <tr>
+              <td>partner_agent_id</td>
+              <td>String</td>
+              <td>This id represents the id of the agent who has participated in that particular interaction in the client system.</td>
+              </tr>
+              <tr>
+              <td>agent_name</td>
+              <td>String</td>
+              <td>The name of the agent who has participated in that particular interaction.</td>
+              </tr>
+              <tr>
+              <td>agent_email</td>
+              <td>String</td>
+              <td>The email of the agent who has participated in that particular interaction.</td>
+              </tr>
+              <tr>
+              <td>agent_status</td>
+              <td>String</td>
+              <td>This is a String field which depicts if the agent is active or not. (ACTIVE or IN_ACTIVE).</td>
+              </tr>
+              <tr>
+              <td>interaction_url</td>
+              <td>String</td>
+              <td>This field represents the url for the particular interaction.</td>
+              </tr>
+              <tr>
+              <td>duration</td>
+              <td>integer</td>
+              <td>This is an integer field which represents how much time (seconds) did the interaction happen.</td>
+              </tr>
+              <tr>
+              <td>source_partner_meeting_id</td>
+              <td>String</td>
+              <td>Incase of split interactions, source_partner_meeting_id is the unique identifier for the interaction before split. source_partner_meeting_id is same as unique identifier in the client system.</td>
+              </tr>
+              <tr>
+              <td>sequence</td>
+              <td>Integer</td>
+              <td>Incase of split interactions, the value of sequence signifies the position of this interaction post split. (Zero based index)</td>
+              </tr>
+              <tr>
+              <td>language</td>
+              <td>String</td>
+              <td>This is a field which represents in which language did the communication happen during the interaction.</td>
+              </tr>
+              <tr>
+              <td>channel</td>
+              <td>String</td>
+              <td>This field represents the type of interaction. (CALL, CHAT, EXTERNAL etc).</td>
+              </tr>
+              <tr>
+              <td>provider_id</td>
+              <td>String</td>
+              <td>The id which originates from the source recording platform.</td>
+              </tr>
+              <tr>
+              <td>transcripts</td>
+              <td>List</td>
+              <td>The list of transcripts of an interaction divided by speaker. The fields under the transcripts are:</td>
+              </tr>
+              <tr>
+              <td>transcripts.phrase</td>
+              <td>String</td>
+              <td>A snippet from the transcript corresponding to one of the two speakers.</td>
+              </tr>
+              <tr>
+              <td>transcripts.speaker</td>
+              <td>String</td>
+              <td>This is the speaker of the phrase - Agent or customer.</td>
+              </tr>
+              <tr>
+              <td>transcripts.start_time</td>
+              <td>integer</td>
+              <td>The phrase start time in milliseconds.</td>
+              </tr>
+              <tr>
+              <td>transcripts.end_time</td>
+              <td>integer</td>
+              <td>The phrase end time in milliseconds.</td>
+              </tr>
+              <tr>
+              <td>transcripts.order</td>
+              <td>integer</td>
+              <td>The position of each phrase in a transcript.</td>
+              </tr>
+              <tr>
+              <tr>
+                <td>summary</td>
+                <td>Object</td>
+                <td>The summary generated for the particular interaction.</td>
+              </tr>
+              <tr>
+                <td>summary.text</td>
+                <td>String</td>
+                <td>Summary text field containing all summary values for the particular interaction.</td>
+              </tr>
+              <td>moment_categories</td>
+              <td>List</td>
+              <td>The list of moment categories contains all the moment categories found in the interactions. The fields under the moment categories are:</td>
+              </tr>
+              <tr>
+              <td>moment_categories.moment_category_id</td>
+              <td>String</td>
+              <td>This id represents that particular moment_category.</td>
+              </tr>
+              <tr>
+              <td>moment_categories.moment_category_name</td>
+              <td>String</td>
+              <td>The name of the particular moment_category.</td>
+              </tr>
+              <tr>
+              <td>moment_categories.moments</td>
+              <td>List</td>
+              <td>The list of moments present under a particular moment category. The fields under the moment are:</td>
+              </tr>
+              <tr>
+              <td>moments.moment_id</td>
+              <td>String</td>
+              <td>The id which represents that particular moment.</td>
+              </tr>
+              <tr>
+              <td>moments.moment_name</td>
+              <td>String</td>
+              <td>The moment name as configured in the Observe.AI userinterface in the 'Moments' tab.</td>
+              </tr>
+              <tr>
+              <td>moments.snippets</td>
+              <td>List</td>
+              <td>The list of phrases from a transcript in which momentswere found. Inside This snippets there are four more fields:</td>
+              </tr>
+              <tr>
+              <td>moments.moment_theme</td>
+              <td>String</td>
+              <td>The moment theme - Positive/Negative/Neutral as configured in the Observe.AI userinterface in the ‘Moments’ tab.</td>
+              </tr>
+              <tr>
+              <td>snippets.evidence</td>
+              <td>String</td>
+              <td>The actual phrase or keyword that matches amoment's criteria.</td>
+              </tr>
+              <tr>
+              <td>snippets.start_time</td>
+              <td>integer</td>
+              <td>The phrase start time in milliseconds.</td>
+              </tr>
+              <tr>
+              <td>snippets.end_time</td>
+              <td>integer</td>
+              <td>The phrase end time in milliseconds.</td>
+              </tr>
+              <tr>
+              <td>snippets.order</td>
+              <td>integer</td>
+              <td>The position of each phrase in a transcript.</td>
+              </tr>
+              <tr>
+              <td>moments.found</td>
+              <td>boolean</td>
+              <td>It determines whether the moment is found in the call or not.</td>
+              </tr>
+              <tr>
+              <td>created_at</td>
+              <td>Date</td>
+              <td>The time at which the interaction was created in the DB.</td>
+              </tr>
+              <tr>
+              <td>updated_at</td>
+              <td>Date</td>
+              <td>The time at which the interaction was last updated.</td>
+              </tr>
+              <tr>
+              <td>interaction_start_time</td>
+              <td>Date</td>
+              <td>The start timestamp of the interaction in ISO time format.</td>
+              </tr>
+              <tr>
+              <td>interaction_meta_data</td>
+              <td>(Key, Value) pair</td>
+              <td>This contains all the interaction metadata which is used to create filters and present in interaction info.</td>
+              </tr>
+              </table>
+        '400':
+          description: Bad Request
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+              examples:
+                '0':
+                  value: >-
+                    {"error_code":"bad_request","error_description":"Maximum observe interaction ids that can be specified is 100"}
+                '1':
+                  value: >-
+                    {"error_code":"bad_request","error_description":"Specify atleast one observe interaction id"}
+                '2':
+                  value: >-
+                    {"error_code":"bad_request","error_description":"Maximum partner interaction ids that can be specified is 100"}
+                '3':
+                  value: >-
+                    {"error_code":"bad_request","error_description":"Specify atleast one partner interaction id"}
+                '4':
+                  value: >-
+                    {"error_code":"bad_request","error_description":"Either observe interaction ids or partner interaction ids can be present in a request, but not both"}
+                '5':
+                  value: >-
+                    {"error_code":"bad_request","error_description":"Either observe interaction ids or partner interaction ids should be present in the request"}
+        '401':
+          description: Unauthorized
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+              examples:
+                '0':
+                  value: >-
+                    {"error_code": "auth_token_error",
+                    "error_description": "invalid auth token"}
+        '403':
+          description: Access Denied
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+              examples:
+                '0':
+                  value: >-
+                    {"error_code":"access_denied","error_description":"unauthorized_user"}
+                '1':
+                  value: >-
+                    {"error_code":"access_denied","error_description":"No authentication header found"}
+                '2':
+                  value: >-
+                    {"error_code":"access_denied","error_description":"ticket/userId is missing in authorization"}
+        '404':
+          description: Request Not Found
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+              examples:
+                '0':
+                  value: >-
+                    {"timestamp":"2022-07-19T07:47:19.178+00:00","status":404,"error":"Not
+                    Found","message":"No message
+                    available","path":"/v1/data/reports/interactions/ids"}
+        '405':
+          description: Method Not Allowed
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+              examples:
+                '0':
+                  value: >-
+                    {"timestamp": "2022-05-17T04:21:37.669+00:00",
+                    "status": 405,
+                    "error": "Method Not Allowed",
+                    "message": "Request method 'POST' not supported",
+                    "path": "/v1/data/reports/interactions/ids"}
+        '429':
+          description: Rate Limit Exceeded
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/RateLimitMessage"
+
+              examples:
+                '0':
+                  value: |-
+                    {"message": "API rate limit exceeded"}
+        '500':
+          description: Internal Server Error
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+  "/v1/data/reports/evaluations/{request_id}":
+    get:
+      tags:
+        - Evaluations
+      operationId: Get Evaluations
+      parameters:
+        - name: request_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: |
+
+            Report field Description:
+            <table>
+              <tr>
+                <td>Param Name</td>
+                <td>Type</td>
+                <td>Description</td>
+              </tr>
+              <tr>
+                <td>evaluation_forms</td>
+                <td>List</td>
+                <td>List of evaluation forms.</td>
+              </tr>
+              <tr>
+                <td>evaluation_forms.template</td>
+                <td>Object</td>
+                <td>Template of each evaluation form</td>
+              </tr>
+              <tr>
+                <td>template.id</td>
+                <td>String</td>
+                <td>ID of the template/evaluation form.</td>
+              </tr>
+              <tr>
+                <td>template.name</td>
+                <td>String</td>
+                <td>Name of the template/evaluation form.</td>
+              </tr>
+              <tr>
+                <td>template.max_score</td>
+                <td>double</td>
+                <td>Max score of the template/evaluation form.</td>
+              </tr>
+              <tr>
+                <td>template.sections</td>
+                <td>List</td>
+                <td>List of sections for each template/evaluation form</td>
+              </tr>
+              <tr>
+                <td>sections.section_id</td>
+                <td>String</td>
+                <td>Section id.</td>
+              </tr>
+              <tr>
+                <td>sections.section_name</td>
+                <td>String</td>
+                <td>Section name.</td>
+              </tr>
+              <tr>
+                <td>sections.max_score</td>
+                <td>double</td>
+                <td>Max score for a section.</td>
+              </tr>
+              <tr>
+                <td>sections.questions</td>
+                <td>List</td>
+                <td>List of questions for each section.</td>
+              </tr>
+              <tr>
+                <td>questions.id</td>
+                <td>String</td>
+                <td>ID of the question.</td>
+              </tr>
+              <tr>
+                <td>questions.max_score</td>
+                <td>double</td>
+                <td>Max score of the question.</td>
+              </tr>
+              <tr>
+                <td>questions.phrase</td>
+                <td>String</td>
+                <td>Question description.</td>
+              </tr>
+              <tr>
+                <td>evaluation_forms.evaluations</td>
+                <td>List</td>
+                <td>List of evaluations for each evaluation form.</td>
+              </tr>
+              <tr>
+                <td>evaluations.channel_meta</td>
+                <td>Object</td>
+                <td>Channel metadata.</td>
+              </tr>
+              <tr>
+                <td>evaluations.evaluation_list</td>
+                <td>List</td>
+                <td>List of evaluations for a template.</td>
+              </tr>
+              <tr>
+                <td>evaluation_list.evaluation_meta</td>
+                <td>Object</td>
+                <td>Evaluation metadata.</td>
+              </tr>
+              <tr>
+                <td>evaluation_meta.id</td>
+                <td>String</td>
+                <td>ID of the evaluation.</td>
+              </tr>
+              <tr>
+                <td>evaluation_meta.evaluation_type</td>
+                <td>String</td>
+                <td>Type of evaluation (Manual/Auto QA)</td>
+              </tr>
+              <tr>
+                <td>evaluation_meta.evaluator_id</td>
+                <td>String</td>
+                <td>ID of the evaluator. "NA" for Auto QA evaluations.</td>
+              </tr>
+              <tr>
+                <td>evaluation_meta.evaluator_name</td>
+                <td>String</td>
+                <td>Name of the evaluator. "Observe.AI" for Auto QA evaluations.</td>
+              </tr>
+              <tr>
+                <td>evaluation_meta.partner_evaluator_id</td>
+                <td>String</td>
+                <td>ID of the evaluator in client's system . "NA" for Auto QA evaluations.</td>
+              </tr>
+              <tr>
+                <td>evaluation_meta.evaluator_email </td>
+                <td>String</td>
+                <td>Email ID of the evaluator. "NA" for Auto QA evaluations.</td>
+              </tr>
+              <tr>
+                <td>evaluation_meta.evaluator_status</td>
+                <td>String</td>
+                <td>Evaluator status on the system: ACTIVE or IN_ACTIVE. "NA" for Auto QA evaluations.</td>
+              </tr>
+              <tr>
+                <td>evaluation_meta.evaluation_purpose</td>
+                <td>String</td>
+                <td>Evaluation Purpose on the system: 
+                <ul>
+                <li>AGENT_PERFORMANCE - Evaluation done for the purpose of grading Agent performance</li>
+                <li>CALIBRATION -  Evaluation completed by Quality Analysts for Calibration purpose</li>
+                <li>FINAL_CALIBRATION - Final Evaluation typically done by Quality Manager or evaluators group based on discussion for Calibration purpose</li>
+                <li>null - evaluation_purpose is applicable only for evaluations with evaluation_type= Manual.</li>
+                </ul>
+                </td>
+              </tr>
+              <tr>
+                <td>evaluation_meta.agent_id</td>
+                <td>String</td>
+                <td>ID of the agent.</td>
+              </tr>
+              <tr>
+                <td>evaluation_meta.partner_agent_id</td>
+                <td>String</td>
+                <td>ID of the agent in client system.</td>
+              </tr>
+              <tr>
+                <td>evaluation_meta.ack_info.ack_status</td>
+                <td>String</td>
+                <td>
+                  Captures current status of Evaluation form in the Acknowledgement-Dispute workflow
+                  <ul>
+                  <li>NOT_INITIATED - Evaluation form is submitted without initiating for Acknowledgement</li>
+                  <li>AWAITING_ACK - Agent has been notified of Evaluation. Acknowledgement pending from Agent</li>
+                  <li>ACKED - Agent Acknowledged the Evaluation</li>
+                  <li>IN_DISPUTE - Dispute raised(typically by Agent or Supervisor) on Evaluation form and awaiting resolution</li>
+                  <li>DISPUTE_ACCEPTED - Dispute has been accepted by resolver(typically QA Analyst/QA Manager)</li>
+                  <li>DISPUTE_PARTIAL - Dispute has been partially accepted by resolver(typically QA Analyst/QA Manager)</li>
+                  <li>DISPUTE_REJECTED - Dispute has been rejected  by resolver(typically QA Analyst/QA Manager)</li>
+                  </ul>
+                </td>
+              </tr>
+              <tr>
+                <td>evaluation_meta.ack_info.ack_init_time</td>
+                <td>Date</td>
+                <td>Acknowledgement Initiated timestamp</td>
+              </tr>
+              <tr>
+                <td>evaluation_meta.ack_info.ack_time</td>
+                <td>Date</td>
+                <td>Acknowledgement confirmation timestamp</td>
+              </tr>
+              <tr>
+                <td>evaluation_meta.ack_info.dispute_raised_at</td>
+                <td>Date</td>
+                <td>Disputed initiated timestamp</td>
+              </tr>
+              <tr>
+                <td>evaluation_meta.ack_info.dispute_raised_by_email</td>
+                <td>String</td>
+                <td>Email ID of the User(typically Agent/Supervisor) who raises dispute</td>
+              </tr>
+              <tr>
+                <td>evaluation_meta.ack_info.dispute_resolved_at</td>
+                <td>Date</td>
+                <td>Disputed resolved timestamp</td>
+              </tr>
+              <tr>
+                <td>evaluation_meta.ack_info.dispute_resolved_by_email</td>
+                <td>String</td>
+                <td>Email ID of the User(typically QA Analyst/QA Manager) who resolves the dispute</td>
+              </tr>
+              <tr>
+                <td>evaluation_meta.agent_name</td>
+                <td>String</td>
+                <td>Name of the agent.</td>
+              </tr>
+              <tr>
+                <td>evaluation_meta.agent_email</td>
+                <td>String</td>
+                <td>Email ID of the agent</td>
+              </tr>
+              <tr>
+                <td>evaluation_meta.agent_status</td>
+                <td>String</td>
+                <td>Agent status on the system: ACTIVE or IN_ACTIVE.</td>
+              </tr>
+              <tr>
+                <td>evaluation_meta.created_at</td>
+                <td>Date</td>
+                <td>Evaluation creation time.</td>
+              </tr>
+              <tr>
+                <td>evaluation_meta.modified_at</td>
+                <td>Date</td>
+                <td>Evaluation modification time</td>
+              </tr>
+              <tr>
+                <td>evaluation_meta.status</td>
+                <td>String</td>
+                <td>Status of the evaluation - whether submitted, edited, or deleted.</td>
+              </tr>
+              <tr>
+                <td>evaluation_list.response</td>
+                <td>Object</td>
+                <td>Response object for a evaluation.</td>
+              </tr>
+              <tr>
+                <td>response.comment</td>
+                <td>String</td>
+                <td>Comment</td>
+              </tr>
+              <tr>
+                <td>response.sections</td>
+                <td>List</td>
+                <td>List of response sections.</td>
+              </tr>
+              <tr>
+                <td>response.sections.id</td>
+                <td>String</td>
+                <td>Section ID</td>
+              </tr>
+              <tr>
+                <td>response.sections.score_obtained</td>
+                <td>double</td>
+                <td>Score obtained for the section.</td>
+              </tr>
+              <tr>
+                <td>response.sections.questions</td>
+                <td>List</td>
+                <td>List of questions for each section.</td>
+              </tr>
+              <tr>
+                <td>response.sections.questions.id</td>
+                <td>String</td>
+                <td>Question ID.</td>
+              </tr>
+              <tr>
+                <td>response.sections.questions.score_obtained</td>
+                <td>double</td>
+                <td>Score obtained for each question.</td>
+              </tr>
+              <tr>
+                <td>response.sections.questions.comment</td>
+                <td>String</td>
+                <td>Comment for a question response.</td>
+              </tr>
+              <tr>
+                <td>response.sections.questions.fail</td>
+                <td>boolean</td>
+                <td>If the agent has failed that question or not.</td>
+              </tr>
+              <tr>
+                <td>response.sections.questions.value</td>
+                <td>String</td>
+                <td>Answer value for the question</td>
+              </tr>
+              <tr>
+                <td>evaluation_list.scores_obtained</td>
+                <td>Object</td>
+                <td>Score object for each evaluation</td>
+              </tr>
+               <tr>
+                <td>scores_obtained.final_score</td>
+                <td>double</td>
+                <td>Final score for the evaluation</td>
+              </tr>
+              <tr>
+                <td>scores_obtained.total_points</td>
+                <td>double</td>
+                <td>Total points for the evaluation</td>
+              </tr>
+              <tr>
+                <td>scores_obtained.percent_score</td>
+                <td>double</td>
+                <td>Percent score for the evaluation</td>
+              </tr>
+              <tr>
+                <td>scores_obtained.total_bonus</td>
+                <td>double</td>
+                <td>Total bonus for the evaluation</td>
+              </tr>
+              <tr>
+                <td>scores_obtained.total_penalties</td>
+                <td>double</td>
+                <td>Total penalties for the evaluation</td>
+              </tr>
+              <tr>
+                <td>scores_obtained.grade_assigned</td>
+                <td>String</td>
+                <td>Assigned grade</td>
+              </tr>
+              <tr>
+                <td>scores_obtained.auto_fail</td>
+                <td>boolean</td>
+                <td>Is auto fail</td>
+              </tr>
+            </table>
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/GetJobResponse"
+              examples:
+                '0':
+                  value: >-
+                    {"start_date":"2022-03-03T00:00:12.000+00:00","end_date":"2022-04-04T00:14:00.000+00:00","status":"COMPLETED","url":"https://e2e-data-out.s3.amazonaws.com/reports/interactions/3058bc09-6d4d-4f22-9f69-6992f3520e56.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20220510T045319Z&X-Amz-SignedHeaders=host&X-Amz-Expires=86400&X-Amz-Credential=YOUR_AWS_ACCESS_KEY_ID%2FYYYYMMDD%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Signature=YOUR_AWS_SIGNATURE_PLACEHOLDER"}
+        '400':
+          description: Bad Request
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+        '401':
+          description: Unauthorized
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+              examples:
+                '0':
+                  value: >-
+                    {"error_code": "auth_token_error",
+                    "error_description": "invalid auth token"}
+        '403':
+          description: Access Denied
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+              examples:
+                '0':
+                  value: >-
+                    {"error_code":"access_denied","error_description":"unauthorized_user"}
+        '404':
+          description: Not Found
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+              examples:
+                '0':
+                  value: >-
+                    {"error_code":"resource_not_found","error_description":"jobId
+                    3058bc09-da96-490c-824f-f42646160f0a of type EVALUATION not
+                    found or does not belong to the account"}
+                '1':
+                  value: >-
+                    {"timestamp": "2022-05-17T04:23:16.247+00:00",
+                    "status": 404,
+                    "error": "Not Found",
+                    "message": "No message available",
+                    "path": "/v1/data/reports/evaluation/3058bc09-1a58-44f3-9674-b5be9768d313"}
+        '405':
+          description: Method Not Allowed
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+              examples:
+                '0':
+                  value: >-
+                    {"timestamp": "2022-05-17T04:21:37.669+00:00",
+                    "status": 405,
+                    "error": "Method Not Allowed",
+                    "message": "Request method 'POST' not supported",
+                    "path": "/v1/data/reports/evaluations/3058bc09-da96-490c-824f-f42646160f0a"}
+        '429':
+          description: Rate Limit Exceeded
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/RateLimitMessage"
+              examples:
+                '0':
+                  value: |-
+                    {"message": "API rate limit exceeded"}
+        '500':
+          description: Internal Server Error
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+  "/v1/data/reports/coachings/{request_id}":
+    get:
+      tags:
+        - Coachings
+      operationId: Get Coachings
+      parameters:
+        - name: request_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: |
+
+            Report field Description:
+            <table>
+              <tr>
+                <td>Param Name</td>
+                <td>Type</td>
+                <td>Description</td>
+              </tr>
+              <tr>
+                <td>coaching_sessions</td>
+                <td>List</td>
+                <td>List of all coaching sessions in the start date and the end date provided in the POST API call</td>
+              </tr>
+              <tr>
+                <td>id</td>
+                <td>String</td>
+                <td>Unique ID of the coaching session</td>
+              </tr>
+              <tr>
+                <td>agent_id</td>
+                <td>String</td>
+                <td>The ID of the agent who was coached.</td>
+              </tr>
+              <tr>
+                <td>partner_agent_id</td>
+                <td>String</td>
+                <td>The ID of the agent who was coached in client system.</td>
+              </tr>
+              <tr>
+                <td>agent_name</td>
+                <td>String</td>
+                <td>Name of the agent who was coached.</td>
+              </tr>
+              <tr>
+                <td>agent_email</td>
+                <td>String</td>
+                <td>Email ID of the agent who was coached</td>
+              </tr>
+              <tr>
+                <td>agents_status</td>
+                <td>String</td>
+                <td>Agent status on the system: ACTIVE or IN_ACTIVE</td>
+              </tr>
+              <tr>
+                <td>coach_id</td>
+                <td>String</td>
+                <td>The ID of the coach(the user who coached the agent).</td>
+              </tr>
+              <tr>
+                <td>partner_coach_id</td>
+                <td>String</td>
+                <td>The ID of the coach(the user who coached the agent) in the client system.</td>
+              </tr>
+              <tr>
+                <td>coach_name</td>
+                <td>String</td>
+                <td>Name of the coach(the user who coached the agent).</td>
+              </tr>
+              <tr>
+                <td>coach_email</td>
+                <td>String</td>
+                <td>The name of the agent who has participated in that particular interaction.</td>
+              </tr>
+              <tr>
+                <td>coach_status</td>
+                <td>String</td>
+                <td>Coach status on the system: ACTIVE or IN_ACTIVE.</td>
+              </tr>
+              <tr>
+                <td>url</td>
+                <td>String</td>
+                <td>URL to the coaching session on Observe AI dashboard.</td>
+              </tr>
+              <tr>
+                <td>feedback_summary</td>
+                <td>String</td>
+                <td>Feedback summary provided by the coach while creating the coaching session.</td>
+              </tr>
+              <tr>
+                <td>coaching_areas</td>
+                <td>List</td>
+                <td>Areas selected for coaching the agent.</td>
+              </tr>
+              <tr>
+                <td>action_plan</td>
+                <td>String</td>
+                <td>Action plan provided by the coach while creating the coaching session</td>
+              </tr>
+              <tr>
+                <td>status</td>
+                <td>String</td>
+                <td>Status of the coaching session - whether submitted, edited, or deleted.</td>
+              </tr>
+              <tr>
+                <td>created_at</td>
+                <td>Data</td>
+                <td>Date when coaching session was submitted.</td>
+              </tr>
+              <tr>
+                <td>updated_at</td>
+                <td>Date</td>
+                <td>Date when coaching session was updated.</td>
+              </tr>
+              <tr>
+                <td>follow_up_date </td>
+                <td>Date</td>
+                <td>The follow-up date set while creating a coaching session.</td>
+              </tr>
+              <tr>
+                <td>evaluations</td>
+                <td>List</td>
+                <td>The phrase start time in milliseconds.</td>
+              </tr>
+              <tr>
+                <td>evaluations.evaluation_form_id</td>
+                <td>String</td>
+                <td>The ID of the evaluation form.</td>
+              </tr>
+              <tr>
+                <td>evaluations.evaluation_ids</td>
+                <td>List</td>
+                <td>List of Ids of evaluations for a particular evaluation form.</td>
+              </tr>
+              <tr>
+                <td>coaching_ack_status</td>
+                <td>String</td>
+                <td>There are 3 status possible:
+                <ul>
+                <li>SUBMITTED: Coaching session submitted by coach without mandating the acknowledgement box. </li>
+                <li>AWAITING_ACK: Once the coaching session is submitted by the coach with mandating the acknowledgement box, this state suggests that agent has not yet acknowledged the coaching session</li>
+                <li>ACKED: Once the coaching session is submitted by the coach with mandating the acknowledgement box, the agent has acknowledged with or without comment</li>
+                </ul>
+                </td>
+              </tr>
+              <tr>
+                <td>coaching_ack_info.ack_date</td>
+                <td>Date</td>
+                <td>This is the date when the agent acknowledges receiving and understanding the coaching session. It confirms the agent's awareness of the feedback provided.</td>
+              </tr>
+              <tr>
+                <td>coaching_ack_info.comment</td>
+                <td>String</td>
+                <td>This field captures the agent’s feedback or reflections on the coaching session. It provides space for the agent to share thoughts while acknowledging the session.</td>
+              </tr>
+            </table>
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/GetJobResponse"
+              examples:
+                '0':
+                  value: >-
+                    {"start_date":"2022-03-03T00:00:12.000+00:00","end_date":"2022-04-04T00:14:00.000+00:00","status":"COMPLETED","url":"https://e2e-data-out.s3.amazonaws.com/reports/interactions/3058bc09-6d4d-4f22-9f69-6992f3520e56.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20220510T045319Z&X-Amz-SignedHeaders=host&X-Amz-Expires=86400&X-Amz-Credential=YOUR_AWS_ACCESS_KEY_ID%2FYYYYMMDD%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Signature=YOUR_AWS_SIGNATURE_PLACEHOLDER"}
+        '400':
+          description: Bad Request
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+        '401':
+          description: Unauthorized
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+              examples:
+                '0':
+                  value: >-
+                    {"error_code": "auth_token_error",
+                    "error_description": "invalid auth token"}
+        '403':
+          description: Access Denied
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+              examples:
+                '0':
+                  value: >-
+                    {"error_code":"access_denied","error_description":"unauthorized_user"}
+        '404':
+          description: Not Found
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+              examples:
+                '0':
+                  value: >-
+                    {"error_code":"resource_not_found","error_description":"jobId
+                    3058bc09-da96-490c-824f-f42646160f0a of type COACHING not
+                    found or does not belong to the account"}
+                '1':
+                  value: >-
+                    {"timestamp": "2022-05-17T04:23:16.247+00:00",
+                    "status": 404,
+                    "error": "Not Found",
+                    "message": "No message available",
+                    "path": "/v1/data/reports/coaching/3058bc09-1a58-44f3-9674-b5be9768d313"}
+        '405':
+          description: Method Not Allowed
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+              examples:
+                '0':
+                  value: >-
+                    {"timestamp": "2022-05-17T04:21:37.669+00:00",
+                    "status": 405,
+                    "error": "Method Not Allowed",
+                    "message": "Request method 'POST' not supported",
+                    "path": "/v1/data/reports/coachings/3058bc09-da96-490c-824f-f42646160f0a"}
+        '429':
+          description: Rate Limit Exceeded
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/RateLimitMessage"
+              examples:
+                '0':
+                  value: |-
+                    {"message": "API rate limit exceeded"}
+        '500':
+          description: Internal Server Error
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorMessage"
+components:
+  parameters:
+    Page:
+      in: query
+      name: page
+      schema:
+        type: integer
+        minimum: 1
+        example: 1
+        default: 1
+      description: The page number of the paginated response.
+    Size:
+      in: query
+      name: size
+      schema:
+        type: integer
+        minimum: 10
+        maximum: 1000
+        example: 1000
+        default: 1000
+      description: Number of evaluations required in a page.
+    InteractionsSize:
+      in: query
+      name: size
+      schema:
+        type: integer
+        minimum: 10
+        maximum: 100
+        example: 100
+        default: 100
+      description: Number of interactions required in a page. Note that for requests without transcripts maximum size can be 1000.
+    IncludeTranscript:
+      in: query
+      name: includeTranscript
+      schema:
+        type: boolean
+        example: true
+        default: false
+      description: Whether to include the transcript or not.
+    IncludeSummary:
+      in: query
+      name: includeSummary
+      schema:
+        type: boolean
+        example: true
+        default: false
+      description: Whether to include the summary or not.
+    EvaluationType:
+      in: query
+      name: evaluationType
+      schema:
+        type: enum
+        default: MANUAL
+        example: AUTOQA
+      description: Choose from MANUAL, AUTOQA or ALL types of evaluation forms. All manual evaluations are fetched if evaluationType is not specified.
+  schemas:
+    ErrorMessage:
+      type: object
+      properties:
+        error_code:
+          type: string
+        error_description:
+          type: string
+    RateLimitMessage:
+      type: object
+      properties:
+        message:
+          type: string
+          description: "API rate limit exceeded"
+    RawJobRequest:
+      required:
+        - end_date
+        - start_date
+      type: object
+      properties:
+        start_date:
+          type: string
+          example: "2022-03-03T00:00:12.000+00:00"
+          description: The date should be given in the ISO format.
+        end_date:
+          type: string
+          example: "2022-04-04T00:14:00.000+00:00"
+          description: The date should be given in the ISO format.
+        format:
+          type: string
+          example: "JSON"
+          enum:
+            - JSON
+    AckDisputeFlowRequestIds:
+      properties:
+        evaluation_ids:
+          type: List<String>
+          example: ["5e178d4246a3ce00010931d2","5e73d49ff2d4540001657309"]
+          description: Give the list of evaluation_ids to fetch ack dispute details. Max Limit of 100 ids.
+    InteractionsRequest:
+      properties:
+        observe_interaction_ids:
+          type: List<String>
+          example: ["af1d1b95-de6d-42db-83bd-3a585e65fcc9","4909093-918a-41ab-9fe3-0d1880fa2fd3"]
+          description: Mandatory if partner_interaction_ids is not present. Both cannot be present together. Max Limit of 100 ids.
+        partner_interaction_ids:
+          type: List<String>
+          example: ["7f9744f08a45cb0010d3a7c8","9f583739466b73001e4a125c"]
+          description: Mandatory if observe_interaction_ids is not present. Both cannot be present together. Max Limit of 100 ids.
+    PostJobResponse:
+      type: object
+      properties:
+        request_id:
+          type: string
+        start_date:
+          type: string
+          format: date-time
+        end_date:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum:
+            - QUEUED
+            - INPROGRESS
+            - COMPLETED
+            - EXPIRED
+            - FAILED
+    GetJobResponse:
+      type: object
+      properties:
+        start_date:
+          type: string
+          format: date-time
+        end_date:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum:
+            - QUEUED
+            - INPROGRESS
+            - COMPLETED
+            - EXPIRED
+            - FAILED
+        url:
+          type: string
+
+    OauthTokenRequest:
+      type: object
+      properties:
+        app_id:
+          type: string
+        app_secret:
+          type: string
+      title: OauthTokenRequest
+
+    OauthTokenResponse:
+      type: object
+      properties:
+        auth_token:
+          type: string
+        expires_in:
+          type: integer
+          format: int32
+      title: OauthTokenResponse
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+    DsrDeleteRequest:
+      type: object
+      required:
+        - entity_type
+        - rules
+      properties:
+        entity_type:
+          type: string
+          description: Entity type to delete
+          enum:
+            - AUDIO_TRANSCRIPT
+            - AUDIO
+            - TRANSCRIPT
+            - SCREEN_RECORDING
+        rules:
+          type: array
+          items:
+            "$ref": "#/components/schemas/DsrRule"
+
+    DsrRule:
+      type: object
+      required:
+        - type
+        - name
+      properties:
+        type:
+          type: string
+          enum:
+            - OAI_METADATA
+            - CUSTOMER_METADATA
+        name:
+          type: string
+          description: For OAI_METADATA use DURATION, ENTITYTYPE, or STATUS
+        values:
+          type: array
+          items:
+            type: string
+
+    DsrDeleteResponse:
+      type: object
+      properties:
+        job_id:
+          type: string
+        status:
+          type: string
+          enum:
+            - QUEUED
+            - CREATED
+            - PROGRESS
+            - COMPLETED
+            - STOPPED
+            - FAILED
+        message:
+          type: string
+        requested_at:
+          type: string
+          format: date-time
+        expected_completion_by:
+          type: string
+          format: date-time
+
+    DsrStatusResponse:
+      type: object
+      properties:
+        request_id:
+          type: string
+        status:
+          type: string
+          enum:
+            - QUEUED
+            - CREATED
+            - PROGRESS
+            - COMPLETED
+            - STOPPED
+            - FAILED
+        status_message:
+          type: string

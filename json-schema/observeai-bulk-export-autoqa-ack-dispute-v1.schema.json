@@ -1,0 +1,138 @@
+{
+"$schema": "https://json-schema.org/draft/2020-12/schema",
+"title": "AUTOQA_ACK_DISPUTE_V1",
+"description": "JSON schema for Observe.ai bulk S3 export of AutoQA acknowledgement and dispute events. Each file is gzip-compressed JSON (AUTOQA_ACK_DISPUTE_V1_<timestamp>.json.gz). Each record is one JSON object.",
+"type": "object",
+"properties": {
+  "evaluation_id": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Identifier of the related evaluation."
+  },
+  "evaluation_form_id": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Identifier of the evaluation template/form used."
+  },
+  "ack_status": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Current acknowledgement/dispute status."
+  },
+  "timeline": {
+    "type": [
+      "array",
+      "null"
+    ],
+    "items": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "ackStatus": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "ACK",
+            "ACKED",
+            "DISPUTE_RAISED",
+            "DISPUTE_RESOLVED",
+            "DISPUTE_PARTIAL_RESOLVED",
+            "DISPUTE_REJECTED",
+            null
+          ],
+          "description": "Event type."
+        },
+        "time": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time",
+          "description": "UTC timestamp of the event."
+        },
+        "comment": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Present for ACKED, DISPUTE_RESOLVED, DISPUTE_PARTIAL_RESOLVED, DISPUTE_REJECTED."
+        },
+        "scoreInfo": {
+          "description": "Present for ACKED. Score snapshot at acknowledgement.",
+          "note": "Nested object; additional fields may appear in your export."
+        },
+        "disputedQuestions": {
+          "description": "Present for DISPUTE_RAISED. Disputed question ids/details.",
+          "note": "Nested object; additional fields may appear in your export."
+        },
+        "disputeSharedWith": {
+          "description": "Present for DISPUTE_RAISED. Users the dispute was shared with.",
+          "note": "Nested object; additional fields may appear in your export."
+        },
+        "disputeRaisedById": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Present for DISPUTE_RAISED. User id who raised the dispute."
+        },
+        "disputeResolvedQuestions": {
+          "description": "Present for DISPUTE_RESOLVED. Affected question ids/details.",
+          "note": "Nested object; additional fields may appear in your export."
+        },
+        "disputeResolvedById": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Present for DISPUTE_RESOLVED. User id who resolved the dispute."
+        },
+        "disputePartialResolvedQuestions": {
+          "description": "Present for DISPUTE_PARTIAL_RESOLVED. Affected question ids/details.",
+          "note": "Nested object; additional fields may appear in your export."
+        },
+        "disputePartiallyResolvedById": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Present for DISPUTE_PARTIAL_RESOLVED. User id who partially resolved the dispute."
+        },
+        "disputeRejectedById": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Present for DISPUTE_REJECTED. User id who rejected the dispute."
+        }
+      },
+      "description": "One acknowledgement/dispute lifecycle event. Fields beyond ackStatus/time are only present for the ackStatus values noted in each field's description (union type, not all fields co-occur)."
+    },
+    "description": "Ordered acknowledgement/dispute event timeline."
+  },
+  "evaluation_created_at": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Evaluation created at."
+  },
+  "evaluation_updated_at": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Evaluation updated at."
+  }
+}
+}

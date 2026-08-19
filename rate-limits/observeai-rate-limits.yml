@@ -1,0 +1,74 @@
+generated: '2026-08-14'
+method: searched
+source: https://api-docs.observe.ai/#tag/ReportingService-Overview
+docs: https://api-docs.observe.ai/
+limit_count: 3
+scope_note: >-
+  All published rate limits are enforced at the App ID (API credential) level.
+  Observe.AI recommends creating one app per API being consumed so a noisy
+  consumer of one report type cannot exhaust another's budget.
+rate_limits:
+- name: Create Reporting Request
+  scope: per-app-credential
+  applies_to:
+  - POST /v1/data/reports/interactions
+  - POST /v2/data/reports/interactions
+  - POST /v1/data/reports/evaluations
+  - POST /v1/data/reports/coachings
+  - POST /v1/data/reports/evaluation/ackdisputedetails
+  limit: 2000
+  unit: requests
+  window: 1d
+  burst: null
+- name: Get Reporting Request Details
+  scope: per-app-credential
+  applies_to:
+  - GET /v1/data/reports/interactions/{request_id}
+  - GET /v2/data/reports/interactions/{request_id}
+  - GET /v1/data/reports/evaluations/{request_id}
+  - GET /v1/data/reports/coachings/{request_id}
+  - GET /v1/data/reports/evaluation/ackdisputedetails/{request_id}
+  limit: 20
+  unit: requests
+  window: 1m
+  burst: null
+- name: Create Auth Token
+  scope: per-app-credential
+  applies_to:
+  - POST /v1/oauth/token
+  limit: 1500
+  unit: requests
+  window: 1d
+  burst: null
+exhaustion:
+  status_code: 429
+  response_description: Rate Limit Exceeded
+  schema: RateLimitMessage
+  example_body: '{"message": "API rate limit exceeded"}'
+  source: openapi/observeai-reporting-apis-openapi.yml
+response_headers:
+  documented: false
+  observed: []
+  note: >-
+    Observe.AI documents the numeric limits but publishes no rate-limit response
+    headers — no X-RateLimit-*, no RateLimit-*, no Retry-After appears in the
+    OpenAPI 429 responses or in the docs. A consumer cannot read remaining quota
+    or a reset time at runtime; it can only observe the 429 and back off blind.
+    This is the single largest agent-readiness gap in an otherwise well
+    rate-limited API. Headers could not be observed live because every endpoint
+    on kong.observe.ai returns 403 without tenant credentials.
+history:
+  note: Rate limits have been raised repeatedly; see changelog/observeai-changelog.yml
+  changes:
+  - date: '2022-06-29'
+    change: POST reporting limit raised 30 -> 100/day
+  - date: '2022-11-16'
+    change: POST reporting limit raised 100 -> 300/day
+  - date: '2022-12-08'
+    change: Create Auth Token limit introduced at 500/day
+  - date: '2023-01-05'
+    change: POST reporting limit raised 300 -> 500/day
+  - date: '2023-02-06'
+    change: Create Auth Token limit raised 500 -> 1500/day
+  - date: '2023-04-18'
+    change: POST reporting limit raised 500 -> 2000/day

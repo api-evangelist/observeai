@@ -1,0 +1,75 @@
+generated: '2026-08-14'
+method: searched
+source: openapi/observeai-reporting-apis-openapi.yml
+docs: https://api-docs.observe.ai/#tag/Authentication
+summary:
+  types:
+  - oauth2
+  - http
+  api_key_in: []
+  oauth2_flows:
+  - clientCredentials
+model: >-
+  Observe.AI Reporting APIs use an OAuth 2.0 "App Credentials" (client
+  credentials) flow. A customer generates an App ID and App Secret in the
+  Observe.AI application (maximum 3 apps per account), exchanges them at
+  POST /v1/oauth/token for a bearer JWT, and passes that token as
+  "Authorization: Bearer <auth_token>" on every reporting call. Basic Auth was
+  the legacy scheme and Observe.AI asked all clients to migrate off it by
+  31-Dec-2022.
+schemes:
+- name: bearerAuth
+  type: http
+  scheme: bearer
+  bearerFormat: JWT
+  applied_to:
+  - POST /v1/dsr/delete/on-demand
+  - GET /v1/dsr/delete/{job_id}/status
+  sources:
+  - openapi/observeai-reporting-apis-openapi.yml
+- name: OAuth2 App Credentials
+  type: oauth2
+  flow: clientCredentials
+  token_endpoint: /v1/oauth/token
+  token_operation: Create Auth Token
+  credentials:
+  - app_id
+  - app_secret
+  request_body_schema: OauthTokenRequest
+  response_schema: OauthTokenResponse
+  source: https://api-docs.observe.ai/#tag/Authentication
+token:
+  type: JWT bearer
+  header: 'Authorization: Bearer <auth_token>'
+  lifetime_seconds: 7200
+  lifetime_note: Access token expires in 2 hours and must be re-created after expiry.
+  refresh: none — re-run the client-credentials exchange
+credential_provisioning:
+  self_serve: false
+  process: >-
+    App credentials are requested from Observe.AI (help@observe.ai or the
+    customer's CSM) and generated in the application. The App ID and App Secret
+    are downloadable exactly once and cannot be viewed or re-downloaded later.
+  max_apps_per_account: 3
+  contact: help@observe.ai
+legacy:
+  scheme: Basic Auth
+  status: deprecated
+  sunset_date: '2022-12-31'
+  note: >-
+    The pre-2023 Calls Report API used HTTP Basic Auth. Observe.AI published a
+    migration notice asking all clients to move to OAuth 2.0 by 31-Dec-2022.
+spec_defects:
+- >-
+  components.securitySchemes in the published OpenAPI contains non-security
+  entries (DsrDeleteRequest, DsrRule, DsrDeleteResponse, DsrStatusResponse are
+  object schemas placed under securitySchemes rather than components.schemas).
+  Only bearerAuth is a real security scheme.
+- >-
+  The OAuth 2.0 client-credentials flow is documented in prose and modelled as a
+  plain POST operation; there is no oauth2 securityScheme declared in the spec,
+  so scopes/ is intentionally not emitted.
+- >-
+  There is no root-level `security:` and only the two DSR operations declare
+  `security: [bearerAuth]`; the 14 reporting operations require the same bearer
+  token per the docs but do not declare it in the spec.

@@ -1,0 +1,266 @@
+{
+"$schema": "https://json-schema.org/draft/2020-12/schema",
+"title": "AUDIT_ASSIGNMENT_V1",
+"description": "JSON schema for Observe.ai bulk S3 export of audit assignment records. Each file is gzip-compressed JSON (AUDIT_ASSIGNMENT_V1_<timestamp>.json.gz). Each record is one JSON object.",
+"type": "object",
+"properties": {
+  "_id": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Unique identifier for this record (source system primary key)."
+  },
+  "assignment_configuration_id": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Identifier of the parent assignment configuration."
+  },
+  "name": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Display name."
+  },
+  "start_time": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "format": "date-time",
+    "description": "UTC timestamp when the record/session started."
+  },
+  "end_time": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "format": "date-time",
+    "description": "UTC timestamp when the record/session ended."
+  },
+  "team_id": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Identifier of the associated team."
+  },
+  "meetings": {
+    "type": [
+      "array",
+      "null"
+    ],
+    "items": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "meetingId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Interaction (meeting) identifier."
+        },
+        "agentId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Agent identifier for the interaction."
+        },
+        "auditorId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Auditor identifier assigned to the interaction."
+        },
+        "auditId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Identifier of the audit evaluation once completed."
+        },
+        "evaluatorId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Original evaluator identifier for the interaction."
+        },
+        "evaluationId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Original evaluation identifier for the interaction."
+        }
+      },
+      "description": "One interaction included in the audit assignment."
+    },
+    "description": "Interactions (meetings) included in this assignment."
+  },
+  "agent_meeting_count_filters": {
+    "description": "Filter criteria used to select agent interaction counts for the assignment.",
+    "note": "Nested object; additional fields may appear in your export."
+  },
+  "evaluator_meeting_count_filters": {
+    "description": "Filter criteria used to select evaluator interaction counts for the assignment.",
+    "note": "Nested object; additional fields may appear in your export."
+  },
+  "created_by_user_id": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Identifier of the user who created the assignment."
+  },
+  "assignment_progress": {
+    "type": [
+      "number",
+      "null"
+    ],
+    "description": "Overall completion progress of the assignment (0-1 or %)."
+  },
+  "auditor_progress": {
+    "type": [
+      "array",
+      "null"
+    ],
+    "items": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "auditorId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Auditor identifier."
+        },
+        "progress": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "description": "Percentage of assigned meetings audited by this auditor (0-100)."
+        }
+      },
+      "description": "Completion progress for one auditor."
+    },
+    "description": "Per-auditor completion progress for this assignment."
+  },
+  "audit_match_score": {
+    "type": [
+      "array",
+      "null"
+    ],
+    "items": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "evaluationId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Original evaluation identifier."
+        },
+        "auditId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Audit evaluation identifier."
+        },
+        "matchScore": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "description": "Percentage match between audit and original evaluation (0-100)."
+        }
+      },
+      "description": "Match score between an audit and its original evaluation."
+    },
+    "description": "Match score(s) between auditor and original evaluator."
+  },
+  "question_match_score": {
+    "type": [
+      "array",
+      "null"
+    ],
+    "items": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "evaluationId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Original evaluation identifier."
+        },
+        "questionId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Evaluation template question identifier."
+        },
+        "matchScore": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "description": "Percentage match for this question (0-100)."
+        }
+      },
+      "description": "Per-question match score between an audit and its original evaluation."
+    },
+    "description": "Per-question match score(s) between evaluators/auditors."
+  },
+  "status": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Current status of the record."
+  },
+  "evaluation_template_id": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Identifier of the evaluation template used for this assignment."
+  },
+  "created_at": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "format": "date-time",
+    "description": "UTC timestamp when the record was created."
+  },
+  "modified_at": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "format": "date-time",
+    "description": "UTC timestamp when the record was last modified."
+  }
+}
+}

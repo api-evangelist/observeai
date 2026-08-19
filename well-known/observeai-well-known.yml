@@ -1,0 +1,121 @@
+generated: '2026-08-14'
+method: probed
+source: live GET probes on 2026-08-14
+result: no-hits
+result_note: >-
+  Every /.well-known/ path returned 404 or an auth-gated 403 on every Observe.AI
+  host. No WellKnown, SecurityTxt, APICatalog or AgentCard pointer is emitted —
+  this file records a verified ABSENCE, not a presence.
+false_positive_warning: >-
+  app.observe.ai is a single-page application whose catch-all answers HTTP 200
+  with the same text/html shell for EVERY path, including every /.well-known/*
+  request and /openapi.json. Those 200s are not documents and were rejected.
+hosts:
+- host: https://www.observe.ai
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+  note: >-
+    Returns a small HTML body reading "Invalid .well-known request" with a 404
+    status — an explicit, well-behaved miss.
+- host: https://api-docs.observe.ai
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/oauth-protected-resource
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+  note: nginx 404 on all paths; only /swagger.yaml and /bulk-export/ are served.
+- host: https://kong.observe.ai
+  documents:
+  - path: /.well-known/security.txt
+    status: 403
+  - path: /.well-known/openid-configuration
+    status: 403
+  - path: /.well-known/oauth-authorization-server
+    status: 403
+  - path: /.well-known/oauth-protected-resource
+    status: 403
+  - path: /.well-known/api-catalog
+    status: 403
+  - path: /.well-known/ai-plugin.json
+    status: 403
+  - path: /.well-known/agent-card.json
+    status: 403
+  - path: /.well-known/agent.json
+    status: 403
+  note: >-
+    The API gateway rejects every anonymous request identically with
+    {"error_code":"access_denied","error_description":"ticket/userId is missing
+    in authorization"}. Nothing can be distinguished as present or absent behind
+    it, so no document is claimed.
+- host: https://api.observe.ai
+  documents:
+  - path: /.well-known/security.txt
+    status: 403
+  - path: /.well-known/openid-configuration
+    status: 403
+  - path: /.well-known/oauth-authorization-server
+    status: 403
+  - path: /.well-known/api-catalog
+    status: 403
+  - path: /.well-known/ai-plugin.json
+    status: 403
+  - path: /.well-known/agent-card.json
+    status: 403
+  - path: /.well-known/agent.json
+    status: 403
+  note: Same gateway, same blanket 403.
+- host: https://app.observe.ai
+  documents:
+  - path: /.well-known/security.txt
+    status: 200
+    accepted: false
+    reason: SPA catch-all returned text/html, not a document
+  - path: /.well-known/agent-card.json
+    status: 200
+    accepted: false
+    reason: SPA catch-all returned text/html, not a document
+  - path: /.well-known/agent.json
+    status: 200
+    accepted: false
+    reason: SPA catch-all returned text/html, not a document
+  - path: /.well-known/openid-configuration
+    status: 200
+    accepted: false
+    reason: SPA catch-all returned text/html, not a document
+  - path: /.well-known/oauth-authorization-server
+    status: 200
+    accepted: false
+    reason: SPA catch-all returned text/html, not a document
+  - path: /.well-known/api-catalog
+    status: 200
+    accepted: false
+    reason: SPA catch-all returned text/html, not a document
+  - path: /.well-known/ai-plugin.json
+    status: 200
+    accepted: false
+    reason: SPA catch-all returned text/html, not a document

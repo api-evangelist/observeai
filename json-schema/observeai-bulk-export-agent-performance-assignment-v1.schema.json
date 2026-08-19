@@ -1,0 +1,213 @@
+{
+"$schema": "https://json-schema.org/draft/2020-12/schema",
+"title": "AGENT_PERFORMANCE_ASSIGNMENT_V1",
+"description": "JSON schema for Observe.ai bulk S3 export of agent performance assignment records. Each file is gzip-compressed JSON (AGENT_PERFORMANCE_ASSIGNMENT_V1_<timestamp>.json.gz). Each record is one JSON object.",
+"type": "object",
+"properties": {
+  "id": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Unique identifier for this record."
+  },
+  "assignment_configuration_id": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Identifier of the parent assignment configuration."
+  },
+  "name": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Display name."
+  },
+  "start_time": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "format": "date-time",
+    "description": "UTC timestamp when the record/session started."
+  },
+  "end_time": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "format": "date-time",
+    "description": "UTC timestamp when the record/session ended."
+  },
+  "team_id": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Identifier of the associated team."
+  },
+  "meetings": {
+    "type": [
+      "array",
+      "null"
+    ],
+    "items": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "meetingId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Interaction (meeting) identifier."
+        },
+        "agentId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Agent identifier for the interaction."
+        },
+        "evaluatorId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Evaluator identifier assigned to the interaction."
+        },
+        "evaluationId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Evaluation identifier once evaluated, else null."
+        }
+      },
+      "description": "One interaction included in the assignment."
+    },
+    "description": "Interactions (meetings) included in this assignment."
+  },
+  "agent_meeting_count_filters": {
+    "type": [
+      "array",
+      "null"
+    ],
+    "items": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "string",
+          "description": "User identifier associated with the meeting count entry."
+        },
+        "meetingCount": {
+          "type": "integer",
+          "description": "Number of meetings counted for the corresponding user identifier."
+        }
+      },
+      "description": "Meeting count entry for one agent."
+    },
+    "description": "Filter criteria used to select agent interaction counts for the assignment. Filter rules applied when counting interactions for this assignment."
+  },
+  "evaluator_meeting_count_filters": {
+    "type": [
+      "array",
+      "null"
+    ],
+    "items": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "string",
+          "description": "User identifier associated with the meeting count entry."
+        },
+        "meetingCount": {
+          "type": "integer",
+          "description": "Number of meetings counted for the corresponding user identifier."
+        }
+      },
+      "description": "Meeting count entry for one evaluator."
+    },
+    "description": "Filter criteria used to select evaluator interaction counts for the assignment. Filter rules applied when counting interactions for this assignment."
+  },
+  "created_by_user_id": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Identifier of the user who created the assignment."
+  },
+  "assignment_progress": {
+    "type": [
+      "number",
+      "null"
+    ],
+    "description": "Overall completion progress of the assignment (0-1 or %)."
+  },
+  "evaluator_progress": {
+    "type": [
+      "array",
+      "number",
+      "null"
+    ],
+    "items": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "evaluatorId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Evaluator identifier."
+        },
+        "progress": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "description": "Percentage of assigned meetings evaluated by this evaluator (0-100)."
+        }
+      },
+      "description": "Completion progress for one evaluator."
+    },
+    "description": "Per-evaluator completion progress for this assignment. Exported as 0.0 when no evaluators are assigned."
+  },
+  "status": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Current status of the record."
+  },
+  "evaluation_template_id": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Identifier of the evaluation template used for this assignment."
+  },
+  "created_at": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "format": "date-time",
+    "description": "UTC timestamp when the record was created."
+  },
+  "modified_at": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "format": "date-time",
+    "description": "UTC timestamp when the record was last modified."
+  }
+}
+}

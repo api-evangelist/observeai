@@ -1,0 +1,344 @@
+{
+"$schema": "https://json-schema.org/draft/2020-12/schema",
+"title": "COACHING_V1",
+"description": "JSON schema for Observe.ai bulk S3 export of coaching session records. Each file is gzip-compressed JSON (COACHING_V1_<timestamp>.json.gz). Each record is one JSON object.",
+"type": "object",
+"properties": {
+  "id": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Unique identifier for this record."
+  },
+  "agent_id": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Observe.ai user identifier for the agent."
+  },
+  "partner_agent_id": {
+    "type": [
+      "array",
+      "null"
+    ],
+    "items": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Partner-system agent identifier."
+    },
+    "description": "Partner-system agent identifier(s) linked to the Observe.ai agent."
+  },
+  "agent_name": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Full name of the agent."
+  },
+  "agent_email": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Email address of the agent."
+  },
+  "agent_status": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Agent account status in Observe.ai (e.g. ACTIVE / IN_ACTIVE)."
+  },
+  "coach_id": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Observe.ai user identifier for the coach."
+  },
+  "partner_coach_id": {
+    "type": [
+      "array",
+      "null"
+    ],
+    "items": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Partner-system coach identifier."
+    },
+    "description": "Partner-system identifier(s) for the coach."
+  },
+  "coach_name": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Full name of the coach."
+  },
+  "coach_email": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Email address of the coach."
+  },
+  "coach_status": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Coach account status in Observe.ai."
+  },
+  "url": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Deep link URL to view this item in the Observe.ai application."
+  },
+  "coaching_areas": {
+    "description": "Areas of improvement / focus tagged for the coaching session.",
+    "note": "Nested object; additional fields may appear in your export."
+  },
+  "feedback_summary": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Summary of feedback given during the coaching session."
+  },
+  "action_plan": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Action plan agreed upon during the coaching session."
+  },
+  "status": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Current status of the record."
+  },
+  "created_at": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "format": "date-time",
+    "description": "UTC timestamp when the record was created."
+  },
+  "updated_at": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "format": "date-time",
+    "description": "UTC timestamp when the record was last modified."
+  },
+  "coaching_ack_status": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Agent acknowledgement status for the coaching session."
+  },
+  "coaching_ack_info": {
+    "description": "Agent acknowledgement metadata for the coaching session.",
+    "note": "Nested object; additional fields may appear in your export."
+  },
+  "follow_up_date": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "format": "date-time",
+    "description": "Scheduled follow-up date for the coaching session."
+  },
+  "coaching_type": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Type/category of the coaching session."
+  },
+  "coaching_session_details": {
+    "type": [
+      "string",
+      "null"
+    ],
+    "description": "Additional details captured about the coaching session."
+  },
+  "evaluations": {
+    "type": [
+      "object",
+      "null"
+    ],
+    "properties": {
+      "manual": {
+        "type": [
+          "array",
+          "null"
+        ],
+        "items": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "properties": {
+            "evaluation_form_id": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "description": "Evaluation template identifier."
+            },
+            "evaluation_ids": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "items": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Evaluation identifier."
+              },
+              "description": "Manual evaluation ids for this template linked to the coaching session."
+            }
+          },
+          "description": "One evaluation template's manually-scored evaluations."
+        },
+        "description": "Manual evaluations grouped by template."
+      },
+      "autoqa": {
+        "type": [
+          "array",
+          "null"
+        ],
+        "items": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "properties": {
+            "evaluation_form_id": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "description": "Evaluation template identifier."
+            },
+            "evaluation_ids": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "items": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Evaluation identifier."
+              },
+              "description": "AutoQA evaluation ids for this template linked to the coaching session."
+            }
+          },
+          "description": "One evaluation template's AutoQA-scored evaluations."
+        },
+        "description": "AutoQA evaluations grouped by template."
+      }
+    },
+    "description": "Evaluation identifiers linked to this coaching session, grouped by scoring type."
+  },
+  "evaluations_full": {
+    "type": [
+      "object",
+      "null"
+    ],
+    "properties": {
+      "manual": {
+        "type": [
+          "array",
+          "null"
+        ],
+        "items": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "properties": {
+            "evaluation_form_id": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "description": "Evaluation template identifier."
+            },
+            "evaluation_ids": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "items": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Evaluation identifier."
+              }
+            }
+          },
+          "description": "One evaluation template's manually-scored evaluations."
+        },
+        "description": "Manual evaluations grouped by template."
+      },
+      "autoqa": {
+        "type": [
+          "array",
+          "null"
+        ],
+        "items": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "properties": {
+            "evaluation_form_id": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "description": "Evaluation template identifier."
+            },
+            "evaluation_ids": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "items": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Evaluation identifier."
+              }
+            }
+          },
+          "description": "One evaluation template's AutoQA-scored evaluations."
+        },
+        "description": "AutoQA evaluations grouped by template."
+      }
+    },
+    "description": "Full evaluation payloads linked to this coaching session."
+  }
+}
+}

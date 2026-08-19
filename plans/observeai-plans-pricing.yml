@@ -1,0 +1,52 @@
+generated: '2026-08-14'
+method: searched
+source: https://aws.amazon.com/marketplace/pp/prodview-q2xrm5ud6rkro
+also_checked:
+- url: https://www.observe.ai/pricing
+  status: 404
+- url: https://www.observe.ai/demo
+  status: 200
+- url: https://www.observe.ai/terms
+  status: 401
+plan_count: 1
+model: sales-led
+model_note: >-
+  Observe.AI publishes no pricing page on its own site — https://www.observe.ai/pricing
+  returns 404 and every commercial path routes to a "Talk to us" / demo request
+  form. The only provider-published price anywhere is the AWS Marketplace listing
+  for a single module (Post-Interaction AI), which is a real Observe.AI-authored
+  listing with a stated per-agent contract price. The full platform (AI Agents,
+  AI Copilot, Conversation Intelligence, Real-Time) is quoted by sales, gated on
+  seat count, module selection and contract length. No API-tier pricing, no
+  metered API pricing and no free/developer tier is published anywhere.
+plans:
+- name: Observe.AI - Post-Interaction AI
+  channel: AWS Marketplace
+  url: https://aws.amazon.com/marketplace/pp/prodview-q2xrm5ud6rkro
+  price: 828.00
+  currency: USD
+  billing_period: 12-month contract
+  unit: per enrolled contact center agent
+  derived_monthly: 69.00
+  included_quota: >-
+    Unlimited conversation analysis — the listing states the product can analyze
+    all customer conversations without altering the per-agent monthly charge.
+  overage: none stated
+  other_terms:
+  - 24-month contract available (price not published)
+  - 36-month contract available (price not published)
+  limits: null
+  note: >-
+    This is one module, not the platform. It does not include AI Agents, AI
+    Copilot or Real-Time products.
+api_access:
+  metered: false
+  priced_separately: false
+  note: >-
+    The Reporting APIs carry no published price and no separate SKU. API access
+    is provisioned by the CSM against an existing contract — app credentials are
+    requested from help@observe.ai, and the tenant base URL is issued via a
+    support ticket. There is no self-serve sign-up that yields API credentials.
+free_tier: null
+trial: >-
+  No self-serve trial. https://www.observe.ai/demo is a sales demo request form.

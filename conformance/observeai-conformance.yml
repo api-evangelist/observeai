@@ -1,0 +1,111 @@
+generated: '2026-08-14'
+method: derived
+source: openapi/observeai-reporting-apis-openapi.yml
+searched:
+- https://www.observe.ai/trust
+- https://www.observe.ai/contact-center-security
+- https://api-docs.observe.ai/
+standards:
+- id: openapi-3.0
+  conforms: true
+  evidence: >-
+    Published OpenAPI 3.0.1 document served at
+    https://api-docs.observe.ai/swagger.yaml and rendered with Redoc.
+- id: openapi-3.1
+  conforms: false
+  evidence: Document declares openapi 3.0.1.
+- id: json-schema-2020-12
+  conforms: true
+  evidence: >-
+    All 16 bulk-export dataset schemas declare
+    "$schema": "https://json-schema.org/draft/2020-12/schema"
+    (harvested to json-schema/).
+- id: oauth2
+  conforms: true
+  evidence: >-
+    OAuth 2.0 client-credentials ("App Credentials") flow documented, with
+    POST /v1/oauth/token exchanging App ID + App Secret for a 2-hour bearer JWT.
+    Note: the flow is documented in prose and modelled as a plain operation; no
+    oauth2 securityScheme is declared in the spec.
+- id: oidc
+  conforms: false
+  evidence: >-
+    No /.well-known/openid-configuration on any host (404 on api-docs.observe.ai,
+    403 on kong.observe.ai).
+- id: rfc8414-oauth-authorization-server-metadata
+  conforms: false
+  evidence: /.well-known/oauth-authorization-server returns 404/403 on all hosts.
+- id: rfc9457-problem-details
+  conforms: false
+  evidence: >-
+    Errors return a flat {"message": "..."} object under the wildcard media type
+    "*/*"; no application/problem+json, no type URI, no error code.
+- id: rfc9116-security-txt
+  conforms: false
+  evidence: /.well-known/security.txt returns 404 on www.observe.ai and api-docs.observe.ai.
+- id: rfc8594-sunset-header
+  conforms: false
+  evidence: >-
+    Deprecation is published in prose with a dated migration guide, but no Sunset
+    or Deprecation response headers are documented.
+- id: rfc6585-429
+  conforms: true
+  evidence: >-
+    429 Rate Limit Exceeded declared on 13 of 16 operations with a
+    RateLimitMessage schema and example body.
+- id: ietf-ratelimit-headers
+  conforms: false
+  evidence: >-
+    No RateLimit-*, X-RateLimit-* or Retry-After header is published on the 429.
+- id: idempotency-key
+  conforms: false
+  evidence: No Idempotency-Key header or idempotent-retry contract exists.
+- id: rest-pagination
+  conforms: true
+  evidence: >-
+    Page-number pagination with page/size request fields and
+    page/size/total_pages/total_size response fields; max page size 1000.
+- id: mcp
+  conforms: false
+  evidence: >-
+    https://www.observe.ai/platform/integrations claims "Model Context Protocol
+    support", but no hosted MCP endpoint could be found — mcp.observe.ai does not
+    resolve, and POST tools/list to api/kong .observe.ai/mcp returns the gateway
+    403. Any MCP support appears to be Observe.AI acting as an MCP *client* into
+    customer systems, not a server agents can call.
+- id: a2a
+  conforms: false
+  evidence: >-
+    /.well-known/agent-card.json and /.well-known/agent.json miss on every host
+    (404 on www + api-docs, 403 on kong; app.observe.ai answers 200 with the SPA
+    HTML shell for every path and is a false positive).
+- id: asyncapi
+  conforms: false
+  evidence: >-
+    No AsyncAPI document and no public webhook catalog; the platform's event
+    surface is delivered as scheduled bulk export to Snowflake/S3 rather than
+    push.
+compliance_programs:
+- id: soc2
+  claimed: true
+  source: https://www.observe.ai/trust
+- id: iso-27001
+  claimed: true
+  source: https://www.observe.ai/trust
+- id: hipaa
+  claimed: true
+  source: https://www.observe.ai/trust
+- id: gdpr
+  claimed: true
+  source: https://www.observe.ai/gdpr-privacy
+- id: ccpa
+  claimed: true
+  source: https://www.observe.ai/ccpa-privacy-notice
+- id: dsr-tooling
+  claimed: true
+  source: https://api-docs.observe.ai/#tag/DSR
+  note: >-
+    Observe.AI backs its privacy claims with an actual API — the DSR deletion
+    endpoints let a customer submit and track metadata-based deletion of audio,
+    transcripts and screen recordings programmatically. That is a materially
+    stronger posture than a compliance page alone.
