@@ -53,6 +53,18 @@ tags:
 - Ai Apps
 - Contact Center
 - Conversation Intelligence
+- Customer-Support
+- Agentic AI
+- Voice AI
+- Quality Assurance
+- Reporting
+- OpenAPI
+- Speech Analytics
+tags_raw:
+- Company
+- Ai Apps
+- Contact Center
+- Conversation Intelligence
 - Customer Support
 - Agentic AI
 - Voice AI
@@ -76,6 +88,16 @@ apis:
   humanURL: https://api-docs.observe.ai/
   baseURL: https://kong.observe.ai/
   tags:
+  - Contact Center
+  - Conversation Intelligence
+  - Quality Assurance
+  - Reporting
+  - call-transcripts
+  - Agent Performance
+  - Coaching
+  - Summarization
+  - data-subject-request
+  tags_raw:
   - contact-center
   - conversation-intelligence
   - quality-assurance
