@@ -73,43 +73,36 @@ tags_raw:
 - OpenAPI
 - Speech Analytics
 apis:
-- name: Observe.AI Reporting APIs
+- aid: observeai:observeai-ack-dispute-flow-api
+  name: Observe.AI Ack Dispute Flow API
   description: >-
-    Asynchronous REST APIs that export Observe.AI contact-center data into
-    external systems: Interactions (Moments, transcripts and metadata for voice
-    calls, webchat and email), Summarization AI (GenAI summaries), Evaluations
-    (Auto QA and manual evaluation forms with question-level and aggregate
-    scores), Coachings (coaching sessions with mapped evaluations and notes),
-    Ack/Dispute state changes, and DSR (Data Subject Request) deletion. Every
-    reporting call is a two-step async flow — POST registers a request and
-    returns a request_id, then GET polls that id until COMPLETED and returns a
-    pre-signed S3 URL valid for 24 hours. Auth is OAuth 2.0 client-credentials
-    (App ID + App Secret exchanged for a 2-hour bearer JWT).
+    Ack Dispute API can be used to pull all evaluation related data which are sent for acknowledgment
+    or dispute.
+
+
+    Please note -
+        <ol>
+          <li>Allow 24 hrs to pass before pulling Ack Dispute Data. ie., For Evaluations completed on
+    14-Jan by 12:00AM PST, they would be available via APIs by 15-Jan by 12:00AM PST.</li>
+          <li>You can pull Ack Dispute for 90 days at a time i.e., the duration between the end_date and
+    the start_date should not exceed 90 days.</li>
+          <Li>There is no limit as to how far back in the past you want to go for pulling Ack Dispuet
+    Data. You can go back to the first ever evaluation on the platform unless data retention limits have
+    been set.</li>
+          <li>The S3 URL obtained in the API response (with the evaluations) is valid for 24 hours.
+                                    </li>
+          <li>If you have been using Basic Auth for the APIs, we request you to switch to OAuth2.0 based
+    Auth for the APIs by 31-Dec-2022. Detailed instructions to create API Credentials and make the switch
+    to OAuth are documented <a href="#tag/Authentication">here</a>. Please reach out to your CSM for more
+    details.</li>
+        </ol>
   humanURL: https://api-docs.observe.ai/
   baseURL: https://kong.observe.ai/
   tags:
-  - Contact Center
-  - Conversation Intelligence
-  - Quality Assurance
-  - Reporting
-  - call-transcripts
-  - Agent Performance
-  - Coaching
-  - Summarization
-  - data-subject-request
-  tags_raw:
-  - contact-center
-  - conversation-intelligence
-  - quality-assurance
-  - reporting
-  - call-transcripts
-  - agent-performance
-  - coaching
-  - summarization
-  - data-subject-request
+  - Ack Dispute Flow
   properties:
   - type: OpenAPI
-    url: openapi/observeai-reporting-apis-openapi.yml
+    url: openapi/observeai-ack-dispute-flow-api-openapi.yml
   - type: Documentation
     url: https://api-docs.observe.ai/
   - type: APIReference
@@ -128,8 +121,543 @@ apis:
     url: data-model/observeai-data-model.yml
   - type: ChangeLog
     url: changelog/observeai-changelog.yml
-  - type: Overlay
-    url: overlays/observeai-reporting-apis-overlay.yaml
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-interaction-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-autoqa-evaluation-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-manual-evaluation-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-coaching-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-interaction-summary-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-agent-performance-assignment-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-audit-assignment-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-autoqa-ack-dispute-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-calibration-assignment-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-contact-reason-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-evaluation-template-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-manual-ack-dispute-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-sentiment-metric-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-team-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-user-login-activity-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-user-v1.schema.json
+- aid: observeai:observeai-authentication-api
+  name: Observe.AI Authentication API
+  description: >-
+    OAuth 2.0, which stands for “Open Authorization”, is a standard design to allow a website or application
+    to access resources hosted by other web apps on behalf of a user
+
+
+    <b>Note</b>: If you have been using Basic Auth for the APIs, we request you to switch to OAuth2.0
+    based Auth for the APIs by 31-Dec-2022. Detailed instructions to create API Credentials and make the
+    switch to OAuth are documented as below. Please reach out to your CSM for more details.
+
+
+    <h2> OAuth App Credential Flow </h2>
+
+
+    The App Credentials flow is recommended for server-side (AKA confidential) client applications with
+    no end user, which normally describes machine-to-machine communication. Your application needs to
+    securely store its app ID and secret and pass those to Observe Authentication Api in exchange for
+    an access token.
+
+
+    <h3> Steps required for generating access token </h3>
+
+      1. API Credential Generation:
+    <ul>
+       <li>To get access for API credentials, please contact help@observe.ai.</li>
+       <li>AppId and AppSecret required to create access tokens, you can generate max of 3 apps.</li>
+
+       - Select New App Id and App Secret.<br>
+
+         <img src="https://cdn.observe.ai/apicredentials_generation.png"/><br>
+
+       - Add your app name.<br>
+
+         <img src="https://cdn.observe.ai/apicredentials_appname.png"/><br>
+
+       - Download the credentials, <b>these can not viewed/downloaded later.</b><br>
+
+         <img src="https://cdn.observe.ai/apicredentials_download.png"/><br>
+    </ul>
+      2. Access Token
+    <ul>
+       <li>You can create accessToken, using AppId and AppSecret from step 1.</li>
+
+       <li><b>Access Token expires in 2 hrs, needs to be created again after expiry time.</b></li>
+
+       <li>The 'Create Auth Token API' API has a rate limit of 1500 requests per day.</li>
+    </ul>
+
+
+    <li> The video in Getting Started outlines these steps in detail </li>
+  humanURL: https://api-docs.observe.ai/
+  baseURL: https://kong.observe.ai/
+  tags:
+  - Authentication
+  properties:
+  - type: OpenAPI
+    url: openapi/observeai-authentication-api-openapi.yml
+  - type: Documentation
+    url: https://api-docs.observe.ai/
+  - type: APIReference
+    url: https://api-docs.observe.ai/
+  - type: GettingStarted
+    url: https://api-docs.observe.ai/#tag/ReportingService-Overview
+  - type: Authentication
+    url: authentication/observeai-authentication.yml
+  - type: Conventions
+    url: conventions/observeai-conventions.yml
+  - type: RateLimits
+    url: rate-limits/observeai-rate-limits.yml
+  - type: ErrorCatalog
+    url: errors/observeai-problem-types.yml
+  - type: DataModel
+    url: data-model/observeai-data-model.yml
+  - type: ChangeLog
+    url: changelog/observeai-changelog.yml
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-interaction-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-autoqa-evaluation-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-manual-evaluation-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-coaching-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-interaction-summary-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-agent-performance-assignment-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-audit-assignment-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-autoqa-ack-dispute-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-calibration-assignment-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-contact-reason-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-evaluation-template-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-manual-ack-dispute-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-sentiment-metric-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-team-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-user-login-activity-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-user-v1.schema.json
+- aid: observeai:observeai-coachings-api
+  name: Observe.AI Coachings API
+  description: >-
+    Coachings API can be used to pull all the Coaching sessions done on Observe AI platform.
+
+    Please note -
+      <ol>
+        <li>Allow 24 hrs to pass before pulling Coaching sessions. ie., For Coaching sessions completed
+    on 14-Jan by 12:00AM PST, they would be available via APIs by 15-Jan by 12:00AM PST.</li>
+        <li>You can pull Coaching sessions for 90 days at a time i.e., the duration between the end_date
+    and the start_date should not exceed 90 days.</li>
+        <Li>There is no limit as to how far back in the past you want to go for pulling Coaching sessions.
+    You can go back to the first ever coaching session on the platform unless data retention limits have
+    been set.</li>
+        <li> All the Coaching sessions that were Submitted, Edited and Deleted in the date-range will
+    be available in the API response.</li>
+          <ul>
+            <li>Lets take an example to explain it further - when you pull Coaching sessions for 15 days(say
+    for start_date - 15-Jan and end_date 30-Jan) on 15-Feb via an API call, you get all Coaching sessions
+    that were -</li>
+              <ul>
+                <li>submitted between 15-jan and 30-jan with "status": "SUBMITTED"</li>
+                <li>submitted before 15-jan but modified/deleted between 15-jan and 30-jan with "status"="EDITED"
+    / "status"="DELETED"</li>
+                <li>submitted between 15-jan and 30-jan but modified after 30-jan until the pull date(15-Feb)
+    with "status"="EDITED"</li>
+              </ul>
+          </ul>
+        <li>The S3 URL obtained in the API response (with the coaching sessions) is valid for 24 hours.
+                        </li>
+        <li>If you have been using Basic Auth for the APIs, we request you to switch to OAuth2.0 based
+    Auth for the APIs by 31-Dec-2022. Detailed instructions to create API Credentials and make the switch
+    to OAuth are documented <a href="#tag/Authentication">here</a>. Please reach out to your CSM for more
+    details.</li>
+      </ol>
+  humanURL: https://api-docs.observe.ai/
+  baseURL: https://kong.observe.ai/
+  tags:
+  - Coachings
+  properties:
+  - type: OpenAPI
+    url: openapi/observeai-coachings-api-openapi.yml
+  - type: Documentation
+    url: https://api-docs.observe.ai/
+  - type: APIReference
+    url: https://api-docs.observe.ai/
+  - type: GettingStarted
+    url: https://api-docs.observe.ai/#tag/ReportingService-Overview
+  - type: Authentication
+    url: authentication/observeai-authentication.yml
+  - type: Conventions
+    url: conventions/observeai-conventions.yml
+  - type: RateLimits
+    url: rate-limits/observeai-rate-limits.yml
+  - type: ErrorCatalog
+    url: errors/observeai-problem-types.yml
+  - type: DataModel
+    url: data-model/observeai-data-model.yml
+  - type: ChangeLog
+    url: changelog/observeai-changelog.yml
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-interaction-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-autoqa-evaluation-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-manual-evaluation-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-coaching-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-interaction-summary-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-agent-performance-assignment-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-audit-assignment-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-autoqa-ack-dispute-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-calibration-assignment-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-contact-reason-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-evaluation-template-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-manual-ack-dispute-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-sentiment-metric-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-team-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-user-login-activity-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-user-v1.schema.json
+- aid: observeai:observeai-dsr-api
+  name: Observe.AI DSR API
+  description: >-
+    DSR (Data Subject Request) deletion APIs allow customers to submit metadata-based deletion requests
+    and check
+
+    the processing status of those requests.
+
+
+    <h3>Authentication</h3>
+
+    OAuth 2.0 Bearer Token is required. Use App ID and App Secret to generate a token via
+
+    <code>POST /v1/oauth/token</code>, then pass it as <code>Authorization: Bearer &lt;auth_token&gt;</code>.
+
+    See <a href="#tag/Authentication">Authentication</a> for the full credential flow.
+  humanURL: https://api-docs.observe.ai/
+  baseURL: https://kong.observe.ai/
+  tags:
+  - DSR
+  properties:
+  - type: OpenAPI
+    url: openapi/observeai-dsr-api-openapi.yml
+  - type: Documentation
+    url: https://api-docs.observe.ai/
+  - type: APIReference
+    url: https://api-docs.observe.ai/
+  - type: GettingStarted
+    url: https://api-docs.observe.ai/#tag/ReportingService-Overview
+  - type: Authentication
+    url: authentication/observeai-authentication.yml
+  - type: Conventions
+    url: conventions/observeai-conventions.yml
+  - type: RateLimits
+    url: rate-limits/observeai-rate-limits.yml
+  - type: ErrorCatalog
+    url: errors/observeai-problem-types.yml
+  - type: DataModel
+    url: data-model/observeai-data-model.yml
+  - type: ChangeLog
+    url: changelog/observeai-changelog.yml
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-interaction-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-autoqa-evaluation-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-manual-evaluation-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-coaching-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-interaction-summary-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-agent-performance-assignment-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-audit-assignment-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-autoqa-ack-dispute-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-calibration-assignment-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-contact-reason-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-evaluation-template-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-manual-ack-dispute-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-sentiment-metric-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-team-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-user-login-activity-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-user-v1.schema.json
+- aid: observeai:observeai-evaluations-api
+  name: Observe.AI Evaluations API
+  description: >-
+    Evaluations API can be used to pull all the Evaluations(Manual and Auto QA)  done on Observe AI platform.
+
+
+    Please note -
+        <ol>
+          <li>Allow 24 hrs to pass before pulling Evaluations. ie., For Evaluations completed on 14-Jan
+    by 12:00AM PST, they would be available via APIs by 15-Jan by 12:00AM PST.</li>
+          <li>You can pull Evaluations for 90 days at a time i.e., the duration between the end_date and
+    the start_date should not exceed 90 days.</li>
+          <Li>There is no limit as to how far back in the past you want to go for pulling Evaluations.
+    You can go back to the first ever evaluation on the platform unless data retention limits have been
+    set.</li>
+          <li> All the Evaluations that were Submitted, Edited and Deleted in the date-range will be available
+    in the API response.</li>
+            <ul>
+              <li>Lets take an example to explain it further - when you pull Evaluations for 15 days(say
+    for start_date - 15-Jan and end_date 30-Jan) on 15-Feb via an API call, you get all Evaluations that
+    were -</li>
+                <ul>
+                  <li>submitted between 15-jan and 30-jan with "status": "SUBMITTED"</li>
+                  <li>submitted before 15-jan but modified/deleted between 15-jan and 30-jan with "status"="EDITED"
+    / "status"="DELETED"</li>
+                  <li>submitted between 15-jan and 30-jan but modified after 30-jan until the pull date(15-Feb)
+    with "status"="EDITED"</li>
+                </ul>
+            </ul>
+          <li>The S3 URL obtained in the API response (with the evaluations) is valid for 24 hours.
+                                    </li>
+          <li>If you have been using Basic Auth for the APIs, we request you to switch to OAuth2.0 based
+    Auth for the APIs by 31-Dec-2022. Detailed instructions to create API Credentials and make the switch
+    to OAuth are documented <a href="#tag/Authentication">here</a>. Please reach out to your CSM for more
+    details.</li>
+        </ol>
+  humanURL: https://api-docs.observe.ai/
+  baseURL: https://kong.observe.ai/
+  tags:
+  - Evaluations
+  properties:
+  - type: OpenAPI
+    url: openapi/observeai-evaluations-api-openapi.yml
+  - type: Documentation
+    url: https://api-docs.observe.ai/
+  - type: APIReference
+    url: https://api-docs.observe.ai/
+  - type: GettingStarted
+    url: https://api-docs.observe.ai/#tag/ReportingService-Overview
+  - type: Authentication
+    url: authentication/observeai-authentication.yml
+  - type: Conventions
+    url: conventions/observeai-conventions.yml
+  - type: RateLimits
+    url: rate-limits/observeai-rate-limits.yml
+  - type: ErrorCatalog
+    url: errors/observeai-problem-types.yml
+  - type: DataModel
+    url: data-model/observeai-data-model.yml
+  - type: ChangeLog
+    url: changelog/observeai-changelog.yml
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-interaction-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-autoqa-evaluation-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-manual-evaluation-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-coaching-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-interaction-summary-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-agent-performance-assignment-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-audit-assignment-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-autoqa-ack-dispute-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-calibration-assignment-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-contact-reason-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-evaluation-template-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-manual-ack-dispute-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-sentiment-metric-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-team-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-user-login-activity-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-user-v1.schema.json
+- aid: observeai:observeai-interactions-api
+  name: Observe.AI Interactions API
+  description: >-
+    Interactions API is an omnichannel API can be used to obtain all the data related to the interactions
+    like Moments, Transcripts and metadata related to Interactions(including Voice calls and Web chat).
+
+
+    Please note -
+
+    <ol>
+      <li>Allow 24 hrs to pass before pulling Interactions. ie., For Interactions completed on 14-Jan
+    by 12:00AM PST, they would be available via APIs by 15-Jan by 12:00AM PST.</li>
+      <li>You can pull Interactions for 30 days at a time i.e., the duration between the end_date and
+    the start_date should not exceed 30 days.</li>
+      <li>There is no limit as to how far back in the past you want to go for pulling Interactions. You
+    can go back to the first ever evaluation on the platform unless data retention limits have been set.</li>
+      <li>Interactions API gives a paginated response so the customer need to specify the page number
+    and the desired amount of interactions in a page. By default, page_size is set to 100</li>
+      <li>There is flexibility to either include or exclude Transcript in the API response by setting
+    a query parameter includeTranscript. By default it is set to false.</li>
+      <li>The S3 URL obtained in the API response (with the interactions) is valid for 24 hours.</li>
+      <li>Clients using ‘Calls report API’ are requested to switch to ‘Interactions API’ which provides
+    several benefits listed <a href="#tag/CallsReportVsInteractions">here</a>. ‘Calls report API’ will
+    be deprecated after 31-Dec-2022. Please reach out to your CSM for more details.</li>
+      <li>If you have been using Basic Auth for the APIs, we request you to switch to OAuth2.0 based Auth
+    for the APIs by 31-Dec-2022. Detailed instructions to create API Credentials and make the switch to
+    OAuth are documented <a href="#tag/Authentication">here</a>. Please reach out to your CSM for more
+    details.</li>
+      <li>If you need to pull Interactions by ID, there is a separate synchronous API - <a href="#tag/Interactions/operation/Get
+    Interactions By Ids">Get Interactions By Ids</a>.</li>
+    </ol>
+  humanURL: https://api-docs.observe.ai/
+  baseURL: https://kong.observe.ai/
+  tags:
+  - Interactions
+  properties:
+  - type: OpenAPI
+    url: openapi/observeai-interactions-api-openapi.yml
+  - type: Documentation
+    url: https://api-docs.observe.ai/
+  - type: APIReference
+    url: https://api-docs.observe.ai/
+  - type: GettingStarted
+    url: https://api-docs.observe.ai/#tag/ReportingService-Overview
+  - type: Authentication
+    url: authentication/observeai-authentication.yml
+  - type: Conventions
+    url: conventions/observeai-conventions.yml
+  - type: RateLimits
+    url: rate-limits/observeai-rate-limits.yml
+  - type: ErrorCatalog
+    url: errors/observeai-problem-types.yml
+  - type: DataModel
+    url: data-model/observeai-data-model.yml
+  - type: ChangeLog
+    url: changelog/observeai-changelog.yml
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-interaction-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-autoqa-evaluation-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-manual-evaluation-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-coaching-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-interaction-summary-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-agent-performance-assignment-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-audit-assignment-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-autoqa-ack-dispute-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-calibration-assignment-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-contact-reason-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-evaluation-template-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-manual-ack-dispute-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-sentiment-metric-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-team-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-user-login-activity-v1.schema.json
+  - type: JSONSchema
+    url: json-schema/observeai-bulk-export-user-v1.schema.json
+- aid: observeai:observeai-summary-api
+  name: Observe.AI Summary API
+  description: >-
+    Summarization AI API can be used to pull the data related to summaries for a particular interaction
+    including calls and chats.
+
+
+    Please note -
+
+    <ol>
+      <li> Summaries can only be extracted if they are available for the interaction.</li>
+      <li>Allow 24 hrs to pass before pulling summaries. ie., For summaries completed on 14-Jan by 12:00AM
+    PST, they would be available via APIs by 15-Jan by 12:00AM PST.</li>
+      <li>You can pull Summaries for 30 days at a time i.e., the duration between the end_date and the
+    start_date should not exceed 30 days.</li>
+      <li>There is no limit as to how far back in the past you want to go for pulling summaries. You can
+    retrieve summaries from the very first ones generated on the platform, unless data retention limits
+    have been set.</li>
+      <li>Summarization AI API gives a paginated response so the customer need to specify the page number
+    and the desired amount of summaries in a page. By default, page_size is set to 100</li>
+      <li>There is flexibility to either include or exclude Transcript in the API response by setting
+    a query parameter includeTranscript. By default it is set to false.</li>
+      <li>The S3 URL obtained in the API response (with the summaries) is valid for 24 hours.</li>
+      <li>If you need to pull Summaries by ID, there is a separate synchronous API - <a href="#tag/Summary/operation/Get
+    Summaries By Ids">Get Summaries By Ids</a>.</li>
+    </ol>
+  humanURL: https://api-docs.observe.ai/
+  baseURL: https://kong.observe.ai/
+  tags:
+  - Summary
+  properties:
+  - type: OpenAPI
+    url: openapi/observeai-summary-api-openapi.yml
+  - type: Documentation
+    url: https://api-docs.observe.ai/
+  - type: APIReference
+    url: https://api-docs.observe.ai/
+  - type: GettingStarted
+    url: https://api-docs.observe.ai/#tag/ReportingService-Overview
+  - type: Authentication
+    url: authentication/observeai-authentication.yml
+  - type: Conventions
+    url: conventions/observeai-conventions.yml
+  - type: RateLimits
+    url: rate-limits/observeai-rate-limits.yml
+  - type: ErrorCatalog
+    url: errors/observeai-problem-types.yml
+  - type: DataModel
+    url: data-model/observeai-data-model.yml
+  - type: ChangeLog
+    url: changelog/observeai-changelog.yml
   - type: JSONSchema
     url: json-schema/observeai-bulk-export-interaction-v1.schema.json
   - type: JSONSchema
@@ -168,6 +696,8 @@ maintainers:
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: Overlay
+  url: overlays/observeai-reporting-apis-overlay.yaml
 - type: Website
   url: https://www.observe.ai/
 - type: Blog
