@@ -708,6 +708,9 @@ maintainers:
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: CapabilityMap
+  url: capabilities/observeai-capability-edges.yml
+  name: Observe.AI Business Capability Map
 - type: Overlay
   url: overlays/observeai-reporting-apis-overlay.yaml
 - type: Website

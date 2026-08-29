@@ -1,0 +1,25 @@
+slug: observeai
+provider: Observe.AI
+generated_by: planning/capability-mapping/scripts/classify_capabilities.py
+model: claude-opus-5
+frame:
+- Telecommunications
+min_confidence: 0.7
+capability_model:
+  source: https://github.com/vincentmakes/turbo-ea-capabilities
+  license: CC-BY-4.0
+  attribution: Turbo EA Capabilities by Vincent Verdet — Turbo EA, https://github.com/vincentmakes/turbo-ea-capabilities,
+    CC BY 4.0
+  notice: NOTICE
+edge_count: 1
+edges:
+- tag: DSR
+  spec_file: observeai-dsr-api-openapi.yml
+  capability_id: BC-130.50
+  capability_id_l1: BC-130
+  capability_name: Privacy & Data Protection Management
+  confidence: 0.85
+  evidence: POST /v1/dsr/delete/on-demand "Submit DSR deletion request"; GET /v1/dsr/delete/{job_id}/status
+    "Get DSR deletion status"
+  reason: Data Subject Request deletion submission and status tracking is the operational realisation
+    of data-subject rights under privacy regulation, matching Privacy & Data Protection Management.
