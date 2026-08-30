@@ -1,0 +1,259 @@
+openapi: 3.2.0
+info:
+  title: Reporting DSR API
+  description: "Reporting APIs are a collection of RESTful APIs that provide a convenient and secure way for integrating reporting data from Observe.AI into external system of your choice. These APIs are asynchronous and render data in a JSON format. Observe.AI uses OAuth 2.0 protocol for authentication of APIs. Please refer to Authentication section to obtain credentials to access Reporting APIs. Below are the 3 APIs that we support -\n      <ol>\n          <li><a href=\"#tag/Interactions\">Interactions API</a>- To fetch Moments, Transcripts and Interactions(Voice calls, Webchat, Email) metadata</li>\n          <li><a href=\"#tag/Evaluations\">Evaluations API</a> - To fetch Evaluation forms and submitted Evaluations along with question-wise scores and aggregate scores.</li>\n          <li><a href=\"#tag/Coachings\"> Coachings API </a> - To fetch Coaching sessions with mapped Evaluations and related Notes.</li>\n          <li><a href=\"#tag/Ack Dispute Flow\"> Ack Dispute API </a> - To fetch Ack/Dispute state changes for Evaluations.</li>\n          <li><a href=\"#tag/Summary\"> Summarization AI API </a> - To fetch GenAI-based Summaries along with Moments, Transcripts and metadata for all Interactions(Voice calls, Webchat).</li>\n      </ol>\n"
+  x-logo:
+    url: https://cdn.observe.ai/observeaiLogo.png
+servers:
+- url: https://{base_url}
+  description: Generated server url, where `{base_url}` corresponds to the specific cluster's base URL.
+tags:
+- name: DSR
+  x-displayName: DSR Deletion API
+  description: 'DSR (Data Subject Request) deletion APIs allow customers to submit metadata-based deletion requests and check
+
+    the processing status of those requests.
+
+
+    <h3>Authentication</h3>
+
+    OAuth 2.0 Bearer Token is required. Use App ID and App Secret to generate a token via
+
+    <code>POST /v1/oauth/token</code>, then pass it as <code>Authorization: Bearer &lt;auth_token&gt;</code>.
+
+    See <a href="#tag/Authentication">Authentication</a> for the full credential flow.
+
+    '
+paths:
+  /v1/dsr/delete/on-demand:
+    post:
+      tags:
+      - DSR
+      summary: Submit DSR deletion request
+      operationId: Create Dsr Delete Request
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DsrDeleteRequest'
+            examples:
+              '0':
+                value:
+                  entity_type: TRANSCRIPT
+                  rules:
+                  - type: OAI_METADATA
+                    name: Region
+                    values:
+                    - UK
+                  - type: CUSTOMER_METADATA
+                    name: Campaign
+                    values:
+                    - iPhone
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/DsrDeleteResponse'
+              examples:
+                '0':
+                  value:
+                    job_id: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+                    status: QUEUED
+                    message: Deletion job accepted and queued for processing.
+                    requested_at: '2025-12-04T08:00:00Z'
+                    expected_completion_by: '2026-01-03T08:00:00Z'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              examples:
+                '0':
+                  value:
+                    error_code: bad_request
+                    error_description: Entity type is not supported
+        '401':
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        '500':
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+  /v1/dsr/delete/{job_id}/status:
+    get:
+      tags:
+      - DSR
+      summary: Get DSR deletion status
+      operationId: Get Dsr Delete Status
+      security:
+      - bearerAuth: []
+      parameters:
+      - in: path
+        name: job_id
+        required: true
+        schema:
+          type: string
+        description: Job ID returned by the delete request
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/DsrStatusResponse'
+              examples:
+                '0':
+                  value:
+                    request_id: 2a7c7e37-7a65-4d6f-9b2b-3b421b3b45ab
+                    status: PROGRESS
+                    status_message: null
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        '401':
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        '500':
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+components:
+  schemas:
+    ErrorMessage:
+      type: object
+      properties:
+        error_code:
+          type: string
+        error_description:
+          type: string
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    DsrDeleteRequest:
+      type: object
+      required:
+      - entity_type
+      - rules
+      properties:
+        entity_type:
+          type: string
+          description: Entity type to delete
+          enum:
+          - AUDIO_TRANSCRIPT
+          - AUDIO
+          - TRANSCRIPT
+          - SCREEN_RECORDING
+        rules:
+          type: array
+          items:
+            $ref: '#/components/schemas/DsrRule'
+    DsrRule:
+      type: object
+      required:
+      - type
+      - name
+      properties:
+        type:
+          type: string
+          enum:
+          - OAI_METADATA
+          - CUSTOMER_METADATA
+        name:
+          type: string
+          description: For OAI_METADATA use DURATION, ENTITYTYPE, or STATUS
+        values:
+          type: array
+          items:
+            type: string
+    DsrDeleteResponse:
+      type: object
+      properties:
+        job_id:
+          type: string
+        status:
+          type: string
+          enum:
+          - QUEUED
+          - CREATED
+          - PROGRESS
+          - COMPLETED
+          - STOPPED
+          - FAILED
+        message:
+          type: string
+        requested_at:
+          type: string
+          format: date-time
+        expected_completion_by:
+          type: string
+          format: date-time
+    DsrStatusResponse:
+      type: object
+      properties:
+        request_id:
+          type: string
+        status:
+          type: string
+          enum:
+          - QUEUED
+          - CREATED
+          - PROGRESS
+          - COMPLETED
+          - STOPPED
+          - FAILED
+        status_message:
+          type: string
+x-tagGroups:
+- name: Reporting APIs
+  tags:
+  - ReportingService-Overview
+  - Authentication
+  - Interactions
+  - Summary
+  - Evaluations
+  - Coachings
+  - Ack Dispute Flow
+  - CallsReportVsInteractions
+  - ReleaseNotes
+- name: DSR APIs
+  tags:
+  - DSR-Overview
+  - DSR
+  - DSR Release Notes
+- name: Bulk Export
+  tags:
+  - Bulk-Export-Overview
+  - Bulk-Export-Data-Definitions

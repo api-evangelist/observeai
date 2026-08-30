@@ -1,0 +1,346 @@
+openapi: 3.2.0
+info:
+  title: Reporting Coachings API
+  description: "Reporting APIs are a collection of RESTful APIs that provide a convenient and secure way for integrating reporting data from Observe.AI into external system of your choice. These APIs are asynchronous and render data in a JSON format. Observe.AI uses OAuth 2.0 protocol for authentication of APIs. Please refer to Authentication section to obtain credentials to access Reporting APIs. Below are the 3 APIs that we support -\n      <ol>\n          <li><a href=\"#tag/Interactions\">Interactions API</a>- To fetch Moments, Transcripts and Interactions(Voice calls, Webchat, Email) metadata</li>\n          <li><a href=\"#tag/Evaluations\">Evaluations API</a> - To fetch Evaluation forms and submitted Evaluations along with question-wise scores and aggregate scores.</li>\n          <li><a href=\"#tag/Coachings\"> Coachings API </a> - To fetch Coaching sessions with mapped Evaluations and related Notes.</li>\n          <li><a href=\"#tag/Ack Dispute Flow\"> Ack Dispute API </a> - To fetch Ack/Dispute state changes for Evaluations.</li>\n          <li><a href=\"#tag/Summary\"> Summarization AI API </a> - To fetch GenAI-based Summaries along with Moments, Transcripts and metadata for all Interactions(Voice calls, Webchat).</li>\n      </ol>\n"
+  x-logo:
+    url: https://cdn.observe.ai/observeaiLogo.png
+servers:
+- url: https://{base_url}
+  description: Generated server url, where `{base_url}` corresponds to the specific cluster's base URL.
+tags:
+- name: Coachings
+  x-displayName: Coachings API
+  description: "Coachings API can be used to pull all the Coaching sessions done on Observe AI platform.\nPlease note -\n  <ol>\n    <li>Allow 24 hrs to pass before pulling Coaching sessions. ie., For Coaching sessions completed on 14-Jan by 12:00AM PST, they would be available via APIs by 15-Jan by 12:00AM PST.</li>\n    <li>You can pull Coaching sessions for 90 days at a time i.e., the duration between the end_date and the start_date should not exceed 90 days.</li>\n    <Li>There is no limit as to how far back in the past you want to go for pulling Coaching sessions. You can go back to the first ever coaching session on the platform unless data retention limits have been set.</li>\n    <li> All the Coaching sessions that were Submitted, Edited and Deleted in the date-range will be available in the API response.</li>\n      <ul>\n        <li>Lets take an example to explain it further - when you pull Coaching sessions for 15 days(say for start_date - 15-Jan and end_date 30-Jan) on 15-Feb via an API call, you get all Coaching sessions that were -</li>\n          <ul>\n            <li>submitted between 15-jan and 30-jan with \"status\": \"SUBMITTED\"</li>\n            <li>submitted before 15-jan but modified/deleted between 15-jan and 30-jan with \"status\"=\"EDITED\" / \"status\"=\"DELETED\"</li>\n            <li>submitted between 15-jan and 30-jan but modified after 30-jan until the pull date(15-Feb) with \"status\"=\"EDITED\"</li>\n          </ul>\n      </ul>\n    <li>The S3 URL obtained in the API response (with the coaching sessions) is valid for 24 hours.\n                    </li>\n    <li>If you have been using Basic Auth for the APIs, we request you to switch to OAuth2.0 based Auth for the APIs by 31-Dec-2022. Detailed instructions to create API Credentials and make the switch to OAuth are documented <a href=\"#tag/Authentication\">here</a>. Please reach out to your CSM for more details.</li>\n  </ol>\n"
+paths:
+  /v1/data/reports/coachings:
+    post:
+      tags:
+      - Coachings
+      operationId: Create Coaching Request
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RawJobRequest'
+      responses:
+        '200':
+          description: Ok
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/PostJobResponse'
+              examples:
+                '0':
+                  value: '{"request_id":"3058bc09-f9fc-4586-bc7c-498b95a63ec2","start_date":"2022-03-03T00:00:12.000+00:00","end_date":"2022-04-04T00:16:00.000+00:00","status":"INPROGRESS"}'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              examples:
+                '0':
+                  value: '{"error_code":"bad_request","error_description":"similar job already exists with request id 3058bc09-b974-4468-ae1f-f7b9b28067f1"}'
+        '401':
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              examples:
+                '0':
+                  value: '{"error_code": "auth_token_error", "error_description": "invalid auth token"}'
+        '403':
+          description: Access Denied
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              examples:
+                '0':
+                  value: '{"error_code":"access_denied","error_description":"unauthorized_user"}'
+        '404':
+          description: Request Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              examples:
+                '0':
+                  value: '{"timestamp":"2022-05-12T06:27:39.587+00:00","status":404,"error":"Not Found","message":"No message available","path":"/v1/data/reports/coaching"}'
+        '405':
+          description: Method Not Allowed
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              examples:
+                '0':
+                  value: '{"timestamp": "2022-05-17T04:21:37.669+00:00", "status": 405, "error": "Method Not Allowed", "message": "Request method ''GET'' not supported", "path": "/v1/data/reports/evaluations"}'
+        '429':
+          description: Rate Limit Exceeded
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/RateLimitMessage'
+              examples:
+                '0':
+                  value: '{"message": "API rate limit exceeded"}'
+        '500':
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+  /v1/data/reports/coachings/{request_id}:
+    get:
+      tags:
+      - Coachings
+      operationId: Get Coachings
+      parameters:
+      - name: request_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: "\nReport field Description:\n<table>\n  <tr>\n    <td>Param Name</td>\n    <td>Type</td>\n    <td>Description</td>\n  </tr>\n  <tr>\n    <td>coaching_sessions</td>\n    <td>List</td>\n    <td>List of all coaching sessions in the start date and the end date provided in the POST API call</td>\n  </tr>\n  <tr>\n    <td>id</td>\n    <td>String</td>\n    <td>Unique ID of the coaching session</td>\n  </tr>\n  <tr>\n    <td>agent_id</td>\n    <td>String</td>\n    <td>The ID of the agent who was coached.</td>\n  </tr>\n  <tr>\n    <td>partner_agent_id</td>\n    <td>String</td>\n    <td>The ID of the agent who was coached in client system.</td>\n  </tr>\n  <tr>\n    <td>agent_name</td>\n    <td>String</td>\n    <td>Name of the agent who was coached.</td>\n  </tr>\n  <tr>\n    <td>agent_email</td>\n    <td>String</td>\n    <td>Email ID of the agent who was coached</td>\n  </tr>\n  <tr>\n    <td>agents_status</td>\n    <td>String</td>\n    <td>Agent status on the system: ACTIVE or IN_ACTIVE</td>\n  </tr>\n  <tr>\n    <td>coach_id</td>\n    <td>String</td>\n    <td>The ID of the coach(the user who coached the agent).</td>\n  </tr>\n  <tr>\n    <td>partner_coach_id</td>\n    <td>String</td>\n    <td>The ID of the coach(the user who coached the agent) in the client system.</td>\n  </tr>\n  <tr>\n    <td>coach_name</td>\n    <td>String</td>\n    <td>Name of the coach(the user who coached the agent).</td>\n  </tr>\n  <tr>\n    <td>coach_email</td>\n    <td>String</td>\n    <td>The name of the agent who has participated in that particular interaction.</td>\n  </tr>\n  <tr>\n    <td>coach_status</td>\n    <td>String</td>\n    <td>Coach status on the system: ACTIVE or IN_ACTIVE.</td>\n  </tr>\n  <tr>\n    <td>url</td>\n    <td>String</td>\n    <td>URL to the coaching session on Observe AI dashboard.</td>\n  </tr>\n  <tr>\n    <td>feedback_summary</td>\n    <td>String</td>\n    <td>Feedback summary provided by the coach while creating the coaching session.</td>\n  </tr>\n  <tr>\n    <td>coaching_areas</td>\n    <td>List</td>\n    <td>Areas selected for coaching the agent.</td>\n  </tr>\n  <tr>\n    <td>action_plan</td>\n    <td>String</td>\n    <td>Action plan provided by the coach while creating the coaching session</td>\n  </tr>\n  <tr>\n    <td>status</td>\n    <td>String</td>\n    <td>Status of the coaching session - whether submitted, edited, or deleted.</td>\n  </tr>\n  <tr>\n    <td>created_at</td>\n    <td>Data</td>\n    <td>Date when coaching session was submitted.</td>\n  </tr>\n  <tr>\n    <td>updated_at</td>\n    <td>Date</td>\n    <td>Date when coaching session was updated.</td>\n  </tr>\n  <tr>\n    <td>follow_up_date </td>\n    <td>Date</td>\n    <td>The follow-up date set while creating a coaching session.</td>\n  </tr>\n  <tr>\n    <td>evaluations</td>\n    <td>List</td>\n    <td>The phrase start time in milliseconds.</td>\n  </tr>\n  <tr>\n    <td>evaluations.evaluation_form_id</td>\n    <td>String</td>\n    <td>The ID of the evaluation form.</td>\n  </tr>\n  <tr>\n    <td>evaluations.evaluation_ids</td>\n    <td>List</td>\n    <td>List of Ids of evaluations for a particular evaluation form.</td>\n  </tr>\n  <tr>\n    <td>coaching_ack_status</td>\n    <td>String</td>\n    <td>There are 3 status possible:\n    <ul>\n    <li>SUBMITTED: Coaching session submitted by coach without mandating the acknowledgement box. </li>\n    <li>AWAITING_ACK: Once the coaching session is submitted by the coach with mandating the acknowledgement box, this state suggests that agent has not yet acknowledged the coaching session</li>\n    <li>ACKED: Once the coaching session is submitted by the coach with mandating the acknowledgement box, the agent has acknowledged with or without comment</li>\n    </ul>\n    </td>\n  </tr>\n  <tr>\n    <td>coaching_ack_info.ack_date</td>\n    <td>Date</td>\n    <td>This is the date when the agent acknowledges receiving and understanding the coaching session. It confirms the agent's awareness of the feedback provided.</td>\n  </tr>\n  <tr>\n    <td>coaching_ack_info.comment</td>\n    <td>String</td>\n    <td>This field captures the agent’s feedback or reflections on the coaching session. It provides space for the agent to share thoughts while acknowledging the session.</td>\n  </tr>\n</table>\n"
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/GetJobResponse'
+              examples:
+                '0':
+                  value: '{"start_date":"2022-03-03T00:00:12.000+00:00","end_date":"2022-04-04T00:14:00.000+00:00","status":"COMPLETED","url":"https://e2e-data-out.s3.amazonaws.com/reports/interactions/3058bc09-6d4d-4f22-9f69-6992f3520e56.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20220510T045319Z&X-Amz-SignedHeaders=host&X-Amz-Expires=86400&X-Amz-Credential=YOUR_AWS_ACCESS_KEY_ID%2FYYYYMMDD%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Signature=YOUR_AWS_SIGNATURE_PLACEHOLDER"}'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        '401':
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              examples:
+                '0':
+                  value: '{"error_code": "auth_token_error", "error_description": "invalid auth token"}'
+        '403':
+          description: Access Denied
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              examples:
+                '0':
+                  value: '{"error_code":"access_denied","error_description":"unauthorized_user"}'
+        '404':
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              examples:
+                '0':
+                  value: '{"error_code":"resource_not_found","error_description":"jobId 3058bc09-da96-490c-824f-f42646160f0a of type COACHING not found or does not belong to the account"}'
+                '1':
+                  value: '{"timestamp": "2022-05-17T04:23:16.247+00:00", "status": 404, "error": "Not Found", "message": "No message available", "path": "/v1/data/reports/coaching/3058bc09-1a58-44f3-9674-b5be9768d313"}'
+        '405':
+          description: Method Not Allowed
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              examples:
+                '0':
+                  value: '{"timestamp": "2022-05-17T04:21:37.669+00:00", "status": 405, "error": "Method Not Allowed", "message": "Request method ''POST'' not supported", "path": "/v1/data/reports/coachings/3058bc09-da96-490c-824f-f42646160f0a"}'
+        '429':
+          description: Rate Limit Exceeded
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/RateLimitMessage'
+              examples:
+                '0':
+                  value: '{"message": "API rate limit exceeded"}'
+        '500':
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+components:
+  schemas:
+    RawJobRequest:
+      required:
+      - end_date
+      - start_date
+      type: object
+      properties:
+        start_date:
+          type: string
+          example: '2022-03-03T00:00:12.000+00:00'
+          description: The date should be given in the ISO format.
+        end_date:
+          type: string
+          example: '2022-04-04T00:14:00.000+00:00'
+          description: The date should be given in the ISO format.
+        format:
+          type: string
+          example: JSON
+          enum:
+          - JSON
+    PostJobResponse:
+      type: object
+      properties:
+        request_id:
+          type: string
+        start_date:
+          type: string
+          format: date-time
+        end_date:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum:
+          - QUEUED
+          - INPROGRESS
+          - COMPLETED
+          - EXPIRED
+          - FAILED
+    RateLimitMessage:
+      type: object
+      properties:
+        message:
+          type: string
+          description: API rate limit exceeded
+    GetJobResponse:
+      type: object
+      properties:
+        start_date:
+          type: string
+          format: date-time
+        end_date:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum:
+          - QUEUED
+          - INPROGRESS
+          - COMPLETED
+          - EXPIRED
+          - FAILED
+        url:
+          type: string
+    ErrorMessage:
+      type: object
+      properties:
+        error_code:
+          type: string
+        error_description:
+          type: string
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    DsrDeleteRequest:
+      type: object
+      required:
+      - entity_type
+      - rules
+      properties:
+        entity_type:
+          type: string
+          description: Entity type to delete
+          enum:
+          - AUDIO_TRANSCRIPT
+          - AUDIO
+          - TRANSCRIPT
+          - SCREEN_RECORDING
+        rules:
+          type: array
+          items:
+            $ref: '#/components/schemas/DsrRule'
+    DsrRule:
+      type: object
+      required:
+      - type
+      - name
+      properties:
+        type:
+          type: string
+          enum:
+          - OAI_METADATA
+          - CUSTOMER_METADATA
+        name:
+          type: string
+          description: For OAI_METADATA use DURATION, ENTITYTYPE, or STATUS
+        values:
+          type: array
+          items:
+            type: string
+    DsrDeleteResponse:
+      type: object
+      properties:
+        job_id:
+          type: string
+        status:
+          type: string
+          enum:
+          - QUEUED
+          - CREATED
+          - PROGRESS
+          - COMPLETED
+          - STOPPED
+          - FAILED
+        message:
+          type: string
+        requested_at:
+          type: string
+          format: date-time
+        expected_completion_by:
+          type: string
+          format: date-time
+    DsrStatusResponse:
+      type: object
+      properties:
+        request_id:
+          type: string
+        status:
+          type: string
+          enum:
+          - QUEUED
+          - CREATED
+          - PROGRESS
+          - COMPLETED
+          - STOPPED
+          - FAILED
+        status_message:
+          type: string
+x-tagGroups:
+- name: Reporting APIs
+  tags:
+  - ReportingService-Overview
+  - Authentication
+  - Interactions
+  - Summary
+  - Evaluations
+  - Coachings
+  - Ack Dispute Flow
+  - CallsReportVsInteractions
+  - ReleaseNotes
+- name: DSR APIs
+  tags:
+  - DSR-Overview
+  - DSR
+  - DSR Release Notes
+- name: Bulk Export
+  tags:
+  - Bulk-Export-Overview
+  - Bulk-Export-Data-Definitions

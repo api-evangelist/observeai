@@ -1,0 +1,458 @@
+openapi: 3.2.0
+info:
+  title: Reporting Ack Dispute Flow API
+  description: "Reporting APIs are a collection of RESTful APIs that provide a convenient and secure way for integrating reporting data from Observe.AI into external system of your choice. These APIs are asynchronous and render data in a JSON format. Observe.AI uses OAuth 2.0 protocol for authentication of APIs. Please refer to Authentication section to obtain credentials to access Reporting APIs. Below are the 3 APIs that we support -\n      <ol>\n          <li><a href=\"#tag/Interactions\">Interactions API</a>- To fetch Moments, Transcripts and Interactions(Voice calls, Webchat, Email) metadata</li>\n          <li><a href=\"#tag/Evaluations\">Evaluations API</a> - To fetch Evaluation forms and submitted Evaluations along with question-wise scores and aggregate scores.</li>\n          <li><a href=\"#tag/Coachings\"> Coachings API </a> - To fetch Coaching sessions with mapped Evaluations and related Notes.</li>\n          <li><a href=\"#tag/Ack Dispute Flow\"> Ack Dispute API </a> - To fetch Ack/Dispute state changes for Evaluations.</li>\n          <li><a href=\"#tag/Summary\"> Summarization AI API </a> - To fetch GenAI-based Summaries along with Moments, Transcripts and metadata for all Interactions(Voice calls, Webchat).</li>\n      </ol>\n"
+  x-logo:
+    url: https://cdn.observe.ai/observeaiLogo.png
+servers:
+- url: https://{base_url}
+  description: Generated server url, where `{base_url}` corresponds to the specific cluster's base URL.
+tags:
+- name: Ack Dispute Flow
+  x-displayName: Evaluations/Ack Dispute API
+  tags:
+  - Ack Dispute Flow
+  description: "Ack Dispute API can be used to pull all evaluation related data which are sent for acknowledgment or dispute.\n\nPlease note -\n    <ol>\n      <li>Allow 24 hrs to pass before pulling Ack Dispute Data. ie., For Evaluations completed on 14-Jan by 12:00AM PST, they would be available via APIs by 15-Jan by 12:00AM PST.</li>\n      <li>You can pull Ack Dispute for 90 days at a time i.e., the duration between the end_date and the start_date should not exceed 90 days.</li>\n      <Li>There is no limit as to how far back in the past you want to go for pulling Ack Dispuet Data. You can go back to the first ever evaluation on the platform unless data retention limits have been set.</li>\n      <li>The S3 URL obtained in the API response (with the evaluations) is valid for 24 hours.\n                                </li>\n      <li>If you have been using Basic Auth for the APIs, we request you to switch to OAuth2.0 based Auth for the APIs by 31-Dec-2022. Detailed instructions to create API Credentials and make the switch to OAuth are documented <a href=\"#tag/Authentication\">here</a>. Please reach out to your CSM for more details.</li>\n    </ol>\n"
+paths:
+  /v1/data/reports/evaluation/ackdisputedetails:
+    post:
+      tags:
+      - Ack Dispute Flow
+      operationId: Create Ack Dispute Request
+      parameters:
+      - $ref: '#/components/parameters/Page'
+      - $ref: '#/components/parameters/Size'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RawJobRequest'
+      responses:
+        '200':
+          description: Ok
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/PostJobResponse'
+              examples:
+                '0':
+                  value: '{"request_id":"3058bc09-f9fc-4586-bc7c-498b95a63ec2","start_date":"2022-03-03T00:00:12.000+00:00","end_date":"2022-04-04T00:16:00.000+00:00","status":"INPROGRESS"}'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              examples:
+                '0':
+                  value: '{"error_code":"bad_request","error_description":"similar job already exists with request id 3058bc09-b974-4468-ae1f-f7b9b28067f1"}'
+        '401':
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              examples:
+                '0':
+                  value: '{"error_code": "auth_token_error", "error_description": "invalid auth token"}'
+        '403':
+          description: Access Denied
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              examples:
+                '0':
+                  value: '{"error_code":"access_denied","error_description":"unauthorized_user"}'
+        '404':
+          description: Request Not found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              examples:
+                '0':
+                  value: '{"timestamp":"2022-05-12T06:27:39.587+00:00","status":404,"error":"Not Found","message":"No message available","path":"/v1/data/reports/evaluation"}'
+        '405':
+          description: Method Not Allowed
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              examples:
+                '0':
+                  value: '{"timestamp": "2022-05-17T04:21:37.669+00:00", "status": 405, "error": "Method Not Allowed", "message": "Request method ''GET'' not supported", "path": "/v1/data/reports/evaluations"}'
+        '429':
+          description: Rate Limit Exceeded
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/RateLimitMessage'
+              examples:
+                '0':
+                  value: '{"message": "API rate limit exceeded"}'
+        '500':
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+  /v1/data/reports/evaluation/ackdisputedetails/{request_id}:
+    get:
+      tags:
+      - Ack Dispute Flow
+      operationId: Get Ack Dispute Details
+      parameters:
+      - name: request_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: "Report field Description:\n<table>\n  <tr>\n    <th>Param Name</th>\n    <th>Type</th>\n    <th>Description</th>\n  </tr>\n  <tr>\n    <td>page</td>\n    <td>integer</td>\n    <td>The current page number of the response from the total response present between the given date range</td>\n  </tr>\n  <tr>\n    <td>size</td>\n    <td>integer</td>\n    <td>Number of interactions present in the current page</td>\n  </tr>\n  <tr>\n    <td>total_pages</td>\n    <td>integer</td>\n    <td>Total number of pages present for the given date range.</td>\n  </tr>\n  <tr>\n    <td>total_size</td>\n    <td>integer</td>\n    <td>Total number of interactions present for the given date range.</td>\n  </tr>\n  <tr>\n    <td>ack_dispute_details</td>\n    <td>List</td>\n    <td>List of all the Evaluations with Ack Dispute Details.</td>\n  </tr>\n  <tr>\n    <td>evaluation_id</td>\n    <td>String</td>\n    <td>ID of the evaluation.</td>\n  </tr>\n  <tr>\n    <td>evaluation_form_id</td>\n    <td>String</td>\n    <td>ID of the template/evaluation form.</td>\n  </tr>\n  <tr>\n    <td>ack_status</td>\n    <td>String</td>\n    <td>\n      Captures current status of Evaluation form in the Acknowledgement-Dispute workflow\n      <ul>\n      <li>NOT_INITIATED - Evaluation form is submitted without initiating for Acknowledgement</li>\n      <li>AWAITING_ACK - Agent has been notified of Evaluation. Acknowledgement pending from Agent</li>\n      <li>ACKED - Agent Acknowledged the Evaluation</li>\n      <li>IN_DISPUTE - Dispute raised(typically by Agent or Supervisor) on Evaluation form and awaiting resolution</li>\n      <li>DISPUTE_ACCEPTED - Dispute has been accepted by resolver(typically QA Analyst/QA Manager)</li>\n      <li>DISPUTE_PARTIAL - Dispute has been partially accepted by resolver(typically QA Analyst/QA Manager)</li>\n      <li>DISPUTE_REJECTED - Dispute has been rejected  by resolver(typically QA Analyst/QA Manager)</li>\n      </ul>\n    </td>\n  </tr>\n  <tr>\n    <td>timeline</td>\n    <td>List</td>\n    <td>List of timelines in the given time range for this particular evaluation id.</td>\n  </tr>\n  <tr>\n    <td>timeline.time</td>\n    <td>String</td>\n    <td>Timestamp of the timeline.</td>\n  </tr>\n  <tr>\n    <td>timeline.comment</td>\n    <td>String</td>\n    <td>Comment.</td>\n  </tr>\n  <tr>\n    <td>timeline.score_info</td>\n    <td>Object</td>\n    <td>Status of the Evaluation Form in this timeline.</td>\n  </tr>\n  <tr>\n    <td>timeline.disputed_questions</td>\n    <td>Object</td>\n    <td>Disputed Questions of the Evaluation Form in this timeline.</td>\n  </tr>\n  <tr>\n    <td>timeline.dispute_resolved_questions</td>\n    <td>Object</td>\n    <td>Dispute Resolved Questions of the Evaluation Form in this timeline.</td>\n  </tr>\n  <tr>\n    <td>timeline.dispute_partial_resolved_questions</td>\n    <td>Object</td>\n    <td>Dispute Partial Resolved Questions of the Evaluation Form in this timeline.</td>\n  </tr>\n  <tr>\n    <td>timeline.dispute_shared_with</td>\n    <td>List</td>\n    <td>List of users to whome Dispute was shared.</td>\n  </tr>\n  <tr>\n    <td>scoreinfo.prebonus_score</td>\n    <td>double</td>\n    <td>Prebonus Score for the Evaluation.</td>\n  </tr>\n  <tr>\n    <td>scoreinfo.bonus</td>\n    <td>double</td>\n    <td>Bonus for the Evaluation.</td>\n  </tr>\n  <tr>\n    <td>scoreinfo.penalty</td>\n    <td>double</td>\n    <td>Penalty for the Evaluation.</td>\n  </tr>\n  <tr>\n    <td>scoreinfo.obtained_score</td>\n    <td>double</td>\n    <td>Obtained Score for the Evaluation.</td>\n  </tr>\n  <tr>\n    <td>scoreinfo.total_score</td>\n    <td>double</td>\n    <td>Total Score for the Evaluation.</td>\n  </tr>\n  <tr>\n    <td>scoreinfo.result</td>\n    <td>Object</td>\n    <td>Result for the Evaluation.</td>\n  </tr>\n  <tr>\n    <td>scoreinfo.calculated_score</td>\n    <td>Object</td>\n    <td>Calculated Score for the Evaluation.</td>\n  </tr>\n  <tr>\n    <td>qaquestionresponse.question_id</td>\n    <td>String</td>\n    <td>Question ID.</td>\n  </tr>\n  <tr>\n    <td>qaquestionresponse.selected_option</td>\n    <td>List</td>\n    <td>Selected options for each question.</td>\n  </tr>\n  <tr>\n    <td>qaquestionresponse.obtained_score</td>\n    <td>List</td>\n    <td>Score obtained for each question.</td>\n  </tr>\n  <tr>\n    <td>qaquestionresponse.comment</td>\n    <td>String</td>\n    <td>Comment.</td>\n  </tr>\n  <tr>\n    <td>qaquestionresponse.is_fail</td>\n    <td>integer</td>\n    <td>If that Agent has failed that question or not.</td>\n  </tr>\n  <tr>\n    <td>qaquestionresponse.is_auto_fail</td>\n    <td>integer</td>\n    <td>Is autofail</td>\n  </tr>\n  <tr>\n    <td>qaquestionresponse.visibility_logic_applied</td>\n    <td>integer</td>\n    <td>Is visibility logic applied.</td>\n  </tr>\n</table>\n"
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/GetJobResponse'
+              examples:
+                '0':
+                  value: '{"start_date":"2022-03-03T00:00:12.000+00:00","end_date":"2022-04-04T00:14:00.000+00:00","status":"COMPLETED","url":"https://e2e-data-out.s3.amazonaws.com/reports/ackdispute/3058bc09-6d4d-4f22-9f69-6992f3520e56.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20220510T045319Z&X-Amz-SignedHeaders=host&X-Amz-Expires=86400&X-Amz-Credential=YOUR_AWS_ACCESS_KEY_ID%2FYYYYMMDD%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Signature=YOUR_AWS_SIGNATURE_PLACEHOLDER"}'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        '401':
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              examples:
+                '0':
+                  value: '{"error_code": "auth_token_error", "error_description": "invalid auth token"}'
+        '403':
+          description: Access Denied
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              examples:
+                '0':
+                  value: '{"error_code":"access_denied","error_description":"unauthorized_user"}'
+        '404':
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              examples:
+                '0':
+                  value: '{"error_code":"resource_not_found","error_description":"jobId 3058bc09-da96-490c-824f-f42646160f0a of type INTERACTION not found or does not belong to the account"}'
+                '1':
+                  value: '{"timestamp": "2022-05-17T04:23:16.247+00:00", "status": 404, "error": "Not Found", "message": "No message available", "path": "/v1/data/reports/interaction/489690ba-1a58-44f3-9674-b5be9768d313"}'
+        '405':
+          description: Method Not Allowed
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              examples:
+                '0':
+                  value: '{"timestamp": "2022-05-17T04:21:37.669+00:00", "status": 405, "error": "Method Not Allowed", "message": "Request method ''POST'' not supported", "path": "/v1/data/reports/interactioms/3058bc09-da96-490c-824f-f42646160f0a"}'
+        '429':
+          description: Rate Limit Exceeded
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/RateLimitMessage'
+              examples:
+                '0':
+                  value: '{"message": "API rate limit exceeded"}'
+        '500':
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+  /v1/data/reports/evaluation/ackdisputedetails/ids:
+    post:
+      tags:
+      - Ack Dispute Flow
+      operationId: Get Ack Dispute Details By Ids
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AckDisputeFlowRequestIds'
+      responses:
+        '200':
+          description: "Report field Description:\n<table>\n  <tr>\n    <th>Param Name</th>\n    <th>Type</th>\n    <th>Description</th>\n  </tr>\n  <tr>\n    <td>page</td>\n    <td>integer</td>\n    <td>The current page number of the response from the total response present between the given date range</td>\n  </tr>\n  <tr>\n    <td>size</td>\n    <td>integer</td>\n    <td>Number of interactions present in the current page</td>\n  </tr>\n  <tr>\n    <td>total_pages</td>\n    <td>integer</td>\n    <td>Total number of pages present for the given date range.</td>\n  </tr>\n  <tr>\n    <td>total_size</td>\n    <td>integer</td>\n    <td>Total number of interactions present for the given date range.</td>\n  </tr>\n  <tr>\n    <td>ack_dispute_details</td>\n    <td>List</td>\n    <td>List of all the Evaluations with Ack Dispute Details.</td>\n  </tr>\n  <tr>\n    <td>evaluation_id</td>\n    <td>String</td>\n    <td>ID of the evaluation.</td>\n  </tr>\n  <tr>\n    <td>evaluation_form_id</td>\n    <td>String</td>\n    <td>ID of the template/evaluation form.</td>\n  </tr>\n  <tr>\n    <td>ack_status</td>\n    <td>String</td>\n    <td>\n      Captures current status of Evaluation form in the Acknowledgement-Dispute workflow\n      <ul>\n      <li>NOT_INITIATED - Evaluation form is submitted without initiating for Acknowledgement</li>\n      <li>AWAITING_ACK - Agent has been notified of Evaluation. Acknowledgement pending from Agent</li>\n      <li>ACKED - Agent Acknowledged the Evaluation</li>\n      <li>IN_DISPUTE - Dispute raised(typically by Agent or Supervisor) on Evaluation form and awaiting resolution</li>\n      <li>DISPUTE_ACCEPTED - Dispute has been accepted by resolver(typically QA Analyst/QA Manager)</li>\n      <li>DISPUTE_PARTIAL - Dispute has been partially accepted by resolver(typically QA Analyst/QA Manager)</li>\n      <li>DISPUTE_REJECTED - Dispute has been rejected  by resolver(typically QA Analyst/QA Manager)</li>\n      </ul>\n    </td>\n  </tr>\n  <tr>\n    <td>timeline</td>\n    <td>List</td>\n    <td>List of timelines in the given time range for this particular evaluation id.</td>\n  </tr>\n  <tr>\n    <td>timeline.time</td>\n    <td>String</td>\n    <td>Timestamp of the timeline.</td>\n  </tr>\n  <tr>\n    <td>timeline.comment</td>\n    <td>String</td>\n    <td>Comment.</td>\n  </tr>\n  <tr>\n    <td>timeline.score_info</td>\n    <td>Object</td>\n    <td>Status of the Evaluation Form in this timeline.</td>\n  </tr>\n  <tr>\n    <td>timeline.disputed_questions</td>\n    <td>Object</td>\n    <td>Disputed Questions of the Evaluation Form in this timeline.</td>\n  </tr>\n  <tr>\n    <td>timeline.dispute_resolved_questions</td>\n    <td>Object</td>\n    <td>Dispute Resolved Questions of the Evaluation Form in this timeline.</td>\n  </tr>\n  <tr>\n    <td>timeline.dispute_partial_resolved_questions</td>\n    <td>Object</td>\n    <td>Dispute Partial Resolved Questions of the Evaluation Form in this timeline.</td>\n  </tr>\n  <tr>\n    <td>timeline.dispute_shared_with</td>\n    <td>List</td>\n    <td>List of users to whome Dispute was shared.</td>\n  </tr>\n  <tr>\n    <td>scoreinfo.prebonus_score</td>\n    <td>double</td>\n    <td>Prebonus Score for the Evaluation.</td>\n  </tr>\n  <tr>\n    <td>scoreinfo.bonus</td>\n    <td>double</td>\n    <td>Bonus for the Evaluation.</td>\n  </tr>\n  <tr>\n    <td>scoreinfo.penalty</td>\n    <td>double</td>\n    <td>Penalty for the Evaluation.</td>\n  </tr>\n  <tr>\n    <td>scoreinfo.obtained_score</td>\n    <td>double</td>\n    <td>Obtained Score for the Evaluation.</td>\n  </tr>\n  <tr>\n    <td>scoreinfo.total_score</td>\n    <td>double</td>\n    <td>Total Score for the Evaluation.</td>\n  </tr>\n  <tr>\n    <td>scoreinfo.result</td>\n    <td>Object</td>\n    <td>Result for the Evaluation.</td>\n  </tr>\n  <tr>\n    <td>scoreinfo.calculated_score</td>\n    <td>Object</td>\n    <td>Calculated Score for the Evaluation.</td>\n  </tr>\n  <tr>\n    <td>qaquestionresponse.question_id</td>\n    <td>String</td>\n    <td>Question ID.</td>\n  </tr>\n  <tr>\n    <td>qaquestionresponse.selected_option</td>\n    <td>List</td>\n    <td>Selected options for each question.</td>\n  </tr>\n  <tr>\n    <td>qaquestionresponse.obtained_score</td>\n    <td>List</td>\n    <td>Score obtained for each question.</td>\n  </tr>\n  <tr>\n    <td>qaquestionresponse.comment</td>\n    <td>String</td>\n    <td>Comment.</td>\n  </tr>\n  <tr>\n    <td>qaquestionresponse.is_fail</td>\n    <td>integer</td>\n    <td>If that Agent has failed that question or not.</td>\n  </tr>\n  <tr>\n    <td>qaquestionresponse.is_auto_fail</td>\n    <td>integer</td>\n    <td>Is autofail</td>\n  </tr>\n  <tr>\n    <td>qaquestionresponse.visibility_logic_applied</td>\n    <td>integer</td>\n    <td>Is visibility logic applied.</td>\n  </tr>\n</table>\n"
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/GetJobResponse'
+              examples:
+                '0':
+                  value: '{"start_date":"2022-03-03T00:00:12.000+00:00","end_date":"2022-04-04T00:14:00.000+00:00","status":"COMPLETED","url":"https://e2e-data-out.s3.amazonaws.com/reports/ackdispute/3058bc09-6d4d-4f22-9f69-6992f3520e56.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20220510T045319Z&X-Amz-SignedHeaders=host&X-Amz-Expires=86400&X-Amz-Credential=YOUR_AWS_ACCESS_KEY_ID%2FYYYYMMDD%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Signature=YOUR_AWS_SIGNATURE_PLACEHOLDER"}'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        '401':
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              examples:
+                '0':
+                  value: '{"error_code": "auth_token_error", "error_description": "invalid auth token"}'
+        '403':
+          description: Access Denied
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              examples:
+                '0':
+                  value: '{"error_code":"access_denied","error_description":"unauthorized_user"}'
+        '404':
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              examples:
+                '0':
+                  value: '{"error_code":"resource_not_found","error_description":"jobId 3058bc09-da96-490c-824f-f42646160f0a of type INTERACTION not found or does not belong to the account"}'
+                '1':
+                  value: '{"timestamp": "2022-05-17T04:23:16.247+00:00", "status": 404, "error": "Not Found", "message": "No message available", "path": "/v1/data/reports/interaction/489690ba-1a58-44f3-9674-b5be9768d313"}'
+        '405':
+          description: Method Not Allowed
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              examples:
+                '0':
+                  value: '{"timestamp": "2022-05-17T04:21:37.669+00:00", "status": 405, "error": "Method Not Allowed", "message": "Request method ''POST'' not supported", "path": "/v1/data/reports/interactioms/3058bc09-da96-490c-824f-f42646160f0a"}'
+        '429':
+          description: Rate Limit Exceeded
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/RateLimitMessage'
+              examples:
+                '0':
+                  value: '{"message": "API rate limit exceeded"}'
+        '500':
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+components:
+  parameters:
+    Page:
+      in: query
+      name: page
+      schema:
+        type: integer
+        minimum: 1
+        example: 1
+        default: 1
+      description: The page number of the paginated response.
+    Size:
+      in: query
+      name: size
+      schema:
+        type: integer
+        minimum: 10
+        maximum: 1000
+        example: 1000
+        default: 1000
+      description: Number of evaluations required in a page.
+  schemas:
+    RawJobRequest:
+      required:
+      - end_date
+      - start_date
+      type: object
+      properties:
+        start_date:
+          type: string
+          example: '2022-03-03T00:00:12.000+00:00'
+          description: The date should be given in the ISO format.
+        end_date:
+          type: string
+          example: '2022-04-04T00:14:00.000+00:00'
+          description: The date should be given in the ISO format.
+        format:
+          type: string
+          example: JSON
+          enum:
+          - JSON
+    PostJobResponse:
+      type: object
+      properties:
+        request_id:
+          type: string
+        start_date:
+          type: string
+          format: date-time
+        end_date:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum:
+          - QUEUED
+          - INPROGRESS
+          - COMPLETED
+          - EXPIRED
+          - FAILED
+    RateLimitMessage:
+      type: object
+      properties:
+        message:
+          type: string
+          description: API rate limit exceeded
+    AckDisputeFlowRequestIds:
+      properties:
+        evaluation_ids:
+          type: List<String>
+          example:
+          - 5e178d4246a3ce00010931d2
+          - 5e73d49ff2d4540001657309
+          description: Give the list of evaluation_ids to fetch ack dispute details. Max Limit of 100 ids.
+    GetJobResponse:
+      type: object
+      properties:
+        start_date:
+          type: string
+          format: date-time
+        end_date:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum:
+          - QUEUED
+          - INPROGRESS
+          - COMPLETED
+          - EXPIRED
+          - FAILED
+        url:
+          type: string
+    ErrorMessage:
+      type: object
+      properties:
+        error_code:
+          type: string
+        error_description:
+          type: string
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    DsrDeleteRequest:
+      type: object
+      required:
+      - entity_type
+      - rules
+      properties:
+        entity_type:
+          type: string
+          description: Entity type to delete
+          enum:
+          - AUDIO_TRANSCRIPT
+          - AUDIO
+          - TRANSCRIPT
+          - SCREEN_RECORDING
+        rules:
+          type: array
+          items:
+            $ref: '#/components/schemas/DsrRule'
+    DsrRule:
+      type: object
+      required:
+      - type
+      - name
+      properties:
+        type:
+          type: string
+          enum:
+          - OAI_METADATA
+          - CUSTOMER_METADATA
+        name:
+          type: string
+          description: For OAI_METADATA use DURATION, ENTITYTYPE, or STATUS
+        values:
+          type: array
+          items:
+            type: string
+    DsrDeleteResponse:
+      type: object
+      properties:
+        job_id:
+          type: string
+        status:
+          type: string
+          enum:
+          - QUEUED
+          - CREATED
+          - PROGRESS
+          - COMPLETED
+          - STOPPED
+          - FAILED
+        message:
+          type: string
+        requested_at:
+          type: string
+          format: date-time
+        expected_completion_by:
+          type: string
+          format: date-time
+    DsrStatusResponse:
+      type: object
+      properties:
+        request_id:
+          type: string
+        status:
+          type: string
+          enum:
+          - QUEUED
+          - CREATED
+          - PROGRESS
+          - COMPLETED
+          - STOPPED
+          - FAILED
+        status_message:
+          type: string
+x-tagGroups:
+- name: Reporting APIs
+  tags:
+  - ReportingService-Overview
+  - Authentication
+  - Interactions
+  - Summary
+  - Evaluations
+  - Coachings
+  - Ack Dispute Flow
+  - CallsReportVsInteractions
+  - ReleaseNotes
+- name: DSR APIs
+  tags:
+  - DSR-Overview
+  - DSR
+  - DSR Release Notes
+- name: Bulk Export
+  tags:
+  - Bulk-Export-Overview
+  - Bulk-Export-Data-Definitions

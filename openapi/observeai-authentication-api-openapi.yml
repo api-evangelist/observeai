@@ -1,0 +1,192 @@
+openapi: 3.2.0
+info:
+  title: Reporting Authentication API
+  description: "Reporting APIs are a collection of RESTful APIs that provide a convenient and secure way for integrating reporting data from Observe.AI into external system of your choice. These APIs are asynchronous and render data in a JSON format. Observe.AI uses OAuth 2.0 protocol for authentication of APIs. Please refer to Authentication section to obtain credentials to access Reporting APIs. Below are the 3 APIs that we support -\n      <ol>\n          <li><a href=\"#tag/Interactions\">Interactions API</a>- To fetch Moments, Transcripts and Interactions(Voice calls, Webchat, Email) metadata</li>\n          <li><a href=\"#tag/Evaluations\">Evaluations API</a> - To fetch Evaluation forms and submitted Evaluations along with question-wise scores and aggregate scores.</li>\n          <li><a href=\"#tag/Coachings\"> Coachings API </a> - To fetch Coaching sessions with mapped Evaluations and related Notes.</li>\n          <li><a href=\"#tag/Ack Dispute Flow\"> Ack Dispute API </a> - To fetch Ack/Dispute state changes for Evaluations.</li>\n          <li><a href=\"#tag/Summary\"> Summarization AI API </a> - To fetch GenAI-based Summaries along with Moments, Transcripts and metadata for all Interactions(Voice calls, Webchat).</li>\n      </ol>\n"
+  x-logo:
+    url: https://cdn.observe.ai/observeaiLogo.png
+servers:
+- url: https://{base_url}
+  description: Generated server url, where `{base_url}` corresponds to the specific cluster's base URL.
+tags:
+- name: Authentication
+  x-displayName: Authentication
+  description: "\nOAuth 2.0, which stands for “Open Authorization”, is a standard design to allow a website or application to access resources hosted by other web apps on behalf of a user\n\n<b>Note</b>: If you have been using Basic Auth for the APIs, we request you to switch to OAuth2.0 based Auth for the APIs by 31-Dec-2022. Detailed instructions to create API Credentials and make the switch to OAuth are documented as below. Please reach out to your CSM for more details.\n\n<h2> OAuth App Credential Flow </h2>\n\nThe App Credentials flow is recommended for server-side (AKA confidential) client applications with no end user, which normally describes machine-to-machine communication. Your application needs to securely store its app ID and secret and pass those to Observe Authentication Api in exchange for an access token.\n\n<h3> Steps required for generating access token </h3>\n\n  1. API Credential Generation:\n<ul>\n   <li>To get access for API credentials, please contact help@observe.ai.</li>\n   <li>AppId and AppSecret required to create access tokens, you can generate max of 3 apps.</li>\n\n   - Select New App Id and App Secret.<br>\n\n     <img src=\"https://cdn.observe.ai/apicredentials_generation.png\"/><br>\n\n   - Add your app name.<br>\n\n     <img src=\"https://cdn.observe.ai/apicredentials_appname.png\"/><br>\n\n   - Download the credentials, <b>these can not viewed/downloaded later.</b><br>\n\n     <img src=\"https://cdn.observe.ai/apicredentials_download.png\"/><br>\n</ul>\n  2. Access Token\n<ul>\n   <li>You can create accessToken, using AppId and AppSecret from step 1.</li>\n\n   <li><b>Access Token expires in 2 hrs, needs to be created again after expiry time.</b></li>\n\n   <li>The 'Create Auth Token API' API has a rate limit of 1500 requests per day.</li>\n</ul>\n\n<li> The video in Getting Started outlines these steps in detail </li>\n"
+paths:
+  /v1/oauth/token:
+    post:
+      tags:
+      - Authentication
+      operationId: Create Auth Token
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OauthTokenRequest'
+      consumes:
+      - application/json
+      produces:
+      - '*/*'
+      parameters:
+      - in: body
+        name: oauthTokenRequest
+        description: oauthTokenRequest
+        required: true
+        schema:
+          $ref: '#/components/schemas/OauthTokenRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/OauthTokenResponse'
+              examples:
+                '0':
+                  value: '{"auth_token":"", "expires_in":7200 (in seconds)}'
+        '401':
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              examples:
+                '0':
+                  value: '{"error_code": "auth_token_error", "error_description": "Invalid/Inactive Credentials"}'
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        '404':
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+components:
+  schemas:
+    OauthTokenResponse:
+      type: object
+      properties:
+        auth_token:
+          type: string
+        expires_in:
+          type: integer
+          format: int32
+      title: OauthTokenResponse
+    OauthTokenRequest:
+      type: object
+      properties:
+        app_id:
+          type: string
+        app_secret:
+          type: string
+      title: OauthTokenRequest
+    ErrorMessage:
+      type: object
+      properties:
+        error_code:
+          type: string
+        error_description:
+          type: string
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    DsrDeleteRequest:
+      type: object
+      required:
+      - entity_type
+      - rules
+      properties:
+        entity_type:
+          type: string
+          description: Entity type to delete
+          enum:
+          - AUDIO_TRANSCRIPT
+          - AUDIO
+          - TRANSCRIPT
+          - SCREEN_RECORDING
+        rules:
+          type: array
+          items:
+            $ref: '#/components/schemas/DsrRule'
+    DsrRule:
+      type: object
+      required:
+      - type
+      - name
+      properties:
+        type:
+          type: string
+          enum:
+          - OAI_METADATA
+          - CUSTOMER_METADATA
+        name:
+          type: string
+          description: For OAI_METADATA use DURATION, ENTITYTYPE, or STATUS
+        values:
+          type: array
+          items:
+            type: string
+    DsrDeleteResponse:
+      type: object
+      properties:
+        job_id:
+          type: string
+        status:
+          type: string
+          enum:
+          - QUEUED
+          - CREATED
+          - PROGRESS
+          - COMPLETED
+          - STOPPED
+          - FAILED
+        message:
+          type: string
+        requested_at:
+          type: string
+          format: date-time
+        expected_completion_by:
+          type: string
+          format: date-time
+    DsrStatusResponse:
+      type: object
+      properties:
+        request_id:
+          type: string
+        status:
+          type: string
+          enum:
+          - QUEUED
+          - CREATED
+          - PROGRESS
+          - COMPLETED
+          - STOPPED
+          - FAILED
+        status_message:
+          type: string
+x-tagGroups:
+- name: Reporting APIs
+  tags:
+  - ReportingService-Overview
+  - Authentication
+  - Interactions
+  - Summary
+  - Evaluations
+  - Coachings
+  - Ack Dispute Flow
+  - CallsReportVsInteractions
+  - ReleaseNotes
+- name: DSR APIs
+  tags:
+  - DSR-Overview
+  - DSR
+  - DSR Release Notes
+- name: Bulk Export
+  tags:
+  - Bulk-Export-Overview
+  - Bulk-Export-Data-Definitions
