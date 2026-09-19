@@ -477,6 +477,8 @@ apis:
   humanURL: https://api-docs.observe.ai/
   baseURL: https://kong.observe.ai/
   tags:
+  - Evaluation
+  tags_raw:
   - Evaluations
   properties:
   - type: OpenAPI
