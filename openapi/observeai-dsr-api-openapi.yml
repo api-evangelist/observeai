@@ -1,7 +1,7 @@
 openapi: 3.2.0
 info:
   title: Reporting DSR API
-  description: "Reporting APIs are a collection of RESTful APIs that provide a convenient and secure way for integrating reporting data from Observe.AI into external system of your choice. These APIs are asynchronous and render data in a JSON format. Observe.AI uses OAuth 2.0 protocol for authentication of APIs. Please refer to Authentication section to obtain credentials to access Reporting APIs. Below are the 3 APIs that we support -\n      <ol>\n          <li><a href=\"#tag/Interactions\">Interactions API</a>- To fetch Moments, Transcripts and Interactions(Voice calls, Webchat, Email) metadata</li>\n          <li><a href=\"#tag/Evaluations\">Evaluations API</a> - To fetch Evaluation forms and submitted Evaluations along with question-wise scores and aggregate scores.</li>\n          <li><a href=\"#tag/Coachings\"> Coachings API </a> - To fetch Coaching sessions with mapped Evaluations and related Notes.</li>\n          <li><a href=\"#tag/Ack Dispute Flow\"> Ack Dispute API </a> - To fetch Ack/Dispute state changes for Evaluations.</li>\n          <li><a href=\"#tag/Summary\"> Summarization AI API </a> - To fetch GenAI-based Summaries along with Moments, Transcripts and metadata for all Interactions(Voice calls, Webchat).</li>\n      </ol>\n"
+  description: Reporting APIs are a collection of RESTful APIs that provide a convenient and secure way for integrating reporting data from Observe.AI into external system of your choice.
   x-logo:
     url: https://cdn.observe.ai/observeaiLogo.png
 servers:
@@ -15,15 +15,14 @@ tags:
     the processing status of those requests.
 
 
-    <h3>Authentication</h3>
+    Authentication
+
 
     OAuth 2.0 Bearer Token is required. Use App ID and App Secret to generate a token via
 
-    <code>POST /v1/oauth/token</code>, then pass it as <code>Authorization: Bearer &lt;auth_token&gt;</code>.
+    POST /v1/oauth/token, then pass it as Authorization: Bearer <auth_token>.
 
-    See <a href="#tag/Authentication">Authentication</a> for the full credential flow.
-
-    '
+    See Authentication for the full credential flow.'
 paths:
   /v1/dsr/delete/on-demand:
     post:

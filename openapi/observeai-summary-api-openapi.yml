@@ -1,7 +1,7 @@
 openapi: 3.2.0
 info:
   title: Reporting Summary API
-  description: "Reporting APIs are a collection of RESTful APIs that provide a convenient and secure way for integrating reporting data from Observe.AI into external system of your choice. These APIs are asynchronous and render data in a JSON format. Observe.AI uses OAuth 2.0 protocol for authentication of APIs. Please refer to Authentication section to obtain credentials to access Reporting APIs. Below are the 3 APIs that we support -\n      <ol>\n          <li><a href=\"#tag/Interactions\">Interactions API</a>- To fetch Moments, Transcripts and Interactions(Voice calls, Webchat, Email) metadata</li>\n          <li><a href=\"#tag/Evaluations\">Evaluations API</a> - To fetch Evaluation forms and submitted Evaluations along with question-wise scores and aggregate scores.</li>\n          <li><a href=\"#tag/Coachings\"> Coachings API </a> - To fetch Coaching sessions with mapped Evaluations and related Notes.</li>\n          <li><a href=\"#tag/Ack Dispute Flow\"> Ack Dispute API </a> - To fetch Ack/Dispute state changes for Evaluations.</li>\n          <li><a href=\"#tag/Summary\"> Summarization AI API </a> - To fetch GenAI-based Summaries along with Moments, Transcripts and metadata for all Interactions(Voice calls, Webchat).</li>\n      </ol>\n"
+  description: Reporting APIs are a collection of RESTful APIs that provide a convenient and secure way for integrating reporting data from Observe.AI into external system of your choice.
   x-logo:
     url: https://cdn.observe.ai/observeaiLogo.png
 servers:
@@ -10,7 +10,7 @@ servers:
 tags:
 - name: Summary
   x-displayName: Summarization AI API
-  description: "Summarization AI API can be used to pull the data related to summaries for a particular interaction including calls and chats.\n\nPlease note -\n<ol>\n  <li> Summaries can only be extracted if they are available for the interaction.</li>\n  <li>Allow 24 hrs to pass before pulling summaries. ie., For summaries completed on 14-Jan by 12:00AM PST, they would be available via APIs by 15-Jan by 12:00AM PST.</li>\n  <li>You can pull Summaries for 30 days at a time i.e., the duration between the end_date and the start_date should not exceed 30 days.</li>\n  <li>There is no limit as to how far back in the past you want to go for pulling summaries. You can retrieve summaries from the very first ones generated on the platform, unless data retention limits have been set.</li>\n  <li>Summarization AI API gives a paginated response so the customer need to specify the page number and the desired amount of summaries in a page. By default, page_size is set to 100</li>\n  <li>There is flexibility to either include or exclude Transcript in the API response by setting a query parameter includeTranscript. By default it is set to false.</li>\n  <li>The S3 URL obtained in the API response (with the summaries) is valid for 24 hours.</li>\n  <li>If you need to pull Summaries by ID, there is a separate synchronous API - <a href=\"#tag/Summary/operation/Get Summaries By Ids\">Get Summaries By Ids</a>.</li>\n</ol>\n"
+  description: Summarization AI API can be used to pull the data related to summaries for a particular interaction including calls and chats.
 paths:
   /v2/data/reports/interactions:
     post:
@@ -97,6 +97,8 @@ paths:
             '*/*':
               schema:
                 $ref: '#/components/schemas/ErrorMessage'
+      summary: Create summaries request
+      x-summary-source: derived
   /v2/data/reports/interactions/{request_id}:
     get:
       tags:
@@ -177,6 +179,8 @@ paths:
             '*/*':
               schema:
                 $ref: '#/components/schemas/ErrorMessage'
+      summary: Get summaries
+      x-summary-source: derived
   /v2/data/reports/interactions/ids:
     post:
       tags:
@@ -267,58 +271,10 @@ paths:
             '*/*':
               schema:
                 $ref: '#/components/schemas/ErrorMessage'
+      summary: Get summaries by ids
+      x-summary-source: derived
 components:
-  parameters:
-    InteractionsSize:
-      in: query
-      name: size
-      schema:
-        type: integer
-        minimum: 10
-        maximum: 100
-        example: 100
-        default: 100
-      description: Number of interactions required in a page. Note that for requests without transcripts maximum size can be 1000.
-    Page:
-      in: query
-      name: page
-      schema:
-        type: integer
-        minimum: 1
-        example: 1
-        default: 1
-      description: The page number of the paginated response.
-    IncludeSummary:
-      in: query
-      name: includeSummary
-      schema:
-        type: boolean
-        example: true
-        default: false
-      description: Whether to include the summary or not.
-    IncludeTranscript:
-      in: query
-      name: includeTranscript
-      schema:
-        type: boolean
-        example: true
-        default: false
-      description: Whether to include the transcript or not.
   schemas:
-    InteractionsRequest:
-      properties:
-        observe_interaction_ids:
-          type: List<String>
-          example:
-          - af1d1b95-de6d-42db-83bd-3a585e65fcc9
-          - 4909093-918a-41ab-9fe3-0d1880fa2fd3
-          description: Mandatory if partner_interaction_ids is not present. Both cannot be present together. Max Limit of 100 ids.
-        partner_interaction_ids:
-          type: List<String>
-          example:
-          - 7f9744f08a45cb0010d3a7c8
-          - 9f583739466b73001e4a125c
-          description: Mandatory if observe_interaction_ids is not present. Both cannot be present together. Max Limit of 100 ids.
     RawJobRequest:
       required:
       - end_date
@@ -338,6 +294,33 @@ components:
           example: JSON
           enum:
           - JSON
+    InteractionsRequest:
+      properties:
+        observe_interaction_ids:
+          type: List<String>
+          example:
+          - af1d1b95-de6d-42db-83bd-3a585e65fcc9
+          - 4909093-918a-41ab-9fe3-0d1880fa2fd3
+          description: Mandatory if partner_interaction_ids is not present. Both cannot be present together. Max Limit of 100 ids.
+        partner_interaction_ids:
+          type: List<String>
+          example:
+          - 7f9744f08a45cb0010d3a7c8
+          - 9f583739466b73001e4a125c
+          description: Mandatory if observe_interaction_ids is not present. Both cannot be present together. Max Limit of 100 ids.
+    ErrorMessage:
+      type: object
+      properties:
+        error_code:
+          type: string
+        error_description:
+          type: string
+    RateLimitMessage:
+      type: object
+      properties:
+        message:
+          type: string
+          description: API rate limit exceeded
     PostJobResponse:
       type: object
       properties:
@@ -357,12 +340,6 @@ components:
           - COMPLETED
           - EXPIRED
           - FAILED
-    RateLimitMessage:
-      type: object
-      properties:
-        message:
-          type: string
-          description: API rate limit exceeded
     GetJobResponse:
       type: object
       properties:
@@ -382,13 +359,42 @@ components:
           - FAILED
         url:
           type: string
-    ErrorMessage:
-      type: object
-      properties:
-        error_code:
-          type: string
-        error_description:
-          type: string
+  parameters:
+    IncludeSummary:
+      in: query
+      name: includeSummary
+      schema:
+        type: boolean
+        example: true
+        default: false
+      description: Whether to include the summary or not.
+    InteractionsSize:
+      in: query
+      name: size
+      schema:
+        type: integer
+        minimum: 10
+        maximum: 100
+        example: 100
+        default: 100
+      description: Number of interactions required in a page. Note that for requests without transcripts maximum size can be 1000.
+    Page:
+      in: query
+      name: page
+      schema:
+        type: integer
+        minimum: 1
+        example: 1
+        default: 1
+      description: The page number of the paginated response.
+    IncludeTranscript:
+      in: query
+      name: includeTranscript
+      schema:
+        type: boolean
+        example: true
+        default: false
+      description: Whether to include the transcript or not.
   securitySchemes:
     bearerAuth:
       type: http

@@ -1,7 +1,7 @@
 openapi: 3.2.0
 info:
   title: Reporting Interactions API
-  description: "Reporting APIs are a collection of RESTful APIs that provide a convenient and secure way for integrating reporting data from Observe.AI into external system of your choice. These APIs are asynchronous and render data in a JSON format. Observe.AI uses OAuth 2.0 protocol for authentication of APIs. Please refer to Authentication section to obtain credentials to access Reporting APIs. Below are the 3 APIs that we support -\n      <ol>\n          <li><a href=\"#tag/Interactions\">Interactions API</a>- To fetch Moments, Transcripts and Interactions(Voice calls, Webchat, Email) metadata</li>\n          <li><a href=\"#tag/Evaluations\">Evaluations API</a> - To fetch Evaluation forms and submitted Evaluations along with question-wise scores and aggregate scores.</li>\n          <li><a href=\"#tag/Coachings\"> Coachings API </a> - To fetch Coaching sessions with mapped Evaluations and related Notes.</li>\n          <li><a href=\"#tag/Ack Dispute Flow\"> Ack Dispute API </a> - To fetch Ack/Dispute state changes for Evaluations.</li>\n          <li><a href=\"#tag/Summary\"> Summarization AI API </a> - To fetch GenAI-based Summaries along with Moments, Transcripts and metadata for all Interactions(Voice calls, Webchat).</li>\n      </ol>\n"
+  description: Reporting APIs are a collection of RESTful APIs that provide a convenient and secure way for integrating reporting data from Observe.AI into external system of your choice.
   x-logo:
     url: https://cdn.observe.ai/observeaiLogo.png
 servers:
@@ -10,7 +10,7 @@ servers:
 tags:
 - name: Interactions
   x-displayName: Interactions API
-  description: "Interactions API is an omnichannel API can be used to obtain all the data related to the interactions like Moments, Transcripts and metadata related to Interactions(including Voice calls and Web chat).\n\nPlease note -\n<ol>\n  <li>Allow 24 hrs to pass before pulling Interactions. ie., For Interactions completed on 14-Jan by 12:00AM PST, they would be available via APIs by 15-Jan by 12:00AM PST.</li>\n  <li>You can pull Interactions for 30 days at a time i.e., the duration between the end_date and the start_date should not exceed 30 days.</li>\n  <li>There is no limit as to how far back in the past you want to go for pulling Interactions. You can go back to the first ever evaluation on the platform unless data retention limits have been set.</li>\n  <li>Interactions API gives a paginated response so the customer need to specify the page number and the desired amount of interactions in a page. By default, page_size is set to 100</li>\n  <li>There is flexibility to either include or exclude Transcript in the API response by setting a query parameter includeTranscript. By default it is set to false.</li>\n  <li>The S3 URL obtained in the API response (with the interactions) is valid for 24 hours.</li>\n  <li>Clients using ‘Calls report API’ are requested to switch to ‘Interactions API’ which provides several benefits listed <a href=\"#tag/CallsReportVsInteractions\">here</a>. ‘Calls report API’ will be deprecated after 31-Dec-2022. Please reach out to your CSM for more details.</li>\n  <li>If you have been using Basic Auth for the APIs, we request you to switch to OAuth2.0 based Auth for the APIs by 31-Dec-2022. Detailed instructions to create API Credentials and make the switch to OAuth are documented <a href=\"#tag/Authentication\">here</a>. Please reach out to your CSM for more details.</li>\n  <li>If you need to pull Interactions by ID, there is a separate synchronous API - <a href=\"#tag/Interactions/operation/Get Interactions By Ids\">Get Interactions By Ids</a>.</li>\n</ol>\n"
+  description: Interactions API is an omnichannel API can be used to obtain all the data related to the interactions like Moments, Transcripts and metadata related to Interactions(including Voice calls and Web chat).
 paths:
   /v1/data/reports/interactions:
     post:
@@ -96,6 +96,8 @@ paths:
             '*/*':
               schema:
                 $ref: '#/components/schemas/ErrorMessage'
+      summary: Create interaction request
+      x-summary-source: derived
   /v1/data/reports/interactions/{request_id}:
     get:
       tags:
@@ -176,6 +178,8 @@ paths:
             '*/*':
               schema:
                 $ref: '#/components/schemas/ErrorMessage'
+      summary: Get interactions
+      x-summary-source: derived
   /v1/data/reports/interactions/ids:
     post:
       tags:
@@ -265,7 +269,94 @@ paths:
             '*/*':
               schema:
                 $ref: '#/components/schemas/ErrorMessage'
+      summary: Get interactions by ids
+      x-summary-source: derived
 components:
+  schemas:
+    RawJobRequest:
+      required:
+      - end_date
+      - start_date
+      type: object
+      properties:
+        start_date:
+          type: string
+          example: '2022-03-03T00:00:12.000+00:00'
+          description: The date should be given in the ISO format.
+        end_date:
+          type: string
+          example: '2022-04-04T00:14:00.000+00:00'
+          description: The date should be given in the ISO format.
+        format:
+          type: string
+          example: JSON
+          enum:
+          - JSON
+    InteractionsRequest:
+      properties:
+        observe_interaction_ids:
+          type: List<String>
+          example:
+          - af1d1b95-de6d-42db-83bd-3a585e65fcc9
+          - 4909093-918a-41ab-9fe3-0d1880fa2fd3
+          description: Mandatory if partner_interaction_ids is not present. Both cannot be present together. Max Limit of 100 ids.
+        partner_interaction_ids:
+          type: List<String>
+          example:
+          - 7f9744f08a45cb0010d3a7c8
+          - 9f583739466b73001e4a125c
+          description: Mandatory if observe_interaction_ids is not present. Both cannot be present together. Max Limit of 100 ids.
+    ErrorMessage:
+      type: object
+      properties:
+        error_code:
+          type: string
+        error_description:
+          type: string
+    RateLimitMessage:
+      type: object
+      properties:
+        message:
+          type: string
+          description: API rate limit exceeded
+    PostJobResponse:
+      type: object
+      properties:
+        request_id:
+          type: string
+        start_date:
+          type: string
+          format: date-time
+        end_date:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum:
+          - QUEUED
+          - INPROGRESS
+          - COMPLETED
+          - EXPIRED
+          - FAILED
+    GetJobResponse:
+      type: object
+      properties:
+        start_date:
+          type: string
+          format: date-time
+        end_date:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum:
+          - QUEUED
+          - INPROGRESS
+          - COMPLETED
+          - EXPIRED
+          - FAILED
+        url:
+          type: string
   parameters:
     InteractionsSize:
       in: query
@@ -294,91 +385,6 @@ components:
         example: true
         default: false
       description: Whether to include the transcript or not.
-  schemas:
-    InteractionsRequest:
-      properties:
-        observe_interaction_ids:
-          type: List<String>
-          example:
-          - af1d1b95-de6d-42db-83bd-3a585e65fcc9
-          - 4909093-918a-41ab-9fe3-0d1880fa2fd3
-          description: Mandatory if partner_interaction_ids is not present. Both cannot be present together. Max Limit of 100 ids.
-        partner_interaction_ids:
-          type: List<String>
-          example:
-          - 7f9744f08a45cb0010d3a7c8
-          - 9f583739466b73001e4a125c
-          description: Mandatory if observe_interaction_ids is not present. Both cannot be present together. Max Limit of 100 ids.
-    RawJobRequest:
-      required:
-      - end_date
-      - start_date
-      type: object
-      properties:
-        start_date:
-          type: string
-          example: '2022-03-03T00:00:12.000+00:00'
-          description: The date should be given in the ISO format.
-        end_date:
-          type: string
-          example: '2022-04-04T00:14:00.000+00:00'
-          description: The date should be given in the ISO format.
-        format:
-          type: string
-          example: JSON
-          enum:
-          - JSON
-    PostJobResponse:
-      type: object
-      properties:
-        request_id:
-          type: string
-        start_date:
-          type: string
-          format: date-time
-        end_date:
-          type: string
-          format: date-time
-        status:
-          type: string
-          enum:
-          - QUEUED
-          - INPROGRESS
-          - COMPLETED
-          - EXPIRED
-          - FAILED
-    RateLimitMessage:
-      type: object
-      properties:
-        message:
-          type: string
-          description: API rate limit exceeded
-    GetJobResponse:
-      type: object
-      properties:
-        start_date:
-          type: string
-          format: date-time
-        end_date:
-          type: string
-          format: date-time
-        status:
-          type: string
-          enum:
-          - QUEUED
-          - INPROGRESS
-          - COMPLETED
-          - EXPIRED
-          - FAILED
-        url:
-          type: string
-    ErrorMessage:
-      type: object
-      properties:
-        error_code:
-          type: string
-        error_description:
-          type: string
   securitySchemes:
     bearerAuth:
       type: http

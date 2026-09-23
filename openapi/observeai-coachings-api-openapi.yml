@@ -1,7 +1,7 @@
 openapi: 3.2.0
 info:
   title: Reporting Coachings API
-  description: "Reporting APIs are a collection of RESTful APIs that provide a convenient and secure way for integrating reporting data from Observe.AI into external system of your choice. These APIs are asynchronous and render data in a JSON format. Observe.AI uses OAuth 2.0 protocol for authentication of APIs. Please refer to Authentication section to obtain credentials to access Reporting APIs. Below are the 3 APIs that we support -\n      <ol>\n          <li><a href=\"#tag/Interactions\">Interactions API</a>- To fetch Moments, Transcripts and Interactions(Voice calls, Webchat, Email) metadata</li>\n          <li><a href=\"#tag/Evaluations\">Evaluations API</a> - To fetch Evaluation forms and submitted Evaluations along with question-wise scores and aggregate scores.</li>\n          <li><a href=\"#tag/Coachings\"> Coachings API </a> - To fetch Coaching sessions with mapped Evaluations and related Notes.</li>\n          <li><a href=\"#tag/Ack Dispute Flow\"> Ack Dispute API </a> - To fetch Ack/Dispute state changes for Evaluations.</li>\n          <li><a href=\"#tag/Summary\"> Summarization AI API </a> - To fetch GenAI-based Summaries along with Moments, Transcripts and metadata for all Interactions(Voice calls, Webchat).</li>\n      </ol>\n"
+  description: Reporting APIs are a collection of RESTful APIs that provide a convenient and secure way for integrating reporting data from Observe.AI into external system of your choice.
   x-logo:
     url: https://cdn.observe.ai/observeaiLogo.png
 servers:
@@ -10,7 +10,7 @@ servers:
 tags:
 - name: Coachings
   x-displayName: Coachings API
-  description: "Coachings API can be used to pull all the Coaching sessions done on Observe AI platform.\nPlease note -\n  <ol>\n    <li>Allow 24 hrs to pass before pulling Coaching sessions. ie., For Coaching sessions completed on 14-Jan by 12:00AM PST, they would be available via APIs by 15-Jan by 12:00AM PST.</li>\n    <li>You can pull Coaching sessions for 90 days at a time i.e., the duration between the end_date and the start_date should not exceed 90 days.</li>\n    <Li>There is no limit as to how far back in the past you want to go for pulling Coaching sessions. You can go back to the first ever coaching session on the platform unless data retention limits have been set.</li>\n    <li> All the Coaching sessions that were Submitted, Edited and Deleted in the date-range will be available in the API response.</li>\n      <ul>\n        <li>Lets take an example to explain it further - when you pull Coaching sessions for 15 days(say for start_date - 15-Jan and end_date 30-Jan) on 15-Feb via an API call, you get all Coaching sessions that were -</li>\n          <ul>\n            <li>submitted between 15-jan and 30-jan with \"status\": \"SUBMITTED\"</li>\n            <li>submitted before 15-jan but modified/deleted between 15-jan and 30-jan with \"status\"=\"EDITED\" / \"status\"=\"DELETED\"</li>\n            <li>submitted between 15-jan and 30-jan but modified after 30-jan until the pull date(15-Feb) with \"status\"=\"EDITED\"</li>\n          </ul>\n      </ul>\n    <li>The S3 URL obtained in the API response (with the coaching sessions) is valid for 24 hours.\n                    </li>\n    <li>If you have been using Basic Auth for the APIs, we request you to switch to OAuth2.0 based Auth for the APIs by 31-Dec-2022. Detailed instructions to create API Credentials and make the switch to OAuth are documented <a href=\"#tag/Authentication\">here</a>. Please reach out to your CSM for more details.</li>\n  </ol>\n"
+  description: Coachings API can be used to pull all the Coaching sessions done on Observe AI platform.
 paths:
   /v1/data/reports/coachings:
     post:
@@ -92,6 +92,8 @@ paths:
             '*/*':
               schema:
                 $ref: '#/components/schemas/ErrorMessage'
+      summary: Create coaching request
+      x-summary-source: derived
   /v1/data/reports/coachings/{request_id}:
     get:
       tags:
@@ -172,6 +174,8 @@ paths:
             '*/*':
               schema:
                 $ref: '#/components/schemas/ErrorMessage'
+      summary: Get coachings
+      x-summary-source: derived
 components:
   schemas:
     RawJobRequest:
@@ -193,6 +197,19 @@ components:
           example: JSON
           enum:
           - JSON
+    ErrorMessage:
+      type: object
+      properties:
+        error_code:
+          type: string
+        error_description:
+          type: string
+    RateLimitMessage:
+      type: object
+      properties:
+        message:
+          type: string
+          description: API rate limit exceeded
     PostJobResponse:
       type: object
       properties:
@@ -212,12 +229,6 @@ components:
           - COMPLETED
           - EXPIRED
           - FAILED
-    RateLimitMessage:
-      type: object
-      properties:
-        message:
-          type: string
-          description: API rate limit exceeded
     GetJobResponse:
       type: object
       properties:
@@ -236,13 +247,6 @@ components:
           - EXPIRED
           - FAILED
         url:
-          type: string
-    ErrorMessage:
-      type: object
-      properties:
-        error_code:
-          type: string
-        error_description:
           type: string
   securitySchemes:
     bearerAuth:

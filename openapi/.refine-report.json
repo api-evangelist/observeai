@@ -1,0 +1,38 @@
+{
+  "provider": "observeai",
+  "sources": [
+    "_original/observeai-reporting-apis-openapi.yml"
+  ],
+  "outputs": [
+    "observeai-ack-dispute-flow-api-openapi.yml",
+    "observeai-authentication-api-openapi.yml",
+    "observeai-coachings-api-openapi.yml",
+    "observeai-dsr-api-openapi.yml",
+    "observeai-evaluations-api-openapi.yml",
+    "observeai-interactions-api-openapi.yml",
+    "observeai-summary-api-openapi.yml"
+  ],
+  "archived": [],
+  "errors": [
+    "observeai-reporting-apis-openapi.yml: dangling $ref: #/components/schemas/DsrDeleteRequest",
+    "observeai-reporting-apis-openapi.yml: dangling $ref: #/components/schemas/DsrDeleteResponse",
+    "observeai-reporting-apis-openapi.yml: dangling $ref: #/components/schemas/DsrStatusResponse"
+  ],
+  "warnings": [
+    "observeai-reporting-apis-openapi.yml: info.version missing"
+  ],
+  "notes": [
+    "sourced from openapi/_original/ (1 archived document(s)); previously refined output at the top level was skipped rather than re-split",
+    "observeai-reporting-apis-openapi.yml: upgraded openapi 3.0.1 -> OpenAPI 3.2.0",
+    "apis.yml register: already-registered"
+  ],
+  "skipped": [
+    "observeai-ack-dispute-flow-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "observeai-authentication-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "observeai-coachings-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "observeai-dsr-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "observeai-evaluations-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "observeai-interactions-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "observeai-summary-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+  ]
+}

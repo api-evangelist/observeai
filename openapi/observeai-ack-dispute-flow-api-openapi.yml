@@ -1,7 +1,7 @@
 openapi: 3.2.0
 info:
   title: Reporting Ack Dispute Flow API
-  description: "Reporting APIs are a collection of RESTful APIs that provide a convenient and secure way for integrating reporting data from Observe.AI into external system of your choice. These APIs are asynchronous and render data in a JSON format. Observe.AI uses OAuth 2.0 protocol for authentication of APIs. Please refer to Authentication section to obtain credentials to access Reporting APIs. Below are the 3 APIs that we support -\n      <ol>\n          <li><a href=\"#tag/Interactions\">Interactions API</a>- To fetch Moments, Transcripts and Interactions(Voice calls, Webchat, Email) metadata</li>\n          <li><a href=\"#tag/Evaluations\">Evaluations API</a> - To fetch Evaluation forms and submitted Evaluations along with question-wise scores and aggregate scores.</li>\n          <li><a href=\"#tag/Coachings\"> Coachings API </a> - To fetch Coaching sessions with mapped Evaluations and related Notes.</li>\n          <li><a href=\"#tag/Ack Dispute Flow\"> Ack Dispute API </a> - To fetch Ack/Dispute state changes for Evaluations.</li>\n          <li><a href=\"#tag/Summary\"> Summarization AI API </a> - To fetch GenAI-based Summaries along with Moments, Transcripts and metadata for all Interactions(Voice calls, Webchat).</li>\n      </ol>\n"
+  description: Reporting APIs are a collection of RESTful APIs that provide a convenient and secure way for integrating reporting data from Observe.AI into external system of your choice.
   x-logo:
     url: https://cdn.observe.ai/observeaiLogo.png
 servers:
@@ -12,7 +12,7 @@ tags:
   x-displayName: Evaluations/Ack Dispute API
   tags:
   - Ack Dispute Flow
-  description: "Ack Dispute API can be used to pull all evaluation related data which are sent for acknowledgment or dispute.\n\nPlease note -\n    <ol>\n      <li>Allow 24 hrs to pass before pulling Ack Dispute Data. ie., For Evaluations completed on 14-Jan by 12:00AM PST, they would be available via APIs by 15-Jan by 12:00AM PST.</li>\n      <li>You can pull Ack Dispute for 90 days at a time i.e., the duration between the end_date and the start_date should not exceed 90 days.</li>\n      <Li>There is no limit as to how far back in the past you want to go for pulling Ack Dispuet Data. You can go back to the first ever evaluation on the platform unless data retention limits have been set.</li>\n      <li>The S3 URL obtained in the API response (with the evaluations) is valid for 24 hours.\n                                </li>\n      <li>If you have been using Basic Auth for the APIs, we request you to switch to OAuth2.0 based Auth for the APIs by 31-Dec-2022. Detailed instructions to create API Credentials and make the switch to OAuth are documented <a href=\"#tag/Authentication\">here</a>. Please reach out to your CSM for more details.</li>\n    </ol>\n"
+  description: Ack Dispute API can be used to pull all evaluation related data which are sent for acknowledgment or dispute.
 paths:
   /v1/data/reports/evaluation/ackdisputedetails:
     post:
@@ -97,6 +97,8 @@ paths:
             '*/*':
               schema:
                 $ref: '#/components/schemas/ErrorMessage'
+      summary: Create ack dispute request
+      x-summary-source: derived
   /v1/data/reports/evaluation/ackdisputedetails/{request_id}:
     get:
       tags:
@@ -177,6 +179,8 @@ paths:
             '*/*':
               schema:
                 $ref: '#/components/schemas/ErrorMessage'
+      summary: Get ack dispute details
+      x-summary-source: derived
   /v1/data/reports/evaluation/ackdisputedetails/ids:
     post:
       tags:
@@ -256,27 +260,9 @@ paths:
             '*/*':
               schema:
                 $ref: '#/components/schemas/ErrorMessage'
+      summary: Get ack dispute details by ids
+      x-summary-source: derived
 components:
-  parameters:
-    Page:
-      in: query
-      name: page
-      schema:
-        type: integer
-        minimum: 1
-        example: 1
-        default: 1
-      description: The page number of the paginated response.
-    Size:
-      in: query
-      name: size
-      schema:
-        type: integer
-        minimum: 10
-        maximum: 1000
-        example: 1000
-        default: 1000
-      description: Number of evaluations required in a page.
   schemas:
     RawJobRequest:
       required:
@@ -297,6 +283,27 @@ components:
           example: JSON
           enum:
           - JSON
+    AckDisputeFlowRequestIds:
+      properties:
+        evaluation_ids:
+          type: List<String>
+          example:
+          - 5e178d4246a3ce00010931d2
+          - 5e73d49ff2d4540001657309
+          description: Give the list of evaluation_ids to fetch ack dispute details. Max Limit of 100 ids.
+    ErrorMessage:
+      type: object
+      properties:
+        error_code:
+          type: string
+        error_description:
+          type: string
+    RateLimitMessage:
+      type: object
+      properties:
+        message:
+          type: string
+          description: API rate limit exceeded
     PostJobResponse:
       type: object
       properties:
@@ -316,20 +323,6 @@ components:
           - COMPLETED
           - EXPIRED
           - FAILED
-    RateLimitMessage:
-      type: object
-      properties:
-        message:
-          type: string
-          description: API rate limit exceeded
-    AckDisputeFlowRequestIds:
-      properties:
-        evaluation_ids:
-          type: List<String>
-          example:
-          - 5e178d4246a3ce00010931d2
-          - 5e73d49ff2d4540001657309
-          description: Give the list of evaluation_ids to fetch ack dispute details. Max Limit of 100 ids.
     GetJobResponse:
       type: object
       properties:
@@ -349,13 +342,26 @@ components:
           - FAILED
         url:
           type: string
-    ErrorMessage:
-      type: object
-      properties:
-        error_code:
-          type: string
-        error_description:
-          type: string
+  parameters:
+    Size:
+      in: query
+      name: size
+      schema:
+        type: integer
+        minimum: 10
+        maximum: 1000
+        example: 1000
+        default: 1000
+      description: Number of evaluations required in a page.
+    Page:
+      in: query
+      name: page
+      schema:
+        type: integer
+        minimum: 1
+        example: 1
+        default: 1
+      description: The page number of the paginated response.
   securitySchemes:
     bearerAuth:
       type: http
