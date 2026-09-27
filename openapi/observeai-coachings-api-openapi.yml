@@ -16,7 +16,7 @@ paths:
     post:
       tags:
       - Coachings
-      operationId: Create Coaching Request
+      operationId: CreateCoachingRequest
       requestBody:
         content:
           application/json:
@@ -94,11 +94,13 @@ paths:
                 $ref: '#/components/schemas/ErrorMessage'
       summary: Create coaching request
       x-summary-source: derived
+      x-operation-id-source: normalized
+      x-operation-id-original: Create Coaching Request
   /v1/data/reports/coachings/{request_id}:
     get:
       tags:
       - Coachings
-      operationId: Get Coachings
+      operationId: GetCoachings
       parameters:
       - name: request_id
         in: path
@@ -176,40 +178,10 @@ paths:
                 $ref: '#/components/schemas/ErrorMessage'
       summary: Get coachings
       x-summary-source: derived
+      x-operation-id-source: normalized
+      x-operation-id-original: Get Coachings
 components:
   schemas:
-    RawJobRequest:
-      required:
-      - end_date
-      - start_date
-      type: object
-      properties:
-        start_date:
-          type: string
-          example: '2022-03-03T00:00:12.000+00:00'
-          description: The date should be given in the ISO format.
-        end_date:
-          type: string
-          example: '2022-04-04T00:14:00.000+00:00'
-          description: The date should be given in the ISO format.
-        format:
-          type: string
-          example: JSON
-          enum:
-          - JSON
-    ErrorMessage:
-      type: object
-      properties:
-        error_code:
-          type: string
-        error_description:
-          type: string
-    RateLimitMessage:
-      type: object
-      properties:
-        message:
-          type: string
-          description: API rate limit exceeded
     PostJobResponse:
       type: object
       properties:
@@ -229,6 +201,25 @@ components:
           - COMPLETED
           - EXPIRED
           - FAILED
+    RawJobRequest:
+      required:
+      - end_date
+      - start_date
+      type: object
+      properties:
+        start_date:
+          type: string
+          example: '2022-03-03T00:00:12.000+00:00'
+          description: The date should be given in the ISO format.
+        end_date:
+          type: string
+          example: '2022-04-04T00:14:00.000+00:00'
+          description: The date should be given in the ISO format.
+        format:
+          type: string
+          example: JSON
+          enum:
+          - JSON
     GetJobResponse:
       type: object
       properties:
@@ -247,6 +238,19 @@ components:
           - EXPIRED
           - FAILED
         url:
+          type: string
+    RateLimitMessage:
+      type: object
+      properties:
+        message:
+          type: string
+          description: API rate limit exceeded
+    ErrorMessage:
+      type: object
+      properties:
+        error_code:
+          type: string
+        error_description:
           type: string
   securitySchemes:
     bearerAuth:

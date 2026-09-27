@@ -16,7 +16,7 @@ paths:
     post:
       tags:
       - Summary
-      operationId: Create Summaries Request
+      operationId: CreateSummariesRequest
       parameters:
       - $ref: '#/components/parameters/Page'
       - $ref: '#/components/parameters/InteractionsSize'
@@ -99,11 +99,13 @@ paths:
                 $ref: '#/components/schemas/ErrorMessage'
       summary: Create summaries request
       x-summary-source: derived
+      x-operation-id-source: normalized
+      x-operation-id-original: Create Summaries Request
   /v2/data/reports/interactions/{request_id}:
     get:
       tags:
       - Summary
-      operationId: Get Summaries
+      operationId: GetSummaries
       parameters:
       - name: request_id
         in: path
@@ -181,11 +183,13 @@ paths:
                 $ref: '#/components/schemas/ErrorMessage'
       summary: Get summaries
       x-summary-source: derived
+      x-operation-id-source: normalized
+      x-operation-id-original: Get Summaries
   /v2/data/reports/interactions/ids:
     post:
       tags:
       - Summary
-      operationId: Get Summaries By Ids
+      operationId: GetSummariesByIds
       parameters:
       - $ref: '#/components/parameters/IncludeTranscript'
       - $ref: '#/components/parameters/IncludeSummary'
@@ -273,8 +277,29 @@ paths:
                 $ref: '#/components/schemas/ErrorMessage'
       summary: Get summaries by ids
       x-summary-source: derived
+      x-operation-id-source: normalized
+      x-operation-id-original: Get Summaries By Ids
 components:
   schemas:
+    PostJobResponse:
+      type: object
+      properties:
+        request_id:
+          type: string
+        start_date:
+          type: string
+          format: date-time
+        end_date:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum:
+          - QUEUED
+          - INPROGRESS
+          - COMPLETED
+          - EXPIRED
+          - FAILED
     RawJobRequest:
       required:
       - end_date
@@ -308,6 +333,12 @@ components:
           - 7f9744f08a45cb0010d3a7c8
           - 9f583739466b73001e4a125c
           description: Mandatory if observe_interaction_ids is not present. Both cannot be present together. Max Limit of 100 ids.
+    RateLimitMessage:
+      type: object
+      properties:
+        message:
+          type: string
+          description: API rate limit exceeded
     ErrorMessage:
       type: object
       properties:
@@ -315,31 +346,6 @@ components:
           type: string
         error_description:
           type: string
-    RateLimitMessage:
-      type: object
-      properties:
-        message:
-          type: string
-          description: API rate limit exceeded
-    PostJobResponse:
-      type: object
-      properties:
-        request_id:
-          type: string
-        start_date:
-          type: string
-          format: date-time
-        end_date:
-          type: string
-          format: date-time
-        status:
-          type: string
-          enum:
-          - QUEUED
-          - INPROGRESS
-          - COMPLETED
-          - EXPIRED
-          - FAILED
     GetJobResponse:
       type: object
       properties:
@@ -360,24 +366,6 @@ components:
         url:
           type: string
   parameters:
-    IncludeSummary:
-      in: query
-      name: includeSummary
-      schema:
-        type: boolean
-        example: true
-        default: false
-      description: Whether to include the summary or not.
-    InteractionsSize:
-      in: query
-      name: size
-      schema:
-        type: integer
-        minimum: 10
-        maximum: 100
-        example: 100
-        default: 100
-      description: Number of interactions required in a page. Note that for requests without transcripts maximum size can be 1000.
     Page:
       in: query
       name: page
@@ -395,6 +383,24 @@ components:
         example: true
         default: false
       description: Whether to include the transcript or not.
+    InteractionsSize:
+      in: query
+      name: size
+      schema:
+        type: integer
+        minimum: 10
+        maximum: 100
+        example: 100
+        default: 100
+      description: Number of interactions required in a page. Note that for requests without transcripts maximum size can be 1000.
+    IncludeSummary:
+      in: query
+      name: includeSummary
+      schema:
+        type: boolean
+        example: true
+        default: false
+      description: Whether to include the summary or not.
   securitySchemes:
     bearerAuth:
       type: http

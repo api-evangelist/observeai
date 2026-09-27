@@ -19,7 +19,7 @@ paths:
     post:
       tags:
       - Authentication
-      operationId: Create Auth Token
+      operationId: CreateAuthToken
       requestBody:
         content:
           application/json:
@@ -69,8 +69,17 @@ paths:
                 $ref: '#/components/schemas/ErrorMessage'
       summary: Create auth token
       x-summary-source: derived
+      x-operation-id-source: normalized
+      x-operation-id-original: Create Auth Token
 components:
   schemas:
+    ErrorMessage:
+      type: object
+      properties:
+        error_code:
+          type: string
+        error_description:
+          type: string
     OauthTokenResponse:
       type: object
       properties:
@@ -80,13 +89,6 @@ components:
           type: integer
           format: int32
       title: OauthTokenResponse
-    ErrorMessage:
-      type: object
-      properties:
-        error_code:
-          type: string
-        error_description:
-          type: string
     OauthTokenRequest:
       type: object
       properties:

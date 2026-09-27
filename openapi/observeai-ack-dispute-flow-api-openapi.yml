@@ -18,7 +18,7 @@ paths:
     post:
       tags:
       - Ack Dispute Flow
-      operationId: Create Ack Dispute Request
+      operationId: CreateAckDisputeRequest
       parameters:
       - $ref: '#/components/parameters/Page'
       - $ref: '#/components/parameters/Size'
@@ -99,11 +99,13 @@ paths:
                 $ref: '#/components/schemas/ErrorMessage'
       summary: Create ack dispute request
       x-summary-source: derived
+      x-operation-id-source: normalized
+      x-operation-id-original: Create Ack Dispute Request
   /v1/data/reports/evaluation/ackdisputedetails/{request_id}:
     get:
       tags:
       - Ack Dispute Flow
-      operationId: Get Ack Dispute Details
+      operationId: GetAckDisputeDetails
       parameters:
       - name: request_id
         in: path
@@ -181,11 +183,13 @@ paths:
                 $ref: '#/components/schemas/ErrorMessage'
       summary: Get ack dispute details
       x-summary-source: derived
+      x-operation-id-source: normalized
+      x-operation-id-original: Get Ack Dispute Details
   /v1/data/reports/evaluation/ackdisputedetails/ids:
     post:
       tags:
       - Ack Dispute Flow
-      operationId: Get Ack Dispute Details By Ids
+      operationId: GetAckDisputeDetailsByIds
       requestBody:
         content:
           application/json:
@@ -262,27 +266,10 @@ paths:
                 $ref: '#/components/schemas/ErrorMessage'
       summary: Get ack dispute details by ids
       x-summary-source: derived
+      x-operation-id-source: normalized
+      x-operation-id-original: Get Ack Dispute Details By Ids
 components:
   schemas:
-    RawJobRequest:
-      required:
-      - end_date
-      - start_date
-      type: object
-      properties:
-        start_date:
-          type: string
-          example: '2022-03-03T00:00:12.000+00:00'
-          description: The date should be given in the ISO format.
-        end_date:
-          type: string
-          example: '2022-04-04T00:14:00.000+00:00'
-          description: The date should be given in the ISO format.
-        format:
-          type: string
-          example: JSON
-          enum:
-          - JSON
     AckDisputeFlowRequestIds:
       properties:
         evaluation_ids:
@@ -291,19 +278,6 @@ components:
           - 5e178d4246a3ce00010931d2
           - 5e73d49ff2d4540001657309
           description: Give the list of evaluation_ids to fetch ack dispute details. Max Limit of 100 ids.
-    ErrorMessage:
-      type: object
-      properties:
-        error_code:
-          type: string
-        error_description:
-          type: string
-    RateLimitMessage:
-      type: object
-      properties:
-        message:
-          type: string
-          description: API rate limit exceeded
     PostJobResponse:
       type: object
       properties:
@@ -323,6 +297,25 @@ components:
           - COMPLETED
           - EXPIRED
           - FAILED
+    RawJobRequest:
+      required:
+      - end_date
+      - start_date
+      type: object
+      properties:
+        start_date:
+          type: string
+          example: '2022-03-03T00:00:12.000+00:00'
+          description: The date should be given in the ISO format.
+        end_date:
+          type: string
+          example: '2022-04-04T00:14:00.000+00:00'
+          description: The date should be given in the ISO format.
+        format:
+          type: string
+          example: JSON
+          enum:
+          - JSON
     GetJobResponse:
       type: object
       properties:
@@ -341,6 +334,19 @@ components:
           - EXPIRED
           - FAILED
         url:
+          type: string
+    RateLimitMessage:
+      type: object
+      properties:
+        message:
+          type: string
+          description: API rate limit exceeded
+    ErrorMessage:
+      type: object
+      properties:
+        error_code:
+          type: string
+        error_description:
           type: string
   parameters:
     Size:

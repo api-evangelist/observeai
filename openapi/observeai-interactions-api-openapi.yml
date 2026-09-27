@@ -16,7 +16,7 @@ paths:
     post:
       tags:
       - Interactions
-      operationId: Create Interaction Request
+      operationId: CreateInteractionRequest
       parameters:
       - $ref: '#/components/parameters/Page'
       - $ref: '#/components/parameters/InteractionsSize'
@@ -98,11 +98,13 @@ paths:
                 $ref: '#/components/schemas/ErrorMessage'
       summary: Create interaction request
       x-summary-source: derived
+      x-operation-id-source: normalized
+      x-operation-id-original: Create Interaction Request
   /v1/data/reports/interactions/{request_id}:
     get:
       tags:
       - Interactions
-      operationId: Get Interactions
+      operationId: GetInteractions
       parameters:
       - name: request_id
         in: path
@@ -180,11 +182,13 @@ paths:
                 $ref: '#/components/schemas/ErrorMessage'
       summary: Get interactions
       x-summary-source: derived
+      x-operation-id-source: normalized
+      x-operation-id-original: Get Interactions
   /v1/data/reports/interactions/ids:
     post:
       tags:
       - Interactions
-      operationId: Get Interactions By Ids
+      operationId: GetInteractionsByIds
       parameters:
       - $ref: '#/components/parameters/IncludeTranscript'
       requestBody:
@@ -271,8 +275,29 @@ paths:
                 $ref: '#/components/schemas/ErrorMessage'
       summary: Get interactions by ids
       x-summary-source: derived
+      x-operation-id-source: normalized
+      x-operation-id-original: Get Interactions By Ids
 components:
   schemas:
+    PostJobResponse:
+      type: object
+      properties:
+        request_id:
+          type: string
+        start_date:
+          type: string
+          format: date-time
+        end_date:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum:
+          - QUEUED
+          - INPROGRESS
+          - COMPLETED
+          - EXPIRED
+          - FAILED
     RawJobRequest:
       required:
       - end_date
@@ -306,6 +331,12 @@ components:
           - 7f9744f08a45cb0010d3a7c8
           - 9f583739466b73001e4a125c
           description: Mandatory if observe_interaction_ids is not present. Both cannot be present together. Max Limit of 100 ids.
+    RateLimitMessage:
+      type: object
+      properties:
+        message:
+          type: string
+          description: API rate limit exceeded
     ErrorMessage:
       type: object
       properties:
@@ -313,31 +344,6 @@ components:
           type: string
         error_description:
           type: string
-    RateLimitMessage:
-      type: object
-      properties:
-        message:
-          type: string
-          description: API rate limit exceeded
-    PostJobResponse:
-      type: object
-      properties:
-        request_id:
-          type: string
-        start_date:
-          type: string
-          format: date-time
-        end_date:
-          type: string
-          format: date-time
-        status:
-          type: string
-          enum:
-          - QUEUED
-          - INPROGRESS
-          - COMPLETED
-          - EXPIRED
-          - FAILED
     GetJobResponse:
       type: object
       properties:
@@ -358,16 +364,6 @@ components:
         url:
           type: string
   parameters:
-    InteractionsSize:
-      in: query
-      name: size
-      schema:
-        type: integer
-        minimum: 10
-        maximum: 100
-        example: 100
-        default: 100
-      description: Number of interactions required in a page. Note that for requests without transcripts maximum size can be 1000.
     Page:
       in: query
       name: page
@@ -385,6 +381,16 @@ components:
         example: true
         default: false
       description: Whether to include the transcript or not.
+    InteractionsSize:
+      in: query
+      name: size
+      schema:
+        type: integer
+        minimum: 10
+        maximum: 100
+        example: 100
+        default: 100
+      description: Number of interactions required in a page. Note that for requests without transcripts maximum size can be 1000.
   securitySchemes:
     bearerAuth:
       type: http

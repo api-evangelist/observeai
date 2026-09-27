@@ -29,7 +29,7 @@ paths:
       tags:
       - DSR
       summary: Submit DSR deletion request
-      operationId: Create Dsr Delete Request
+      operationId: CreateDsrDeleteRequest
       security:
       - bearerAuth: []
       requestBody:
@@ -95,12 +95,14 @@ paths:
             '*/*':
               schema:
                 $ref: '#/components/schemas/ErrorMessage'
+      x-operation-id-source: normalized
+      x-operation-id-original: Create Dsr Delete Request
   /v1/dsr/delete/{job_id}/status:
     get:
       tags:
       - DSR
       summary: Get DSR deletion status
-      operationId: Get Dsr Delete Status
+      operationId: GetDsrDeleteStatus
       security:
       - bearerAuth: []
       parameters:
@@ -147,6 +149,8 @@ paths:
             '*/*':
               schema:
                 $ref: '#/components/schemas/ErrorMessage'
+      x-operation-id-source: normalized
+      x-operation-id-original: Get Dsr Delete Status
 components:
   schemas:
     ErrorMessage:
