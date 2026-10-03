@@ -80,6 +80,14 @@ components:
           type: string
         error_description:
           type: string
+    OauthTokenRequest:
+      type: object
+      properties:
+        app_id:
+          type: string
+        app_secret:
+          type: string
+      title: OauthTokenRequest
     OauthTokenResponse:
       type: object
       properties:
@@ -89,14 +97,6 @@ components:
           type: integer
           format: int32
       title: OauthTokenResponse
-    OauthTokenRequest:
-      type: object
-      properties:
-        app_id:
-          type: string
-        app_secret:
-          type: string
-      title: OauthTokenRequest
   securitySchemes:
     bearerAuth:
       type: http

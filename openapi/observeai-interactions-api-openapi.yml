@@ -279,25 +279,6 @@ paths:
       x-operation-id-original: Get Interactions By Ids
 components:
   schemas:
-    PostJobResponse:
-      type: object
-      properties:
-        request_id:
-          type: string
-        start_date:
-          type: string
-          format: date-time
-        end_date:
-          type: string
-          format: date-time
-        status:
-          type: string
-          enum:
-          - QUEUED
-          - INPROGRESS
-          - COMPLETED
-          - EXPIRED
-          - FAILED
     RawJobRequest:
       required:
       - end_date
@@ -331,19 +312,6 @@ components:
           - 7f9744f08a45cb0010d3a7c8
           - 9f583739466b73001e4a125c
           description: Mandatory if observe_interaction_ids is not present. Both cannot be present together. Max Limit of 100 ids.
-    RateLimitMessage:
-      type: object
-      properties:
-        message:
-          type: string
-          description: API rate limit exceeded
-    ErrorMessage:
-      type: object
-      properties:
-        error_code:
-          type: string
-        error_description:
-          type: string
     GetJobResponse:
       type: object
       properties:
@@ -363,16 +331,39 @@ components:
           - FAILED
         url:
           type: string
+    RateLimitMessage:
+      type: object
+      properties:
+        message:
+          type: string
+          description: API rate limit exceeded
+    ErrorMessage:
+      type: object
+      properties:
+        error_code:
+          type: string
+        error_description:
+          type: string
+    PostJobResponse:
+      type: object
+      properties:
+        request_id:
+          type: string
+        start_date:
+          type: string
+          format: date-time
+        end_date:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum:
+          - QUEUED
+          - INPROGRESS
+          - COMPLETED
+          - EXPIRED
+          - FAILED
   parameters:
-    Page:
-      in: query
-      name: page
-      schema:
-        type: integer
-        minimum: 1
-        example: 1
-        default: 1
-      description: The page number of the paginated response.
     IncludeTranscript:
       in: query
       name: includeTranscript
@@ -391,6 +382,15 @@ components:
         example: 100
         default: 100
       description: Number of interactions required in a page. Note that for requests without transcripts maximum size can be 1000.
+    Page:
+      in: query
+      name: page
+      schema:
+        type: integer
+        minimum: 1
+        example: 1
+        default: 1
+      description: The page number of the paginated response.
   securitySchemes:
     bearerAuth:
       type: http

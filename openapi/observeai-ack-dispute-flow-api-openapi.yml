@@ -270,33 +270,6 @@ paths:
       x-operation-id-original: Get Ack Dispute Details By Ids
 components:
   schemas:
-    AckDisputeFlowRequestIds:
-      properties:
-        evaluation_ids:
-          type: List<String>
-          example:
-          - 5e178d4246a3ce00010931d2
-          - 5e73d49ff2d4540001657309
-          description: Give the list of evaluation_ids to fetch ack dispute details. Max Limit of 100 ids.
-    PostJobResponse:
-      type: object
-      properties:
-        request_id:
-          type: string
-        start_date:
-          type: string
-          format: date-time
-        end_date:
-          type: string
-          format: date-time
-        status:
-          type: string
-          enum:
-          - QUEUED
-          - INPROGRESS
-          - COMPLETED
-          - EXPIRED
-          - FAILED
     RawJobRequest:
       required:
       - end_date
@@ -335,6 +308,14 @@ components:
           - FAILED
         url:
           type: string
+    AckDisputeFlowRequestIds:
+      properties:
+        evaluation_ids:
+          type: List<String>
+          example:
+          - 5e178d4246a3ce00010931d2
+          - 5e73d49ff2d4540001657309
+          description: Give the list of evaluation_ids to fetch ack dispute details. Max Limit of 100 ids.
     RateLimitMessage:
       type: object
       properties:
@@ -348,7 +329,35 @@ components:
           type: string
         error_description:
           type: string
+    PostJobResponse:
+      type: object
+      properties:
+        request_id:
+          type: string
+        start_date:
+          type: string
+          format: date-time
+        end_date:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum:
+          - QUEUED
+          - INPROGRESS
+          - COMPLETED
+          - EXPIRED
+          - FAILED
   parameters:
+    Page:
+      in: query
+      name: page
+      schema:
+        type: integer
+        minimum: 1
+        example: 1
+        default: 1
+      description: The page number of the paginated response.
     Size:
       in: query
       name: size
@@ -359,15 +368,6 @@ components:
         example: 1000
         default: 1000
       description: Number of evaluations required in a page.
-    Page:
-      in: query
-      name: page
-      schema:
-        type: integer
-        minimum: 1
-        example: 1
-        default: 1
-      description: The page number of the paginated response.
   securitySchemes:
     bearerAuth:
       type: http

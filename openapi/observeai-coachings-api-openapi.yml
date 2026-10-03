@@ -182,25 +182,6 @@ paths:
       x-operation-id-original: Get Coachings
 components:
   schemas:
-    PostJobResponse:
-      type: object
-      properties:
-        request_id:
-          type: string
-        start_date:
-          type: string
-          format: date-time
-        end_date:
-          type: string
-          format: date-time
-        status:
-          type: string
-          enum:
-          - QUEUED
-          - INPROGRESS
-          - COMPLETED
-          - EXPIRED
-          - FAILED
     RawJobRequest:
       required:
       - end_date
@@ -252,6 +233,25 @@ components:
           type: string
         error_description:
           type: string
+    PostJobResponse:
+      type: object
+      properties:
+        request_id:
+          type: string
+        start_date:
+          type: string
+          format: date-time
+        end_date:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum:
+          - QUEUED
+          - INPROGRESS
+          - COMPLETED
+          - EXPIRED
+          - FAILED
   securitySchemes:
     bearerAuth:
       type: http
