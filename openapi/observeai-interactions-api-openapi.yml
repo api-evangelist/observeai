@@ -278,40 +278,35 @@ paths:
       x-operation-id-source: normalized
       x-operation-id-original: Get Interactions By Ids
 components:
+  parameters:
+    Page:
+      in: query
+      name: page
+      schema:
+        type: integer
+        minimum: 1
+        example: 1
+        default: 1
+      description: The page number of the paginated response.
+    IncludeTranscript:
+      in: query
+      name: includeTranscript
+      schema:
+        type: boolean
+        example: true
+        default: false
+      description: Whether to include the transcript or not.
+    InteractionsSize:
+      in: query
+      name: size
+      schema:
+        type: integer
+        minimum: 10
+        maximum: 100
+        example: 100
+        default: 100
+      description: Number of interactions required in a page. Note that for requests without transcripts maximum size can be 1000.
   schemas:
-    RawJobRequest:
-      required:
-      - end_date
-      - start_date
-      type: object
-      properties:
-        start_date:
-          type: string
-          example: '2022-03-03T00:00:12.000+00:00'
-          description: The date should be given in the ISO format.
-        end_date:
-          type: string
-          example: '2022-04-04T00:14:00.000+00:00'
-          description: The date should be given in the ISO format.
-        format:
-          type: string
-          example: JSON
-          enum:
-          - JSON
-    InteractionsRequest:
-      properties:
-        observe_interaction_ids:
-          type: List<String>
-          example:
-          - af1d1b95-de6d-42db-83bd-3a585e65fcc9
-          - 4909093-918a-41ab-9fe3-0d1880fa2fd3
-          description: Mandatory if partner_interaction_ids is not present. Both cannot be present together. Max Limit of 100 ids.
-        partner_interaction_ids:
-          type: List<String>
-          example:
-          - 7f9744f08a45cb0010d3a7c8
-          - 9f583739466b73001e4a125c
-          description: Mandatory if observe_interaction_ids is not present. Both cannot be present together. Max Limit of 100 ids.
     GetJobResponse:
       type: object
       properties:
@@ -331,19 +326,20 @@ components:
           - FAILED
         url:
           type: string
-    RateLimitMessage:
-      type: object
+    InteractionsRequest:
       properties:
-        message:
-          type: string
-          description: API rate limit exceeded
-    ErrorMessage:
-      type: object
-      properties:
-        error_code:
-          type: string
-        error_description:
-          type: string
+        observe_interaction_ids:
+          type: List<String>
+          example:
+          - af1d1b95-de6d-42db-83bd-3a585e65fcc9
+          - 4909093-918a-41ab-9fe3-0d1880fa2fd3
+          description: Mandatory if partner_interaction_ids is not present. Both cannot be present together. Max Limit of 100 ids.
+        partner_interaction_ids:
+          type: List<String>
+          example:
+          - 7f9744f08a45cb0010d3a7c8
+          - 9f583739466b73001e4a125c
+          description: Mandatory if observe_interaction_ids is not present. Both cannot be present together. Max Limit of 100 ids.
     PostJobResponse:
       type: object
       properties:
@@ -363,34 +359,38 @@ components:
           - COMPLETED
           - EXPIRED
           - FAILED
-  parameters:
-    IncludeTranscript:
-      in: query
-      name: includeTranscript
-      schema:
-        type: boolean
-        example: true
-        default: false
-      description: Whether to include the transcript or not.
-    InteractionsSize:
-      in: query
-      name: size
-      schema:
-        type: integer
-        minimum: 10
-        maximum: 100
-        example: 100
-        default: 100
-      description: Number of interactions required in a page. Note that for requests without transcripts maximum size can be 1000.
-    Page:
-      in: query
-      name: page
-      schema:
-        type: integer
-        minimum: 1
-        example: 1
-        default: 1
-      description: The page number of the paginated response.
+    RawJobRequest:
+      required:
+      - end_date
+      - start_date
+      type: object
+      properties:
+        start_date:
+          type: string
+          example: '2022-03-03T00:00:12.000+00:00'
+          description: The date should be given in the ISO format.
+        end_date:
+          type: string
+          example: '2022-04-04T00:14:00.000+00:00'
+          description: The date should be given in the ISO format.
+        format:
+          type: string
+          example: JSON
+          enum:
+          - JSON
+    RateLimitMessage:
+      type: object
+      properties:
+        message:
+          type: string
+          description: API rate limit exceeded
+    ErrorMessage:
+      type: object
+      properties:
+        error_code:
+          type: string
+        error_description:
+          type: string
   securitySchemes:
     bearerAuth:
       type: http

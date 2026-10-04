@@ -73,13 +73,6 @@ paths:
       x-operation-id-original: Create Auth Token
 components:
   schemas:
-    ErrorMessage:
-      type: object
-      properties:
-        error_code:
-          type: string
-        error_description:
-          type: string
     OauthTokenRequest:
       type: object
       properties:
@@ -88,6 +81,13 @@ components:
         app_secret:
           type: string
       title: OauthTokenRequest
+    ErrorMessage:
+      type: object
+      properties:
+        error_code:
+          type: string
+        error_description:
+          type: string
     OauthTokenResponse:
       type: object
       properties:

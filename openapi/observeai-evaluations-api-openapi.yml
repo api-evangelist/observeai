@@ -185,7 +185,54 @@ paths:
       x-operation-id-source: normalized
       x-operation-id-original: Get Evaluations
 components:
+  parameters:
+    Page:
+      in: query
+      name: page
+      schema:
+        type: integer
+        minimum: 1
+        example: 1
+        default: 1
+      description: The page number of the paginated response.
+    Size:
+      in: query
+      name: size
+      schema:
+        type: integer
+        minimum: 10
+        maximum: 1000
+        example: 1000
+        default: 1000
+      description: Number of evaluations required in a page.
+    EvaluationType:
+      in: query
+      name: evaluationType
+      schema:
+        type: enum
+        default: MANUAL
+        example: AUTOQA
+      description: Choose from MANUAL, AUTOQA or ALL types of evaluation forms. All manual evaluations are fetched if evaluationType is not specified.
   schemas:
+    GetJobResponse:
+      type: object
+      properties:
+        start_date:
+          type: string
+          format: date-time
+        end_date:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum:
+          - QUEUED
+          - INPROGRESS
+          - COMPLETED
+          - EXPIRED
+          - FAILED
+        url:
+          type: string
     PostJobResponse:
       type: object
       properties:
@@ -224,25 +271,6 @@ components:
           example: JSON
           enum:
           - JSON
-    GetJobResponse:
-      type: object
-      properties:
-        start_date:
-          type: string
-          format: date-time
-        end_date:
-          type: string
-          format: date-time
-        status:
-          type: string
-          enum:
-          - QUEUED
-          - INPROGRESS
-          - COMPLETED
-          - EXPIRED
-          - FAILED
-        url:
-          type: string
     RateLimitMessage:
       type: object
       properties:
@@ -256,34 +284,6 @@ components:
           type: string
         error_description:
           type: string
-  parameters:
-    Page:
-      in: query
-      name: page
-      schema:
-        type: integer
-        minimum: 1
-        example: 1
-        default: 1
-      description: The page number of the paginated response.
-    Size:
-      in: query
-      name: size
-      schema:
-        type: integer
-        minimum: 10
-        maximum: 1000
-        example: 1000
-        default: 1000
-      description: Number of evaluations required in a page.
-    EvaluationType:
-      in: query
-      name: evaluationType
-      schema:
-        type: enum
-        default: MANUAL
-        example: AUTOQA
-      description: Choose from MANUAL, AUTOQA or ALL types of evaluation forms. All manual evaluations are fetched if evaluationType is not specified.
   securitySchemes:
     bearerAuth:
       type: http
