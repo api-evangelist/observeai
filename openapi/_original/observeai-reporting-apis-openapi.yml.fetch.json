@@ -1,0 +1,12 @@
+{
+ "url": "https://api-docs.observe.ai/swagger.yaml",
+ "requested_url": "https://api-docs.observe.ai/swagger.yaml",
+ "status": 200,
+ "content_type": "application/octet-stream",
+ "bytes": 162424,
+ "sha256": "0f6b3f4c811962f3f59deace75604696c2dfa788132cb7a03d75765f25317a01",
+ "fetched_at": "2026-10-04",
+ "fetched_by": "APIEvangelist-Harvest/1.0 (+https://apievangelist.com)",
+ "match": "byte-identical",
+ "note": "Re-fetched from the provider by verify-openapi-sources.py; the archived file is byte-identical to what the provider serves."
+}
