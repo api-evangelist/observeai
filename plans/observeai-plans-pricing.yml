@@ -50,3 +50,17 @@ api_access:
 free_tier: null
 trial: >-
   No self-serve trial. https://www.observe.ai/demo is a sales demo request form.
+x-canonical:
+  generated: '2026-10-08'
+  vocabulary: all/0-working/economics/plans-canonical.yml
+  models:
+  - hybrid
+  units: []
+  plans:
+  - name: Observe.AI - Post-Interaction AI
+    access: other
+    model: hybrid
+    model_how: derived
+    units:
+    - other
+    periods: []
