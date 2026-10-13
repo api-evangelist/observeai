@@ -1,0 +1,24 @@
+generated: '2026-10-13'
+method: searched
+checked:
+- https://aws.amazon.com/marketplace/
+marketplace_apps: []
+edges:
+- partner_name: AWS Marketplace
+  partner: amazon-web-services
+  partner_match: aggregator
+  type: marketplace
+  marketplace: aws-marketplace
+  channel: distribution
+  relationship: platform-app
+  direction: provider-built
+  evidence: https://aws.amazon.com/marketplace/seller-profile?id=seller-zym4i5eswhj3w
+  listing_count: 4
+  apps:
+  - Observe.AI - Real-Time AI
+  - Observe.AI - VoiceAI Agents for Customer Support
+  - Observe.AI - Customer Interaction Intelligence
+  - Observe.AI - Screen Recording
+  seller_name: Observe.AI
+  detected_by: sweep-cloud-marketplaces.py
+  detected: '2026-10-13'
