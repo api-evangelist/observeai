@@ -64,6 +64,152 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-Observe.AI is a company surfaced as a portfolio company of scale-venture-partners, softbank-vision-fund and added to the API Evangelist network as a stub for enrichment. Sector: ai-apps. This profile is a lead awaiting the enrichment pipeline.
+Observe.AI is an agentic AI platform for the contact center, providing purpose-built AI agents that handle customer support end-to-end across voice and chat, real-time AI Copilot guidance that assists frontline agents during live interactions, and Conversation Intelligence that evaluates every interaction for quality assurance, compliance, and business insight. Its AI agents connect to CRM, CCaaS, knowledge base, and backend systems to read and write data and trigger workflows, backed by 250+ prebuilt integrations and API/integration toolkits. Observe.AI serves regulated industries including banking and financial services, healthcare, insurance, and travel and hospitality, and maintains SOC 2, ISO 27001, and HIPAA compliance. Its public developer surface is the Reporting APIs at api-docs.observe.ai — an OpenAPI 3.0.1 contract covering asynchronous export of interactions, GenAI summaries, Auto QA and manual evaluations, coachings and ack/dispute state, plus a Data Subject Request deletion API and a scheduled bulk export to Snowflake or S3 described by sixteen JSON Schemas. The company was added to the API Evangelist network as a portfolio company of Scale Venture Partners and the SoftBank Vision Fund.
 
-Backed by: scale-venture-partners, softbank-vision-fund — https://www.observe.ai/
+**Areas:** Company · Ai Apps · Contact Center · Conversation Intelligence · Customer Service · AI Agents · Voice AI · Quality Assurance · Reporting · OpenAPI · Speech Analytics · Conversational AI
+
+## Observe.AI on APIs.io
+
+Everything profiled for Observe.AI is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/observeai/](https://apis.io/providers/observeai/)** — or go straight to one of the APIs or properties below.
+
+### APIs (7)
+
+- [Observe.AI Ack Dispute Flow API](https://apis.io/apis/observeai/observeai-ack-dispute-flow-api/) — Ack Dispute API can be used to pull all evaluation related data which are sent for acknowledgment or dispute. Please note - <ol> <li>Allow 24 hrs to pass…
+- [Observe.AI Authentication API](https://apis.io/apis/observeai/observeai-authentication-api/) — OAuth 2.0, which stands for “Open Authorization”, is a standard design to allow a website or application to access resources hosted by other web apps on…
+- [Observe.AI Coachings API](https://apis.io/apis/observeai/observeai-coachings-api/) — Coachings API can be used to pull all the Coaching sessions done on Observe AI platform. Please note - <ol> <li>Allow 24 hrs to pass before pulling Coaching…
+- [Observe.AI DSR API](https://apis.io/apis/observeai/observeai-dsr-api/) — DSR (Data Subject Request) deletion APIs allow customers to submit metadata-based deletion requests and check the processing status of those requests.…
+- [Observe.AI Evaluations API](https://apis.io/apis/observeai/observeai-evaluations-api/) — Evaluations API can be used to pull all the Evaluations(Manual and Auto QA) done on Observe AI platform. Please note - <ol> <li>Allow 24 hrs to pass before…
+- [Observe.AI Interactions API](https://apis.io/apis/observeai/observeai-interactions-api/) — Interactions API is an omnichannel API can be used to obtain all the data related to the interactions like Moments, Transcripts and metadata related to…
+- [Observe.AI Summary API](https://apis.io/apis/observeai/observeai-summary-api/) — Summarization AI API can be used to pull the data related to summaries for a particular interaction including calls and chats. Please note - <ol> <li>…
+
+### Published properties
+
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
+
+#### MCP servers (1)
+
+Model Context Protocol servers that expose the API to agents.
+
+- [observeai](https://apis.io/servers/observeai/observeai/)
+
+#### JSON Schema (16)
+
+The data models the API reads and writes.
+
+- [AGENT_PERFORMANCE_ASSIGNMENT_V1](https://apis.io/schemas/observeai/observeai-bulk-export-agent-performance-assignment-v1.schema/)
+- [AUDIT_ASSIGNMENT_V1](https://apis.io/schemas/observeai/observeai-bulk-export-audit-assignment-v1.schema/)
+- [AUTOQA_ACK_DISPUTE_V1](https://apis.io/schemas/observeai/observeai-bulk-export-autoqa-ack-dispute-v1.schema/)
+- [AUTOQA_EVALUATION_V1](https://apis.io/schemas/observeai/observeai-bulk-export-autoqa-evaluation-v1.schema/)
+- [CALIBRATION_ASSIGNMENT_V1](https://apis.io/schemas/observeai/observeai-bulk-export-calibration-assignment-v1.schema/)
+- [COACHING_V1](https://apis.io/schemas/observeai/observeai-bulk-export-coaching-v1.schema/)
+- [CONTACT_REASON_V1](https://apis.io/schemas/observeai/observeai-bulk-export-contact-reason-v1.schema/)
+- [EVALUATION_TEMPLATE_V1](https://apis.io/schemas/observeai/observeai-bulk-export-evaluation-template-v1.schema/)
+- [INTERACTION_SUMMARY_V1](https://apis.io/schemas/observeai/observeai-bulk-export-interaction-summary-v1.schema/)
+- [INTERACTION_V1](https://apis.io/schemas/observeai/observeai-bulk-export-interaction-v1.schema/)
+- [MANUAL_ACK_DISPUTE_V1](https://apis.io/schemas/observeai/observeai-bulk-export-manual-ack-dispute-v1.schema/)
+- [MANUAL_EVALUATION_V1](https://apis.io/schemas/observeai/observeai-bulk-export-manual-evaluation-v1.schema/)
+- [SENTIMENT_METRIC_V1](https://apis.io/schemas/observeai/observeai-bulk-export-sentiment-metric-v1.schema/)
+- [TEAM_V1](https://apis.io/schemas/observeai/observeai-bulk-export-team-v1.schema/)
+- [USER_LOGIN_ACTIVITY_V1](https://apis.io/schemas/observeai/observeai-bulk-export-user-login-activity-v1.schema/)
+- [USER_V1](https://apis.io/schemas/observeai/observeai-bulk-export-user-v1.schema/)
+
+#### Overlays (1)
+
+OpenAPI overlays, including conversational phrasing for each operation.
+
+- [Observeai Reporting Apis Overlay](https://apis.io/overlays/observeai/observeai-reporting-apis-overlay/)
+
+#### Security (4)
+
+Authentication, trust centre, and vulnerability disclosure.
+
+- [Observeai Authentication](https://apis.io/security/observeai/observeai-authentication/)
+- [Observeai Domain Security](https://apis.io/security/observeai/observeai-domain-security/)
+- [Observeai Trust Center](https://apis.io/security/observeai/observeai-trust-center/)
+- [Observeai Vulnerability Disclosure](https://apis.io/security/observeai/observeai-vulnerability-disclosure/)
+
+#### Plans and pricing (1)
+
+Published plans, tiers and prices.
+
+- [Observeai Plans Pricing](https://apis.io/plans/observeai/observeai-plans-pricing/)
+
+#### Rate limits (1)
+
+Published request limits.
+
+- [Observeai Rate Limits](https://apis.io/rate-limits/observeai/observeai-rate-limits/)
+
+## Where to find this API
+
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
+
+- [Website](https://www.observe.ai/)
+- [Documentation](https://api-docs.observe.ai/)
+- [Getting started](https://api-docs.observe.ai/#tag/ReportingService-Overview)
+- [API reference](https://api-docs.observe.ai/)
+- [Pricing](https://aws.amazon.com/marketplace/pp/prodview-q2xrm5ud6rkro)
+- [Sign up](https://app.observe.ai/login)
+- [Support](https://help.observe.ai/)
+- [Blog](https://www.observe.ai/blog)
+- [Security](https://www.observe.ai/contact-center-security)
+- [Compliance](https://www.observe.ai/trust)
+- [Terms of service](https://www.observe.ai/terms)
+- [Privacy policy](https://www.observe.ai/privacy-policy)
+- [GitHub](https://github.com/observeai)
+- [Status](https://status.observe.ai/)
+
+## API Evangelist rating
+
+**Kin Score 54.5** — strong · rubric 0.25.0 · scored 2026-10-23
+
+| Facet | Score |
+|---|---|
+| Discoverability | 73.2 |
+| Contract quality | 49.3 |
+| Contract governance | 4.5 |
+| Operational transparency | 80.3 |
+| Developer ergonomics | 48.2 |
+| Access clarity | 63.2 |
+
+**Agent readiness 31.2** — agent-ready
+
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | yes |
+| Agentic Access | — |
+| Reversibility Documented | — |
+| MCP Server | — |
+| Auth Clarity | bearer (partial credit) |
+| Idempotency | — |
+| Error Semantics | verified |
+| OpenAPI Examples | verified |
+| Rate Limit Signal | documented (partial credit) |
+| Event Surface Described | — |
+| Agent Skills | derived (partial credit) |
+| Well Known Catalog | — |
+| Consent Identity | — |
+| Agent Card | — |
+| Dry Run Mode | — |
+| Delegated Identity | — |
+| Protected Resource Metadata | — |
+| Dynamic Client Registration | — |
+| Agentic Commerce | — |
+| Pagination Ratio | na |
+| Operation Distinctiveness | distinct |
+
+**Regulatory alignment 33.3** — AI & Biometrics
+
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/observeai/](https://apis.io/providers/observeai/).
+
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for Observe.AI: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/observeai/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
